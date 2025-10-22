@@ -13,11 +13,11 @@ function Header() {
   const handleMenuClick = (item) => {
     const rutas = {
       "Inicio": "/",
-      "Series, Peliculas": "/catalogo",
-      "Mangas": "/mangas",
+      "Series, Peliculas": "/Catalogo",
+      "Mangas": "/Mangas",
       "Mawa": "/mawa",
-      "Mi Lista": "/mi-lista",
-      "Novedades": "/novedades"
+      "Mi Lista": "/MiLista",
+      "Novedades": "/Novedades"
     };
     navigate(rutas[item]);
     setIsMenuOpen(false);

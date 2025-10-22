@@ -13,31 +13,23 @@ export const todosLosContenidos = [
     episodios: 24,
     isNew: true,
     isExclusive: true,
-    // Datos para el reproductor
+    isFavorito: false,
     tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
         nombre: "Temporada 1",
         videos: [
-          {
-            id: 1,
-            title: "Episodio 1: Para ti, que renuncias a la humanidad",
-            thumbnail: "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            duration: "24:15",
-            views: "2.4M",
-            numero: 1
-          },
-          {
-            id: 2,
-            title: "Episodio 2: Ese día",
-            thumbnail: "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-            duration: "23:45",
-            views: "2.1M",
-            numero: 2
-          }
+          { id: 1, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/10/47347.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", duration: "24:15", views: "2.4M", numero: 1 },
+          { id: 2, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/10/47347.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", duration: "23:45", views: "2.1M", numero: 2 }
+        ]
+      },
+      {
+        id: 2,
+        nombre: "Temporada 2",
+        videos: [
+          { id: 11, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/10/47347.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "24:30", views: "2.0M", numero: 1 },
+          { id: 12, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/10/47347.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", duration: "25:00", views: "2.2M", numero: 2 }
         ]
       }
     ]
@@ -54,21 +46,23 @@ export const todosLosContenidos = [
     temporadas: 3,
     episodios: 26,
     isTrending: true,
+    isFavorito: false,
     tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
         nombre: "Temporada 1",
         videos: [
-          {
-            id: 3,
-            title: "Episodio 1: Crueldad",
-            thumbnail: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-            duration: "23:30",
-            views: "3.2M",
-            numero: 1
-          }
+          { id: 3, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", duration: "23:30", views: "3.2M", numero: 1 },
+          { id: 13, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "24:00", views: "2.9M", numero: 2 }
+        ]
+      },
+      {
+        id: 2,
+        nombre: "Temporada 2",
+        videos: [
+          { id: 14, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", duration: "24:15", views: "3.0M", numero: 1 },
+          { id: 15, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", duration: "23:45", views: "3.1M", numero: 2 }
         ]
       }
     ]
@@ -85,21 +79,100 @@ export const todosLosContenidos = [
     temporadas: 2,
     episodios: 24,
     isPopular: true,
+    isFavorito: true,
     tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
         nombre: "Temporada 1",
         videos: [
-          {
-            id: 4,
-            title: "Episodio 1: Ryomen Sukuna",
-            thumbnail: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-            duration: "24:00",
-            views: "2.8M",
-            numero: 1
-          }
+          { id: 4, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "24:00", views: "2.8M", numero: 1 },
+          { id: 16, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", duration: "24:20", views: "2.6M", numero: 2 }
+        ]
+      },
+      {
+        id: 2,
+        nombre: "Temporada 2",
+        videos: [
+          { id: 17, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", duration: "24:15", views: "2.7M", numero: 1 },
+          { id: 18, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", duration: "24:40", views: "2.9M", numero: 2 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 19,
+    title: "One Piece",
+    image: "https://cdn.myanimelist.net/images/anime/6/73245.jpg",
+    rating: 4.6,
+    year: 1999,
+    categoria: "Anime",
+    generos: ["Aventura", "Acción", "Comedia"],
+    descripcion: "Monkey D. Luffy y su tripulación buscan el tesoro legendario 'One Piece'.",
+    temporadas: 20,
+    episodios: 1000,
+    isPopular: true,
+    isFavorito: false,
+    tipo: "anime",
+    temporadasDetalle: [
+      {
+        id: 1,
+        nombre: "Temporada 1",
+        videos: [
+          { id: 100, title: "Episodio 1", thumbnail: "https://cdn.myanimelist.net/images/anime/6/73245.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "24:00", views: "5M", numero: 1 },
+          { id: 101, title: "Episodio 2", thumbnail: "https://cdn.myanimelist.net/images/anime/6/73245.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", duration: "24:30", views: "4.8M", numero: 2 }
+        ]
+      }
+    ]
+  },
+
+  // SERIES
+  {
+    id: 9,
+    title: "Breaking Bad",
+    image: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+    rating: 4.9,
+    year: 2008,
+    categoria: "Serie",
+    generos: ["Drama", "Crimen", "Suspense"],
+    descripcion: "Un profesor de química se convierte en fabricante de metanfetamina.",
+    temporadas: 5,
+    episodios: 62,
+    isPopular: true,
+    isFavorito: true,
+    tipo: "serie",
+    temporadasDetalle: [
+      {
+        id: 1,
+        nombre: "Temporada 1",
+        videos: [
+          { id: 19, title: "Episodio 1", thumbnail: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", duration: "47:00", views: "10M", numero: 1 },
+          { id: 20, title: "Episodio 2", thumbnail: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", duration: "48:00", views: "9M", numero: 2 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 10,
+    title: "Game of Thrones",
+    image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg",
+    rating: 4.8,
+    year: 2011,
+    categoria: "Serie",
+    generos: ["Fantasía", "Drama", "Aventura"],
+    descripcion: "Nobles familias luchan por el control de los Siete Reinos.",
+    temporadas: 8,
+    episodios: 73,
+    isPopular: true,
+    isFavorito: true,
+    tipo: "serie",
+    temporadasDetalle: [
+      {
+        id: 1,
+        nombre: "Temporada 1",
+        videos: [
+          { id: 21, title: "Episodio 1", thumbnail: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "58:00", views: "12M", numero: 1 },
+          { id: 22, title: "Episodio 2", thumbnail: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", duration: "56:00", views: "11M", numero: 2 }
         ]
       }
     ]
@@ -107,7 +180,7 @@ export const todosLosContenidos = [
 
   // PELÍCULAS
   {
-    id: 4,
+    id: 11,
     title: "Spider-Man: Across the Spider-Verse",
     image: "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg",
     rating: 4.7,
@@ -117,27 +190,20 @@ export const todosLosContenidos = [
     descripcion: "Miles Morales viaja a través del multiverso para unirse a Gwen Stacy.",
     duracion: "2:20:15",
     isNew: true,
+    isFavorito: true,
     tipo: "pelicula",
     temporadasDetalle: [
       {
         id: 1,
         nombre: "Película Completa",
         videos: [
-          {
-            id: 5,
-            title: "Spider-Man: Across the Spider-Verse",
-            thumbnail: "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-            duration: "2:20:15",
-            views: "12.4M",
-            numero: 1
-          }
+          { id: 23, title: "Película", thumbnail: "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", duration: "2:20:15", views: "12.4M", numero: 1 }
         ]
       }
     ]
   },
   {
-    id: 5,
+    id: 12,
     title: "Avengers: Endgame",
     image: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
     rating: 4.9,
@@ -147,85 +213,14 @@ export const todosLosContenidos = [
     descripcion: "Los Vengadores se reúnen para revertir el chasquido de Thanos.",
     duracion: "3:01:00",
     isPopular: true,
+    isFavorito: true,
     tipo: "pelicula",
     temporadasDetalle: [
       {
         id: 1,
         nombre: "Película Completa",
         videos: [
-          {
-            id: 6,
-            title: "Avengers: Endgame",
-            thumbnail: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            duration: "3:01:00",
-            views: "25.1M",
-            numero: 1
-          }
-        ]
-      }
-    ]
-  },
-
-  // SERIES
-  {
-    id: 6,
-    title: "Stranger Things",
-    image: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg",
-    rating: 4.6,
-    year: 2022,
-    categoria: "Serie",
-    generos: ["Ciencia Ficción", "Terror", "Drama", "Misterio"],
-    descripcion: "Un grupo de niños se enfrenta a fuerzas sobrenaturales en su pueblo.",
-    temporadas: 4,
-    episodios: 34,
-    isPopular: true,
-    tipo: "serie",
-    temporadasDetalle: [
-      {
-        id: 1,
-        nombre: "Temporada 1",
-        videos: [
-          {
-            id: 7,
-            title: "Capítulo 1: La desaparición de Will Byers",
-            thumbnail: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-            duration: "47:15",
-            views: "15.2M",
-            numero: 1
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 7,
-    title: "The Last of Us",
-    image: "https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
-    rating: 4.7,
-    year: 2023,
-    categoria: "Serie",
-    generos: ["Drama", "Post-apocalíptico", "Aventura", "Terror"],
-    descripcion: "Un hombre y una niña en un mundo devastado por una infección.",
-    temporadas: 1,
-    episodios: 9,
-    isTrending: true,
-    tipo: "serie",
-    temporadasDetalle: [
-      {
-        id: 1,
-        nombre: "Temporada 1",
-        videos: [
-          {
-            id: 8,
-            title: "Episodio 1: Cuando estás perdido en la oscuridad",
-            thumbnail: "https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-            duration: "58:20",
-            views: "18.7M",
-            numero: 1
-          }
+          { id: 24, title: "Película", thumbnail: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", duration: "3:01:00", views: "25.1M", numero: 1 }
         ]
       }
     ]
@@ -233,7 +228,7 @@ export const todosLosContenidos = [
 
   // DORAMAS
   {
-    id: 8,
+    id: 13,
     title: "Goblin: The Lonely and Great God",
     image: "https://i.mydramalist.com/4vz1W_4f.jpg",
     rating: 4.8,
@@ -242,36 +237,21 @@ export const todosLosContenidos = [
     generos: ["Romance", "Fantasía", "Drama"],
     descripcion: "Un inmortal goblin busca a su novia humana para poner fin a su inmortalidad.",
     episodios: 16,
+    isFavorito: true,
     tipo: "dorama",
     temporadasDetalle: [
       {
         id: 1,
         nombre: "Temporada 1",
         videos: [
-          {
-            id: 9,
-            title: "Episodio 1",
-            thumbnail: "https://i.mydramalist.com/4vz1W_4f.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-            duration: "60:00",
-            views: "5.2M",
-            numero: 1
-          }
+          { id: 25, title: "Episodio 1", thumbnail: "https://i.mydramalist.com/4vz1W_4f.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "60:00", views: "5.2M", numero: 1 }
         ]
       },
-       {
+      {
         id: 2,
         nombre: "Temporada 2",
         videos: [
-          {
-            id: 9,
-            title: "Episodio 1",
-            thumbnail: "https://i.mydramalist.com/4vz1W_4f.jpg",
-            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-            duration: "60:00",
-            views: "5.2M",
-            numero: 1
-          }
+          { id: 26, title: "Episodio 1", thumbnail: "https://i.mydramalist.com/4vz1W_4f.jpg", videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", duration: "60:00", views: "5.2M", numero: 1 }
         ]
       }
     ]
