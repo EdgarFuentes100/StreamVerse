@@ -35,7 +35,7 @@ function CatalogoPage() {
   // 🔹 Filtrar los contenidos DEL BACKEND
   const contenidosFiltrados = contenido
     .filter(item => {
-      const coincideCategoria = filtroCategoria === 'todos' || 
+      const coincideCategoria = filtroCategoria === 'todos' ||
         item.categoria === filtroCategoria;
 
       const coincideGenero = filtroGenero === 'todos' ||
@@ -119,7 +119,7 @@ function CatalogoPage() {
               <select
                 value={orden}
                 onChange={(e) => setOrden(e.target.value)}
-                className="flex-1 sm:flex-none !bg-gray-800 border border-purple-500/30 text-white rounded-lg px-3 py-2 text-sm"
+                className="flex-1 sm:flex-none bg-gray-800 border !border-purple-500/30 text-white rounded-lg px-3 py-2 text-sm"
               >
                 {ordenes.map((opcion) => (
                   <option key={opcion.value} value={opcion.value}>
@@ -132,56 +132,115 @@ function CatalogoPage() {
 
           {mostrarFiltros && (
             <div className="mt-3 p-4 bg-gray-800/50 rounded-lg border border-cyan-500/20">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                {/* Categorías */}
-                {categorias.map((c) => (
+
+              {/* Grupo 1: Categorías */}
+              <div className="mb-6">
+                <h3 className="text-cyan-400 font-bold text-sm mb-3 flex items-center gap-2">
+                  <span>📁</span> Categorías
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {/* "Todos" primero en categorías */}
                   <button
-                    key={c.idCategoria}
-                    onClick={() => setFiltroCategoria(c.nombre)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      filtroCategoria === c.nombre
+                    onClick={() => setFiltroCategoria('todos')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${filtroCategoria === 'todos'
                         ? '!bg-cyan-500 text-white shadow-lg'
                         : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
+                      }`}
                   >
-                    {c.icon} {c.nombre}
-                    {c.nombre !== 'todos' && (
-                      <span className="ml-2 text-cyan-400 text-xs font-bold bg-cyan-500/10 rounded-full px-2 py-0.5">
-                        {c.cantidad}K
-                      </span>
-                    )}
+                    🌐 Todos
                   </button>
-                ))}
 
-                {/* Géneros dinámicos */}
-                {generos.map(g => (
+                  {/* Resto de categorías */}
+                  {categorias
+                    .filter(c => c.nombre !== 'todos')
+                    .map((c) => (
+                      <button
+                        key={c.idCategoria}
+                        onClick={() => setFiltroCategoria(c.nombre)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${filtroCategoria === c.nombre
+                            ? '!bg-cyan-500 text-white shadow-lg'
+                            : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                      >
+                        {c.icon} {c.nombre}
+                        <span className="ml-2 text-cyan-400 text-xs font-bold bg-cyan-500/10 rounded-full px-2 py-0.5">
+                          {c.cantidad}K
+                        </span>
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Grupo 2: Géneros */}
+              <div className="mb-6">
+                <h3 className="text-purple-400 font-bold text-sm mb-3 flex items-center gap-2">
+                  <span>🎭</span> Géneros
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {/* "Todos" primero en géneros */}
                   <button
-                    key={g.idGenero}
-                    onClick={() => setFiltroGenero(g.nombre)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      filtroGenero === g.nombre
+                    onClick={() => setFiltroGenero('todos')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${filtroGenero === 'todos'
                         ? '!bg-purple-500 text-white shadow-lg'
                         : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
+                      }`}
                   >
-                    {g.nombre}
+                    Todos
                   </button>
-                ))}
 
-                {/* Años */}
-                {años.map(a => (
+                  {/* Resto de géneros ordenados alfabéticamente */}
+                  {generos
+                    .filter(g => g.nombre !== 'todos')
+                    .sort((a, b) => a.nombre.localeCompare(b.nombre))
+                    .map(g => (
+                      <button
+                        key={g.idGenero}
+                        onClick={() => setFiltroGenero(g.nombre)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${filtroGenero === g.nombre
+                            ? '!bg-purple-500 text-white shadow-lg'
+                            : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                      >
+                        {g.nombre}
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Grupo 3: Años */}
+              <div className="mb-6">
+                <h3 className="text-pink-400 font-bold text-sm mb-3 flex items-center gap-2">
+                  <span>📅</span> Años
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {/* "Todos" primero en años */}
                   <button
-                    key={a}
-                    onClick={() => setFiltroAño(a)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      filtroAño === a
+                    onClick={() => setFiltroAño('todos')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${filtroAño === 'todos'
                         ? '!bg-pink-500 text-white shadow-lg'
                         : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
+                      }`}
                   >
-                    {a === 'todos' ? '📆 Todos' : a}
+                    📆 Todos
                   </button>
-                ))}
+
+                  {/* Resto de años ordenados descendentes */}
+                  {años
+                    .filter(a => a !== 'todos')
+                    .sort((a, b) => parseInt(b) - parseInt(a))
+                    .map(a => (
+                      <button
+                        key={a}
+                        onClick={() => setFiltroAño(a)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${filtroAño === a
+                            ? '!bg-pink-500 text-white shadow-lg'
+                            : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                      >
+                        {a}
+                      </button>
+                    ))}
+                </div>
               </div>
 
               {/* Botones para móvil */}
@@ -197,10 +256,26 @@ function CatalogoPage() {
                     setFiltroCategoria('todos');
                     setFiltroGenero('todos');
                     setFiltroAño('todos');
+                    setBusqueda('');
                   }}
-                  className="flex-1 bg-gray-600 text-white py-2 rounded-lg text-sm font-medium"
+                  className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-medium"
                 >
-                  Limpiar
+                  Limpiar Todo
+                </button>
+              </div>
+
+              {/* Botón para quitar todos los filtros - Escritorio */}
+              <div className="hidden sm:flex justify-center mt-4">
+                <button
+                  onClick={() => {
+                    setFiltroCategoria('todos');
+                    setFiltroGenero('todos');
+                    setFiltroAño('todos');
+                    setBusqueda('');
+                  }}
+                  className="!bg-red-500 hover:bg-red-600 border border-red-400 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                >
+                  🗑️ Quitar Todos los Filtros
                 </button>
               </div>
             </div>
@@ -226,7 +301,7 @@ function CatalogoPage() {
                       className="w-full h-40 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
+
                     {/* Badge de categoría */}
                     <div className="absolute top-3 left-3">
                       <div className={`${getBadgeColor(item.categoria)} text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1`}>
@@ -234,7 +309,7 @@ function CatalogoPage() {
                         <span>{item.categoria}</span>
                       </div>
                     </div>
-                    
+
                     {/* Rating */}
                     <div className="absolute top-3 right-3 bg-yellow-500/95 text-gray-900 px-2 py-1 rounded-full text-xs font-bold flex items-center space-x-1 shadow-lg">
                       <span>⭐</span>
@@ -253,7 +328,7 @@ function CatalogoPage() {
                     <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight mb-3 group-hover:text-cyan-100 transition-colors">
                       {item.title}
                     </h3>
-                    
+
                     {/* Descripción */}
                     <p className="text-sm text-gray-300 line-clamp-3 leading-relaxed mb-3 flex-1">
                       {item.descripcion}
