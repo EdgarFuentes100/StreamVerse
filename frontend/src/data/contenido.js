@@ -14,7 +14,6 @@ export const todosLosContenidos = [
     isNew: true,
     isExclusive: true,
     isFavorito: false,
-    tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
@@ -47,7 +46,6 @@ export const todosLosContenidos = [
     episodios: 26,
     isTrending: true,
     isFavorito: false,
-    tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
@@ -80,7 +78,6 @@ export const todosLosContenidos = [
     episodios: 24,
     isPopular: true,
     isFavorito: true,
-    tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
@@ -113,7 +110,6 @@ export const todosLosContenidos = [
     episodios: 1000,
     isPopular: true,
     isFavorito: false,
-    tipo: "anime",
     temporadasDetalle: [
       {
         id: 1,
@@ -140,7 +136,6 @@ export const todosLosContenidos = [
     episodios: 62,
     isPopular: true,
     isFavorito: true,
-    tipo: "serie",
     temporadasDetalle: [
       {
         id: 1,
@@ -165,7 +160,6 @@ export const todosLosContenidos = [
     episodios: 73,
     isPopular: true,
     isFavorito: true,
-    tipo: "serie",
     temporadasDetalle: [
       {
         id: 1,
@@ -191,7 +185,6 @@ export const todosLosContenidos = [
     duracion: "2:20:15",
     isNew: true,
     isFavorito: true,
-    tipo: "pelicula",
     temporadasDetalle: [
       {
         id: 1,
@@ -214,7 +207,6 @@ export const todosLosContenidos = [
     duracion: "3:01:00",
     isPopular: true,
     isFavorito: true,
-    tipo: "pelicula",
     temporadasDetalle: [
       {
         id: 1,
@@ -238,7 +230,6 @@ export const todosLosContenidos = [
     descripcion: "Un inmortal goblin busca a su novia humana para poner fin a su inmortalidad.",
     episodios: 16,
     isFavorito: true,
-    tipo: "dorama",
     temporadasDetalle: [
       {
         id: 1,

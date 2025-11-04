@@ -8,6 +8,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/StreamVerse/',
+  base: '/',
 
 })
