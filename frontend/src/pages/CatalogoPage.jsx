@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { todosLosContenidos } from '../data/contenido';
+import { useCategoria } from '../data/useCategoria';
+import { useGenero } from '../data/useGenero';
+import { useContenido } from '../data/useContenido';
 
 function CatalogoPage() {
   const navigate = useNavigate();
+  const { categoria } = useCategoria();
+  const { genero } = useGenero();
+  const { contenido } = useContenido();
+
   const [filtroCategoria, setFiltroCategoria] = useState('todos');
   const [filtroGenero, setFiltroGenero] = useState('todos');
   const [filtroAño, setFiltroAño] = useState('todos');
@@ -11,9 +17,14 @@ function CatalogoPage() {
   const [busqueda, setBusqueda] = useState('');
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
-  const categorias = ['todos', 'Anime', 'Película', 'Serie', 'Dorama', 'Infantil'];
-  const generos = ['todos', 'Acción', 'Aventura', 'Comedia', 'Drama', 'Romance', 'Terror', 'Ciencia Ficción', 'Fantasía', 'Superhéroes', 'Sobrenatural', 'Misterio'];
+  // 🔹 Combinar "todos" + categorías del backend
+  const categorias = [{ idCategoria: 0, nombre: 'todos', icon: '🌐', cantidad: 0 }, ...categoria];
+
+  // 🔹 Combinar "todos" + géneros del backend
+  const generos = [{ idGenero: 0, nombre: 'todos' }, ...genero];
+
   const años = ['todos', '2024', '2023', '2022', '2021', '2020'];
+
   const ordenes = [
     { value: 'popular', label: '🎯 Popular' },
     { value: 'new', label: '🆕 Nuevo' },
@@ -21,32 +32,40 @@ function CatalogoPage() {
     { value: 'title', label: '🔤 A-Z' }
   ];
 
-  const contenidosFiltrados = todosLosContenidos.filter(item => {
-    const coincideCategoria = filtroCategoria === 'todos' || item.categoria === filtroCategoria;
-    const coincideGenero = filtroGenero === 'todos' || item.generos.includes(filtroGenero);
-    const coincideAño = filtroAño === 'todos' || item.year.toString() === filtroAño;
-    const coincideBusqueda = item.title.toLowerCase().includes(busqueda.toLowerCase());
-    return coincideCategoria && coincideGenero && coincideAño && coincideBusqueda;
-  }).sort((a, b) => {
-    switch (orden) {
-      case 'popular':
-        return (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0) || b.rating - a.rating;
-      case 'new':
-        return b.year - a.year;
-      case 'rating':
-        return b.rating - a.rating;
-      case 'title':
-        return a.title.localeCompare(b.title);
-      default:
-        return 0;
-    }
-  });
+  // 🔹 Filtrar los contenidos DEL BACKEND
+  const contenidosFiltrados = contenido
+    .filter(item => {
+      const coincideCategoria = filtroCategoria === 'todos' || 
+        item.categoria === filtroCategoria;
 
-  const handleVerVideo = (contenido) => {
-    navigate(`/video/${contenido.id}`);
-  };
+      const coincideGenero = filtroGenero === 'todos' ||
+        (item.generos && item.generos.toLowerCase().includes(filtroGenero.toLowerCase()));
 
-  const getBadgeColor = (categoria) => {
+      const coincideAño = filtroAño === 'todos' ||
+        item.year.toString() === filtroAño;
+
+      const coincideBusqueda = item.title.toLowerCase().includes(busqueda.toLowerCase());
+
+      return coincideCategoria && coincideGenero && coincideAño && coincideBusqueda;
+    })
+    .sort((a, b) => {
+      switch (orden) {
+        case 'popular':
+          return (parseFloat(b.rating) - parseFloat(a.rating));
+        case 'new':
+          return b.year - a.year;
+        case 'rating':
+          return parseFloat(b.rating) - parseFloat(a.rating);
+        case 'title':
+          return a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+
+  const handleVerVideo = (contenido) => navigate(`/video/${contenido.idContenido}`);
+
+  const getBadgeColor = (categoriaNombre) => {
     const colors = {
       'Anime': 'bg-pink-500',
       'Película': 'bg-purple-500',
@@ -54,33 +73,27 @@ function CatalogoPage() {
       'Dorama': 'bg-red-500',
       'Infantil': 'bg-green-500'
     };
-    return colors[categoria] || 'bg-gray-500';
+    return colors[categoriaNombre] || 'bg-gray-500';
+  };
+
+  // Función para obtener el ícono de la categoría
+  const getCategoriaIcon = (nombreCategoria) => {
+    const cat = categorias.find(c => c.nombre === nombreCategoria);
+    return cat ? cat.icon : '🎬';
   };
 
   return (
     <div className="pt-20 min-h-screen bg-gray-950">
-
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative py-0 px-4 sm:px-8 bg-gradient-to-br from-gray-900 via-purple-900/20 to-cyan-900/20">
         <div className="container mx-auto text-center">
-          <h1
-            className="font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 3rem)', marginTop: 0 }}
-          >
+          <h1 className="font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 3rem)', marginTop: 0 }}>
             Catálogo
           </h1>
           <p className="text-sm sm:text-xl text-gray-300 max-w-full sm:max-w-2xl mx-auto">
             Encuentra tu próxima historia favorita
           </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs sm:text-sm text-cyan-400">
-            <span>🎬 Películas</span>
-            <span>•</span>
-            <span>📺 Series</span>
-            <span>•</span>
-            <span>🎌 Animes</span>
-            <span>•</span>
-            <span>💞 Doramas</span>
-          </div>
         </div>
       </section>
 
@@ -93,19 +106,20 @@ function CatalogoPage() {
               placeholder="🔍 Buscar contenido..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full bg-gray-800/80 border border-cyan-500/30 rounded-lg sm:rounded-xl px-3 py-2 text-sm sm:text-base placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+              className="w-full sm:flex-1 !bg-gray-800/80 border border-cyan-500/30 rounded-lg px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:border-cyan-400"
             />
-            <div className="flex gap-1 sm:gap-2 mt-2 sm:mt-0">
+
+            <div className="flex gap-2 sm:gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setMostrarFiltros(!mostrarFiltros)}
-                className="!bg-gray-800/80 flex items-center justify-center gap-1 bg-gray-800 border border-cyan-500/30 text-cyan-400 px-2 py-2 rounded-lg text-xs sm:text-sm"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1 !bg-gray-800 border border-cyan-500/30 text-cyan-400 px-3 py-2 rounded-lg text-sm"
               >
                 🎚️ Filtros
               </button>
               <select
                 value={orden}
                 onChange={(e) => setOrden(e.target.value)}
-                className="!bg-gray-800 border border-purple-500/30 text-white rounded-lg px-2 py-2 text-xs sm:text-sm"
+                className="flex-1 sm:flex-none !bg-gray-800 border border-purple-500/30 text-white rounded-lg px-3 py-2 text-sm"
               >
                 {ordenes.map((opcion) => (
                   <option key={opcion.value} value={opcion.value}>
@@ -114,159 +128,187 @@ function CatalogoPage() {
                 ))}
               </select>
             </div>
-
-            {/* Filtros expandibles */}
-            {mostrarFiltros && (
-              <div className="mt-3 p-3 sm:p-4 bg-gray-800/50 rounded-lg sm:rounded-xl border border-cyan-500/20">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                  {/* Categoría */}
-                  {categorias.map(c => (
-                    <button
-                      key={c}
-                      onClick={() => setFiltroCategoria(c)}
-                      className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${filtroCategoria === c ? '!bg-cyan-500 text-white shadow' : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
-                        }`}
-                    >
-                      {c === 'todos' ? '🌐 Todos' : c === 'Anime' ? '🎌 Animes' : c === 'Película' ? '🎬 Películas' : c === 'Serie' ? '📺 Series' : c === 'Dorama' ? '💞 Doramas' : '👶 Infantil'}
-                    </button>
-                  ))}
-
-                  {/* Géneros */}
-                  {generos.map(g => (
-                    <button
-                      key={g}
-                      onClick={() => setFiltroGenero(g)}
-                      className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${filtroGenero === g ? '!bg-purple-500 text-white shadow' : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
-                        }`}
-                    >
-                      {g}
-                    </button>
-                  ))}
-
-                  {/* Año */}
-                  {años.map(a => (
-                    <button
-                      key={a}
-                      onClick={() => setFiltroAño(a)}
-                      className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${filtroAño === a ? '!bg-pink-500 text-white shadow' : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
-                        }`}
-                    >
-                      {a === 'todos' ? '📆 Todos' : a}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex gap-2 mt-3 sm:hidden">
-                  <button onClick={() => setMostrarFiltros(false)} className="flex-1 bg-cyan-500 text-white py-2 rounded-lg text-sm">Aplicar</button>
-                  <button onClick={() => {
-                    setFiltroCategoria('todos'); setFiltroGenero('todos'); setFiltroAño('todos');
-                  }} className="flex-1 bg-gray-600 text-white py-2 rounded-lg text-sm">Limpiar</button>
-                </div>
-              </div>
-            )}
           </div>
+
+          {mostrarFiltros && (
+            <div className="mt-3 p-4 bg-gray-800/50 rounded-lg border border-cyan-500/20">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                {/* Categorías */}
+                {categorias.map((c) => (
+                  <button
+                    key={c.idCategoria}
+                    onClick={() => setFiltroCategoria(c.nombre)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      filtroCategoria === c.nombre
+                        ? '!bg-cyan-500 text-white shadow-lg'
+                        : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {c.icon} {c.nombre}
+                    {c.nombre !== 'todos' && (
+                      <span className="ml-2 text-cyan-400 text-xs font-bold bg-cyan-500/10 rounded-full px-2 py-0.5">
+                        {c.cantidad}K
+                      </span>
+                    )}
+                  </button>
+                ))}
+
+                {/* Géneros dinámicos */}
+                {generos.map(g => (
+                  <button
+                    key={g.idGenero}
+                    onClick={() => setFiltroGenero(g.nombre)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      filtroGenero === g.nombre
+                        ? '!bg-purple-500 text-white shadow-lg'
+                        : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {g.nombre}
+                  </button>
+                ))}
+
+                {/* Años */}
+                {años.map(a => (
+                  <button
+                    key={a}
+                    onClick={() => setFiltroAño(a)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      filtroAño === a
+                        ? '!bg-pink-500 text-white shadow-lg'
+                        : '!bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {a === 'todos' ? '📆 Todos' : a}
+                  </button>
+                ))}
+              </div>
+
+              {/* Botones para móvil */}
+              <div className="flex gap-2 mt-4 sm:hidden">
+                <button
+                  onClick={() => setMostrarFiltros(false)}
+                  className="flex-1 bg-cyan-500 text-white py-2 rounded-lg text-sm font-medium"
+                >
+                  Aplicar
+                </button>
+                <button
+                  onClick={() => {
+                    setFiltroCategoria('todos');
+                    setFiltroGenero('todos');
+                    setFiltroAño('todos');
+                  }}
+                  className="flex-1 bg-gray-600 text-white py-2 rounded-lg text-sm font-medium"
+                >
+                  Limpiar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Grid de Contenido Optimizado */}
+      {/* Grid de contenidos */}
       <section className="py-6 px-4 sm:px-8">
         <div className="container mx-auto">
           {contenidosFiltrados.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {contenidosFiltrados.map(item => (
                 <div
-                  key={item.id}
+                  key={item.idContenido}
                   onClick={() => handleVerVideo(item)}
-                  className="group bg-gray-800/80 rounded-lg overflow-hidden cursor-pointer border border-transparent hover:border-cyan-400/50 hover:shadow-md transition-all flex flex-col"
+                  className="group bg-gray-800/80 rounded-xl overflow-hidden cursor-pointer border border-gray-700/50 hover:border-cyan-400/50 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col h-full"
                 >
-                  <div className="relative">
+                  <div className="relative flex-shrink-0">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-36 sm:h-52 object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-40 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-
-                    {/* BOTÓN EN MÓVILES: centrado sobre la imagen */}
-                    <div className="sm:hidden absolute inset-0 flex items-center justify-center">
-                      <button className="bg-black/40 text-white p-3 rounded-full text-2xl hover:scale-110 transition-transform">
-                        ▶
-                      </button>
-                    </div>
-
-                    {/* Badges */}
-                    <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-                      <div className={`${getBadgeColor(item.categoria)} text-white px-2 py-0.5 rounded text-[10px] font-bold`}>
-                        {item.categoria}
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Badge de categoría */}
+                    <div className="absolute top-3 left-3">
+                      <div className={`${getBadgeColor(item.categoria)} text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1`}>
+                        <span>{getCategoriaIcon(item.categoria)}</span>
+                        <span>{item.categoria}</span>
                       </div>
-                      {item.isNew && (
-                        <div className="bg-green-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">
-                          NUEVO
-                        </div>
-                      )}
-                      {item.isExclusive && (
-                        <div className="bg-yellow-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">
-                          EXCLUSIVO
-                        </div>
-                      )}
                     </div>
-
+                    
                     {/* Rating */}
-                    <div className="absolute top-2 right-2 bg-yellow-500 text-gray-900 px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1">
+                    <div className="absolute top-3 right-3 bg-yellow-500/95 text-gray-900 px-2 py-1 rounded-full text-xs font-bold flex items-center space-x-1 shadow-lg">
                       <span>⭐</span>
                       <span>{item.rating}</span>
                     </div>
+
+                    {/* Año */}
+                    <div className="absolute bottom-3 left-3 bg-gray-900/90 text-white px-2 py-1 rounded text-xs font-medium">
+                      {item.year}
+                    </div>
                   </div>
 
-                  {/* Información inferior */}
-                  <div className="p-2 sm:p-3 flex flex-col flex-1">
-                    <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white line-clamp-2">
+                  {/* Contenido de la tarjeta */}
+                  <div className="p-4 flex flex-col flex-1">
+                    {/* Título */}
+                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight mb-3 group-hover:text-cyan-100 transition-colors">
                       {item.title}
                     </h3>
-
-                    <p className="text-[10px] sm:text-xs md:text-sm lg:text-base text-gray-400 line-clamp-2 mt-1 flex-1">
+                    
+                    {/* Descripción */}
+                    <p className="text-sm text-gray-300 line-clamp-3 leading-relaxed mb-3 flex-1">
                       {item.descripcion}
                     </p>
 
-                    <div className="flex flex-wrap gap-1 mt-1 mb-2">
-                      {item.generos.slice(0, 2).map(g => (
-                        <span key={g} className="bg-gray-700 text-gray-300 px-1 py-0.5 text-[9px] sm:text-[10px] md:text-xs rounded">
-                          {g}
-                        </span>
-                      ))}
-                      {item.generos.length > 2 && (
-                        <span className="bg-gray-600 text-gray-400 px-1 py-0.5 text-[9px] sm:text-[10px] md:text-xs rounded">
-                          +{item.generos.length - 2}
-                        </span>
-                      )}
+                    {/* Géneros */}
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-400 line-clamp-1">
+                        {item.generos}
+                      </p>
                     </div>
 
-                    {/* BOTÓN EN PANTALLAS GRANDES */}
-                    <div className="mt-auto hidden sm:block">
-                      <button className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm md:text-base font-bold">
-                        ▶ Ver Ahora
-                      </button>
+                    {/* Información adicional */}
+                    <div className="flex items-center justify-between text-xs text-gray-400 mb-4">
+                      <div className="flex items-center space-x-1">
+                        <span>🕒</span>
+                        <span>{item.duracion || (item.episodios ? `${item.episodios} eps` : '120 min')}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span>📺</span>
+                        <span>{item.temporadas || 1} temp</span>
+                      </div>
                     </div>
+
+                    {/* Botón Ver Ahora */}
+                    <button className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white py-3 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center space-x-2">
+                      <span className="text-lg">▶</span>
+                      <span>Ver Ahora</span>
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-400 mb-2">No se encontraron resultados</h3>
-              <p className="text-gray-500 text-sm sm:text-base max-w-md mx-auto mb-4">
-                Prueba con otros filtros o términos de búsqueda
+            <div className="text-center py-20">
+              <div className="text-8xl mb-6 opacity-50">🔍</div>
+              <h3 className="text-2xl font-bold text-gray-300 mb-4">No se encontraron resultados</h3>
+              <p className="text-gray-400 mb-8 max-w-md mx-auto">
+                Intenta ajustar los filtros o la búsqueda para encontrar más contenido.
               </p>
-              <button onClick={() => {
-                setFiltroCategoria('todos'); setFiltroGenero('todos'); setFiltroAño('todos'); setBusqueda('');
-              }} className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-2 rounded-lg font-bold text-sm sm:text-base">
+              <button
+                onClick={() => {
+                  setFiltroCategoria('todos');
+                  setFiltroGenero('todos');
+                  setFiltroAño('todos');
+                  setBusqueda('');
+                }}
+                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white px-8 py-3 rounded-xl font-bold text-base transition-all duration-300 transform hover:scale-105"
+              >
                 Limpiar Filtros
               </button>
             </div>
           )}
         </div>
       </section>
-
     </div>
   );
 }

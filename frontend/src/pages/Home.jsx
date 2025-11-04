@@ -1,4 +1,5 @@
 import Particles from "../components/Particles";
+import { useCategoria } from "../data/useCategoria";
 import PlanesCarousel from "./PlanesCarousel";
 
 function Home() {
@@ -21,15 +22,6 @@ function Home() {
     { id: 6, title: "Dune", image: "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg", rating: 4.4, type: "pelicula" },
   ];
 
-  const contenidoTendencia = [
-    { id: 1, title: "Chainsaw Man", image: "https://cdn.myanimelist.net/images/anime/1806/126216.jpg", rating: 4.8, type: "anime", trend: "🔥" },
-    { id: 2, title: "The Last of Us", image: "https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg", rating: 4.7, type: "serie", trend: "📈" },
-    { id: 3, title: "Oppenheimer", image: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", rating: 4.6, type: "pelicula", trend: "🎬" },
-    { id: 4, title: "Blue Lock", image: "https://cdn.myanimelist.net/images/anime/1236/128158.jpg", rating: 4.5, type: "anime", trend: "⚽" },
-    { id: 5, title: "Wednesday", image: "https://image.tmdb.org/t/p/w500/9PFonBhy4xuQSSr1deT9f8mzIBu.jpg", rating: 4.4, type: "serie", trend: "👻" },
-    { id: 6, title: "John Wick 4", image: "https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg", rating: 4.3, type: "pelicula", trend: "🔫" },
-  ];
-
   const tipos = [
     { name: "Películas", icon: "🎬", count: "3.2K" },
     { name: "Series", icon: "📺", count: "1.8K" },
@@ -39,40 +31,8 @@ function Home() {
     { name: "Infantil", icon: "👶", count: "520" },
   ];
 
-  const generos = [
-    "Acción", "Aventura", "Comedia", "Drama", "Fantasia", "Ciencia Ficción",
-    "Terror", "Romance", "Misterio", "Deportes", "Musical", "Documental"
-  ];
+  const { categoria } = useCategoria();
 
-  const planes = [
-    {
-      id: 1,
-      name: "Básico",
-      price: "$5.99",
-      period: "/ mes",
-      features: ["Calidad 720p", "1 dispositivo", "Contenido limitado", "Anuncios incluidos"],
-      color: "from-gray-500 to-gray-700",
-      popular: false,
-    },
-    {
-      id: 2,
-      name: "Estándar",
-      price: "$9.99",
-      period: "/ mes",
-      features: ["Calidad 1080p", "2 dispositivos", "Contenido completo", "Sin anuncios", "Descargas"],
-      color: "from-cyan-500 to-blue-500",
-      popular: true,
-    },
-    {
-      id: 3,
-      name: "Premium",
-      price: "$14.99",
-      period: "/ mes",
-      features: ["Calidad 4K UHD", "4 dispositivos", "Todo el contenido", "Sin anuncios", "Descargas ilimitadas", "Contenido exclusivo"],
-      color: "from-purple-500 to-pink-500",
-      popular: false,
-    },
-  ];
 
   return (
     <>
@@ -239,9 +199,6 @@ function Home() {
         </div>
       </section>
 
-
-
-
       {/* Categorías Optimizadas para Móviles */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
         <div className="container mx-auto">
@@ -254,9 +211,9 @@ function Home() {
 
           {/* Grid responsive con mejor espaciado */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
-            {tipos.map((tipo, index) => (
+            {categoria.map((tipo, index) => (
               <div
-                key={tipo.name}
+                key={tipo.idCategoria}
                 className="group relative bg-gray-800/50 border border-cyan-500/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center hover:border-cyan-400 transition-all duration-300 hover:scale-105 cursor-pointer backdrop-blur-sm active:scale-95"
               >
                 {/* Icono con tamaño responsive */}
@@ -266,12 +223,12 @@ function Home() {
 
                 {/* Nombre de categoría con texto responsive */}
                 <h3 className="font-semibold text-gray-300 group-hover:text-cyan-400 transition-colors mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base whitespace-nowrap overflow-hidden text-ellipsis">
-                  {tipo.name}
+                  {tipo.nombre}
                 </h3>
 
                 {/* Contador con mejor jerarquía */}
                 <div className="text-cyan-400 text-xs sm:text-sm font-bold bg-cyan-500/10 rounded-full px-2 py-1 inline-block">
-                  {tipo.count}
+                  {tipo.cantidad}K
                 </div>
 
                 {/* Efecto de brillo al hover */}
@@ -489,7 +446,7 @@ function Home() {
           </div>
         </div>
       </section>
-      
+
       <PlanesCarousel />
     </>
   );

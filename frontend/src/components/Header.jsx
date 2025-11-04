@@ -15,7 +15,6 @@ function Header() {
       "Inicio": "/",
       "Series, Peliculas": "/Catalogo",
       "Mangas": "/Mangas",
-      "Mawa": "/mawa",
       "Mi Lista": "/MiLista",
       "Novedades": "/Novedades"
     };
@@ -44,13 +43,13 @@ function Header() {
             className="font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
             style={{ fontSize: 'clamp(1rem, 5vw, 2rem)' }}
           >
-            StreamVerse
+            Next View
           </h1>
         </div>
 
         {/* Menú desktop */}
         <nav className="hidden lg:flex space-x-8">
-          {["Inicio", "Series, Peliculas", "Mangas", "Mawa", "Mi Lista", "Novedades"].map((item) => (
+          {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"].map((item) => (
             <a
               key={item}
               href="#"
@@ -100,7 +99,7 @@ function Header() {
           />
           <div className="lg:hidden fixed top-16 left-0 right-0 bg-gray-900/98 backdrop-blur-lg border-b border-cyan-500/20 shadow-xl z-50 max-h-[80vh] overflow-y-auto">
             <nav className="flex flex-col">
-              {["Inicio", "Series, Peliculas", "Mangas", "Mawa", "Mi Lista", "Novedades"].map((item) => (
+              {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"].map((item) => (
                 <button
                   key={item}
                   onClick={() => handleMenuClick(item)}
