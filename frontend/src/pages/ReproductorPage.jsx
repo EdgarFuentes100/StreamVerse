@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { getContenidoById, getRecomendaciones, todosLosContenidos } from '../data/contenido';
+import { useReproductor } from "../data/useReproductor";
 
 function ReproductorPage() {
   const { id } = useParams();
@@ -9,32 +9,88 @@ function ReproductorPage() {
   const controlsTimeoutRef = useRef(null);
 
   // Estados
-  const [selectedContenido, setSelectedContenido] = useState(null);
-  const [selectedTemporada, setSelectedTemporada] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [showControls, setShowControls] = useState(false);
-  const [recomendaciones, setRecomendaciones] = useState([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [temporadaSeleccionada, setTemporadaSeleccionada] = useState(null);
+  const [cargandoVideos, setCargandoVideos] = useState(false);
+  const [videosLocales, setVideosLocales] = useState([]); // Nuevo estado local para videos
+  const [videoActualLocal, setVideoActualLocal] = useState(null); // Nuevo estado local para video actual
 
-  // Cargar contenido cuando cambia el ID
+  const { getTemporadas, temporadas, getVideos, videos, getVideoActual, videoActual, getContenidoInfo, contenidoInfo, recomendacion } = useReproductor();
+
+  // Cargar contenido cuando cambia el ID - CORREGIDO
   useEffect(() => {
-    const contenido = getContenidoById(id);
-    if (contenido) {
-      setSelectedContenido(contenido);
-      setSelectedTemporada(contenido.temporadasDetalle[0]);
-      setSelectedVideo(contenido.temporadasDetalle[0].videos[0]);
-      setRecomendaciones(getRecomendaciones(contenido));
-      setIsPlaying(false);
-    }
+    // Limpiar TODOS los estados anteriores
+    setTemporadaSeleccionada(null);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setCargandoVideos(true);
+    setVideosLocales([]); // Limpiar videos locales
+    setVideoActualLocal(null); // Limpiar video actual local
+    
+    // Cargar nuevo contenido
+    getTemporadas(id);
+    getContenidoInfo(id);
   }, [id]);
+
+  // Sincronizar videos del hook con estado local - NUEVO
+  useEffect(() => {
+    setVideosLocales(videos);
+  }, [videos]);
+
+  // Sincronizar videoActual del hook con estado local - NUEVO
+  useEffect(() => {
+    setVideoActualLocal(videoActual);
+  }, [videoActual]);
+
+  // Cuando ya se hayan cargado las temporadas, cargar los videos de la primera
+  useEffect(() => {
+    if (temporadas.length > 0) {
+      const primeraTemporada = temporadas[0];
+      setTemporadaSeleccionada(primeraTemporada);
+      setCargandoVideos(true);
+      setVideosLocales([]); // Limpiar videos antes de cargar nuevos
+      setVideoActualLocal(null); // Limpiar video actual
+      getVideos(primeraTemporada.idTemporada);
+    } else {
+      // Si no hay temporadas, limpiar videos
+      setCargandoVideos(false);
+      setVideosLocales([]);
+      setVideoActualLocal(null);
+    }
+  }, [temporadas]);
+
+  // Cuando se cargan los videos
+  useEffect(() => {
+    if (videosLocales.length > 0) {
+      getVideoActual(videosLocales[0].idEpisodio);
+      setCargandoVideos(false);
+    } else {
+      setCargandoVideos(false);
+      setVideoActualLocal(null); // Asegurar que no hay video actual si no hay videos
+    }
+  }, [videosLocales]);
+
+  // CORREGIDO: Resetear el video cuando cambia videoActualLocal
+  useEffect(() => {
+    if (videoRef.current && videoActualLocal) {
+      videoRef.current.load();
+      setIsPlaying(false);
+      setCurrentTime(0);
+    }
+  }, [videoActualLocal]);
+
+  const generosArray = contenidoInfo?.generos
+    ? contenidoInfo.generos.split(',').map(g => g.trim())
+    : [];
 
   // Controladores del video
   const togglePlay = () => {
-    if (videoRef.current) {
+    if (videoRef.current && videoActualLocal?.videoUrl) {
       if (isPlaying) {
         videoRef.current.pause();
       } else {
@@ -54,7 +110,7 @@ function ReproductorPage() {
 
   const handleSeek = (e) => {
     const seekTime = parseFloat(e.target.value);
-    if (videoRef.current) {
+    if (videoRef.current && videoActualLocal?.videoUrl) {
       videoRef.current.currentTime = seekTime;
       setCurrentTime(seekTime);
     }
@@ -72,7 +128,7 @@ function ReproductorPage() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      videoRef.current.requestFullscreen().catch(err => {
+      videoRef.current?.requestFullscreen().catch(err => {
         console.log(`Error attempting to enable full-screen mode: ${err.message}`);
       });
       setIsFullscreen(true);
@@ -85,18 +141,25 @@ function ReproductorPage() {
     showControlsTemporarily();
   };
 
+  // Manejar cambio de video - CORREGIDO
   const handleVideoChange = (video) => {
-    setSelectedVideo(video);
+    getVideoActual(video.idEpisodio);
     setIsPlaying(false);
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.load();
-      }
-    }, 100);
+    setCurrentTime(0);
   };
 
+  // Manejar cambio de temporada - CORREGIDO
+  const handleCambiarTemporada = (temporada) => {
+    setTemporadaSeleccionada(temporada);
+    setCargandoVideos(true);
+    setVideosLocales([]); // Limpiar videos antes de cargar nuevos
+    setVideoActualLocal(null); // Limpiar video actual
+    getVideos(temporada.idTemporada);
+  };
+
+  // Manejar cambio de contenido desde recomendaciones - CORREGIDO
   const handleIrAContenido = (nuevoContenido) => {
-    navigate(`/video/${nuevoContenido.id}`);
+    navigate(`/video/${nuevoContenido.idContenido}`);
   };
 
   // Mostrar controles temporalmente
@@ -139,7 +202,7 @@ function ReproductorPage() {
   };
 
   // Si no se encuentra el contenido
-  if (!selectedContenido) {
+  if (!contenidoInfo) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center pt-20 px-4">
         <div className="text-center">
@@ -153,14 +216,6 @@ function ReproductorPage() {
             Volver al Catálogo
           </button>
         </div>
-      </div>
-    );
-  }
-
-  if (!selectedVideo) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center pt-20">
-        <div className="text-white">Cargando video...</div>
       </div>
     );
   }
@@ -189,117 +244,146 @@ function ReproductorPage() {
                 onMouseLeave={() => setShowControls(false)}
                 onTouchStart={showControlsTemporarily}
               >
-                <video
-                  ref={videoRef}
-                  src={selectedVideo.videoUrl}
-                  className="w-full h-full object-contain"
-                  onTimeUpdate={handleTimeUpdate}
-                  onLoadedMetadata={handleTimeUpdate}
-                  onEnded={() => setIsPlaying(false)}
-                  onClick={togglePlay}
-                  playsInline
-                />
-
-                {/* Overlay de controles */}
-                <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                  }`}>
-
-                  {/* Controles superiores */}
-                  <div className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 flex justify-between items-start">
-                    <div className="flex flex-wrap gap-1 md:gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs md:text-sm font-bold ${getBadgeColor(selectedContenido.categoria)} !text-white backdrop-blur-sm`}>
-                        <span className="sm:hidden">{getIcon(selectedContenido.categoria)}</span>
-                        <span className="hidden sm:inline">{getIcon(selectedContenido.categoria)} {selectedContenido.categoria}</span>
-                      </span>
-                      {selectedContenido.isNew && (
-                        <span className="!bg-green-500 !text-white px-1 py-1 rounded text-xs font-bold backdrop-blur-sm">
-                          NUEVO
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <span className="!bg-yellow-500 !text-gray-900 px-2 py-1 rounded text-xs font-bold flex items-center space-x-1">
-                        <span>⭐</span>
-                        <span className="hidden xs:inline">{selectedContenido.rating}</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Botón de play/pause central */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <button
+                {videoActualLocal && videoActualLocal.videoUrl ? (
+                  <>
+                    <video
+                      ref={videoRef}
+                      src={videoActualLocal.videoUrl}
+                      className="w-full h-full object-contain"
+                      onTimeUpdate={handleTimeUpdate}
+                      onLoadedMetadata={handleTimeUpdate}
+                      onEnded={() => setIsPlaying(false)}
                       onClick={togglePlay}
-                      className="transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
-                    >
-                      <div className="bg-black/50 backdrop-blur-sm rounded-full p-3 md:p-4">
-                        <span className="!text-white text-3xl md:text-4xl">
-                          {isPlaying ? '⏸️' : '▶️'}
-                        </span>
+                      playsInline
+                      key={videoActualLocal.idEpisodio} // CORREGIDO: Forzar re-render
+                    />
+
+                    {/* Overlay de controles */}
+                    <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      }`}>
+
+                      {/* Controles superiores */}
+                      <div className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 flex justify-between items-start">
+                        <div className="flex flex-wrap gap-1 md:gap-2">
+                          <span className={`px-2 py-1 rounded-full text-xs md:text-sm font-bold ${getBadgeColor(contenidoInfo.categoria)} !text-white backdrop-blur-sm`}>
+                            <span className="sm:hidden">{getIcon(contenidoInfo.categoria)}</span>
+                            <span className="hidden sm:inline">{getIcon(contenidoInfo.categoria)} {contenidoInfo.categoria}</span>
+                          </span>
+                          {contenidoInfo.isNew && (
+                            <span className="!bg-green-500 !text-white px-1 py-1 rounded text-xs font-bold backdrop-blur-sm">
+                              NUEVO
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <span className="!bg-yellow-500 !text-gray-900 px-2 py-1 rounded text-xs font-bold flex items-center space-x-1">
+                            <span>⭐</span>
+                            <span className="hidden xs:inline">{contenidoInfo.rating}</span>
+                          </span>
+                        </div>
                       </div>
-                    </button>
-                  </div>
 
-                  {/* Controles inferiores */}
-                  <div className="absolute bottom-0 left-0 right-0 p-2 md:p-4 bg-gradient-to-t from-black/90 to-transparent">
-                    {/* Barra de progreso */}
-                    <div className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-3">
-                      <span className="!text-white text-xs md:text-sm font-mono min-w-[35px] md:min-w-[40px]">
-                        {formatTime(currentTime)}
-                      </span>
-                      <input
-                        type="range"
-                        min="0"
-                        max={duration || 0}
-                        value={currentTime}
-                        onChange={handleSeek}
-                        className="flex-1 h-1.5 md:h-1 !bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 md:[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-3 md:[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:!bg-cyan-400 [&::-webkit-slider-thumb]:!border [&::-webkit-slider-thumb]:!border-white [&::-webkit-slider-thumb]:shadow-lg"
-                      />
-                      <span className="!text-white text-xs md:text-sm font-mono min-w-[35px] md:min-w-[40px]">
-                        {formatTime(duration)}
-                      </span>
-                    </div>
-
-                    {/* Controles de reproducción */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3 md:space-x-4">
+                      {/* Botón de play/pause central */}
+                      <div className="absolute inset-0 flex items-center justify-center">
                         <button
                           onClick={togglePlay}
-                          className="!bg-gray-800 !text-white hover:!text-cyan-400 transition-colors text-lg md:text-base p-2 rounded-lg"
+                          className="transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
                         >
-                          {isPlaying ? '⏸️' : '▶️'}
+                          <div className="bg-black/50 backdrop-blur-sm rounded-full p-3 md:p-4">
+                            <span className="!text-white text-3xl md:text-4xl">
+                              {isPlaying ? '⏸️' : '▶️'}
+                            </span>
+                          </div>
                         </button>
+                      </div>
 
-                        {/* Volumen - Oculto en móviles */}
-                        <div className="hidden sm:flex items-center space-x-2">
-                          <span className="!text-white text-sm">🔊</span>
+                      {/* Controles inferiores */}
+                      <div className="absolute bottom-0 left-0 right-0 p-2 md:p-4 bg-gradient-to-t from-black/90 to-transparent">
+                        {/* Barra de progreso */}
+                        <div className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-3">
+                          <span className="!text-white text-xs md:text-sm font-mono min-w-[35px] md:min-w-[40px]">
+                            {formatTime(currentTime)}
+                          </span>
                           <input
                             type="range"
                             min="0"
-                            max="1"
-                            step="0.1"
-                            value={volume}
-                            onChange={handleVolumeChange}
-                            className="w-16 md:w-20 h-1 !bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:!bg-cyan-400"
+                            max={duration || 0}
+                            value={currentTime}
+                            onChange={handleSeek}
+                            className="flex-1 h-1.5 md:h-1 !bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 md:[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-3 md:[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:!bg-cyan-400 [&::-webkit-slider-thumb]:!border [&::-webkit-slider-thumb]:!border-white [&::-webkit-slider-thumb]:shadow-lg"
                           />
+                          <span className="!text-white text-xs md:text-sm font-mono min-w-[35px] md:min-w-[40px]">
+                            {formatTime(duration)}
+                          </span>
                         </div>
 
-                        <span className="!text-white text-xs md:text-sm hidden xs:inline">
-                          {selectedVideo.views}
-                        </span>
-                      </div>
+                        {/* Controles de reproducción */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3 md:space-x-4">
+                            <button
+                              onClick={togglePlay}
+                              className="!bg-gray-800 !text-white hover:!text-cyan-400 transition-colors text-lg md:text-base p-2 rounded-lg"
+                            >
+                              {isPlaying ? '⏸️' : '▶️'}
+                            </button>
 
-                      <div className="flex items-center space-x-2 md:space-x-3">
-                        <button
-                          onClick={toggleFullscreen}
-                          className="!bg-gray-800 !text-white hover:!text-cyan-400 transition-colors text-lg md:text-base"
-                        >
-                          {isFullscreen ? '⤢' : '⤡'}
-                        </button>
+                            {/* Volumen - Oculto en móviles */}
+                            <div className="hidden sm:flex items-center space-x-2">
+                              <span className="!text-white text-sm">🔊</span>
+                              <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                value={volume}
+                                onChange={handleVolumeChange}
+                                className="w-16 md:w-20 h-1 !bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:!bg-cyan-400"
+                              />
+                            </div>
+
+                            <span className="!text-white text-xs md:text-sm hidden xs:inline">
+                              {videoActualLocal.views}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center space-x-2 md:space-x-3">
+                            <button
+                              onClick={toggleFullscreen}
+                              className="!bg-gray-800 !text-white hover:!text-cyan-400 transition-colors text-lg md:text-base"
+                            >
+                              {isFullscreen ? '⤢' : '⤡'}
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  </>
+                ) : (
+                  // Mensaje cuando no hay video disponible - MEJORADO
+                  <div className="w-full h-full flex items-center justify-center flex-col p-8 text-center">
+                    <div className="text-6xl mb-4">
+                      {cargandoVideos ? "⏳" : "📺"}
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      {cargandoVideos ? "Cargando video..." : "No hay video disponible"}
+                    </h3>
+                    <p className="text-gray-400 mb-4">
+                      {cargandoVideos 
+                        ? "Buscando el contenido solicitado..." 
+                        : "Este video no está disponible en este momento."
+                      }
+                    </p>
+                    {!cargandoVideos && (
+                      <button
+                        onClick={() => navigate('/catalogo')}
+                        className="!bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+                      >
+                        Explorar Catálogo
+                      </button>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Información del contenido */}
@@ -307,30 +391,30 @@ function ReproductorPage() {
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="flex-1">
                     <h2 className="text-xl md:text-2xl lg:text-3xl font-bold !text-white mb-3">
-                      {selectedContenido.title}
+                      {contenidoInfo.title}
                     </h2>
 
                     <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm mb-4">
-                      <span className="!text-cyan-400">{selectedContenido.year}</span>
+                      <span className="!text-cyan-400">{contenidoInfo.year}</span>
                       <span className="!text-gray-400">•</span>
-                      {selectedContenido.duracion && (
+                      {contenidoInfo.duracion && (
                         <>
-                          <span className="!text-purple-400">{selectedContenido.duracion}</span>
+                          <span className="!text-purple-400">{contenidoInfo.duracion}</span>
                           <span className="!text-gray-400">•</span>
                         </>
                       )}
-                      {selectedContenido.temporadas && (
+                      {contenidoInfo.temporadas && (
                         <>
-                          <span className="!text-pink-400">{selectedContenido.temporadas} Temporadas</span>
+                          <span className="!text-pink-400">{contenidoInfo.temporadas} Temporadas</span>
                           <span className="!text-gray-400">•</span>
                         </>
                       )}
-                      <span className="!text-yellow-400">⭐ {selectedContenido.rating}</span>
+                      <span className="!text-yellow-400">⭐ {contenidoInfo.rating}</span>
                     </div>
 
                     {/* Géneros */}
                     <div className="flex gap-2 mb-4 overflow-x-auto scrollbar-thin scrollbar-thumb-cyan-500 scrollbar-track-gray-700 pb-2">
-                      {selectedContenido.generos.map((genero) => (
+                      {generosArray.map((genero) => (
                         <span
                           key={genero}
                           className="!bg-gray-700 px-2 py-1 rounded-lg text-xs !text-gray-300 whitespace-nowrap flex-shrink-0"
@@ -341,7 +425,7 @@ function ReproductorPage() {
                     </div>
 
                     <p className="!text-gray-300 text-sm md:text-base leading-relaxed">
-                      {selectedContenido.descripcion}
+                      {contenidoInfo.descripcion}
                     </p>
                   </div>
 
@@ -361,16 +445,16 @@ function ReproductorPage() {
             </div>
 
             {/* Recomendaciones */}
-            {recomendaciones.length > 0 && (
+            {recomendacion.length > 0 && (
               <div className="mt-6 md:mt-8">
                 <h2 className="text-xl md:text-2xl font-bold !text-cyan-400 mb-4 md:mb-6 flex items-center space-x-2">
                   <span>🎬</span>
                   <span>Te podría gustar</span>
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                  {recomendaciones.map((item) => (
+                  {recomendacion.slice(0, 8).map((item) => (
                     <div
-                      key={item.id}
+                      key={item.idContenido}
                       onClick={() => handleIrAContenido(item)}
                       className="group !bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 border border-transparent hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10"
                     >
@@ -383,9 +467,9 @@ function ReproductorPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
 
                         <div className="absolute top-1 left-1 md:top-2 md:left-2">
-                          <div className={`${getBadgeColor(item.categoria)} !text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
-                            <span className="sm:hidden">{getIcon(item.categoria)}</span>
-                            <span className="hidden sm:inline">{item.categoria}</span>
+                          <div className={`${getBadgeColor(item.nombre)} !text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
+                            <span className="sm:hidden">{getIcon(item.nombre)}</span>
+                            <span className="hidden sm:inline">{item.nombre}</span>
                           </div>
                         </div>
 
@@ -423,18 +507,18 @@ function ReproductorPage() {
 
               <div className="flex items-center space-x-3 md:space-x-4 mb-3 md:mb-4">
                 <img
-                  src={selectedContenido.image}
-                  alt={selectedContenido.title}
+                  src={contenidoInfo.image}
+                  alt={contenidoInfo.title}
                   className="w-12 h-12 md:w-16 md:h-16 object-cover rounded-lg md:rounded-xl"
                 />
                 <div className="flex-1">
-                  <h4 className="font-bold !text-white text-sm mb-1 line-clamp-2">{selectedContenido.title}</h4>
+                  <h4 className="font-bold !text-white text-sm mb-1 line-clamp-2">{contenidoInfo.title}</h4>
                   <div className="flex items-center space-x-1 md:space-x-2">
-                    <span className={`px-1.5 py-0.5 md:px-2 md:py-1 rounded text-xs ${getBadgeColor(selectedContenido.categoria)} !text-white`}>
-                      <span className="sm:hidden">{getIcon(selectedContenido.categoria)}</span>
-                      <span className="hidden sm:inline">{selectedContenido.categoria}</span>
+                    <span className={`px-1.5 py-0.5 md:px-2 md:py-1 rounded text-xs ${getBadgeColor(contenidoInfo.categoria)} !text-white`}>
+                      <span className="sm:hidden">{getIcon(contenidoInfo.categoria)}</span>
+                      <span className="hidden sm:inline">{contenidoInfo.categoria}</span>
                     </span>
-                    <span className="!text-yellow-400 text-xs">⭐ {selectedContenido.rating}</span>
+                    <span className="!text-yellow-400 text-xs">⭐ {contenidoInfo.rating}</span>
                   </div>
                 </div>
               </div>
@@ -442,81 +526,102 @@ function ReproductorPage() {
               <div className="grid grid-cols-2 gap-2 md:gap-3 text-center">
                 <div className="!bg-gray-700/50 rounded-lg md:rounded-xl p-2 md:p-3">
                   <div className="!text-cyan-400 font-bold text-base md:text-lg">
-                    {selectedContenido.temporadasDetalle.reduce((total, temp) => total + temp.videos.length, 0)}
+                    {contenidoInfo.episodios}
                   </div>
                   <div className="!text-gray-400 text-xs">
-                    {selectedContenido.categoria === 'Película' ? 'Películas' : 'Episodios'}
+                    {contenidoInfo.categoria === 'Película' ? 'Películas' : 'Episodios'}
                   </div>
                 </div>
                 <div className="!bg-gray-700/50 rounded-lg md:rounded-xl p-2 md:p-3">
                   <div className="!text-purple-400 font-bold text-base md:text-lg">
-                    {selectedContenido.year}
+                    {contenidoInfo.year}
                   </div>
                   <div className="!text-gray-400 text-xs">Año</div>
                 </div>
               </div>
             </div>
 
-            {/* Lista de Episodios/Películas */}
+            {/* Lista de Episodios/Películas - CORREGIDO */}
             <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-purple-500/20">
               <h3 className="text-base md:text-lg font-bold !text-purple-400 mb-3 md:mb-4 flex items-center space-x-2">
                 <span>🎥</span>
                 <span>
-                  {selectedContenido.categoria === 'Película' ? 'Película' : 'Episodios'}
+                  {contenidoInfo.categoria === 'Película' ? 'Película' : 'Episodios'}
                 </span>
               </h3>
 
-              <div className="space-y-2 md:space-y-3 max-h-[300px] md:max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-700">
-                {selectedTemporada.videos.map((video) => (
-                  <div
-                    key={video.id}
-                    onClick={() => handleVideoChange(video)}
-                    className={`group cursor-pointer p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 border backdrop-blur-sm ${selectedVideo.id === video.id
-                      ? '!bg-purple-500/20 !border-purple-400 shadow-lg shadow-purple-500/25'
-                      : '!bg-gray-700/50 border-transparent hover:!border-purple-500/30 hover:!bg-gray-600/50'
-                      }`}
-                  >
-                    <div className="flex space-x-2 md:space-x-3">
-                      <div className="relative flex-shrink-0">
-                        <img
-                          src={video.thumbnail}
-                          alt={video.title}
-                          className="w-12 h-9 md:w-16 md:h-12 object-cover rounded-md md:rounded-lg"
-                        />
-                        <div className="absolute bottom-0.5 right-0.5 !bg-black/80 !text-white text-xs px-0.5 rounded">
-                          {video.duration}
-                        </div>
-                        {selectedVideo.id === video.id && (
-                          <div className="absolute inset-0 !bg-purple-400/20 rounded-md md:rounded-lg flex items-center justify-center">
-                            <span className="!text-white text-xs md:text-sm">▶</span>
+              {cargandoVideos ? (
+                <div className="text-center py-8">
+                  <div className="text-white mb-2">Cargando...</div>
+                  <div className="text-gray-400 text-sm">Buscando contenido disponible</div>
+                </div>
+              ) : videosLocales.length > 0 ? (
+                <div className="space-y-2 md:space-y-3 max-h-[300px] md:max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-700">
+                  {videosLocales.map((video) => (
+                    <div
+                      key={video.idEpisodio}
+                      onClick={() => handleVideoChange(video)}
+                      className={`group cursor-pointer p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 border backdrop-blur-sm ${videoActualLocal?.idEpisodio === video.idEpisodio
+                        ? '!bg-purple-500/20 !border-purple-400 shadow-lg shadow-purple-500/25'
+                        : '!bg-gray-700/50 border-transparent hover:!border-purple-500/30 hover:!bg-gray-600/50'
+                        }`}
+                    >
+                      <div className="flex space-x-2 md:space-x-3">
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={video.image}
+                            alt={video.title}
+                            className="w-12 h-9 md:w-16 md:h-12 object-cover rounded-md md:rounded-lg"
+                          />
+                          <div className="absolute bottom-0.5 right-0.5 !bg-black/80 !text-white text-xs px-0.5 rounded">
+                            {video.duration}
                           </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-0.5 md:mb-1">
-                          <h4 className="font-semibold !text-white text-xs md:text-sm group-hover:!text-purple-400 transition-colors line-clamp-2">
-                            {selectedContenido.categoria === 'Película' ? video.title : `Ep. ${video.numero}`}
-                          </h4>
+                          {videoActualLocal?.idEpisodio === video.idEpisodio && (
+                            <div className="absolute inset-0 !bg-purple-400/20 rounded-md md:rounded-lg flex items-center justify-center">
+                              <span className="!text-white text-xs md:text-sm">▶</span>
+                            </div>
+                          )}
                         </div>
-                        {selectedContenido.categoria !== 'Película' && (
-                          <p className="!text-gray-400 text-xs line-clamp-2 leading-relaxed">
-                            {video.title}
-                          </p>
-                        )}
-                        <div className="flex justify-between items-center mt-0.5 md:mt-1 text-xs !text-gray-400">
-                          <span className="text-xs">{video.views}</span>
-                          <span className="text-xs">{video.duration}</span>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-0.5 md:mb-1">
+                            <h4 className="font-semibold !text-white text-xs md:text-sm group-hover:!text-purple-400 transition-colors line-clamp-2">
+                              {contenidoInfo.categoria === 'Película'
+                                ? video.title
+                                : `Ep. ${video.capitulo}`}
+                            </h4>
+                          </div>
+                          {contenidoInfo.categoria !== 'Película' && (
+                            <p className="!text-gray-400 text-xs line-clamp-2 leading-relaxed">
+                              {video.title}
+                            </p>
+                          )}
+                          <div className="flex justify-between items-center mt-0.5 md:mt-1 text-xs !text-gray-400">
+                            <span className="text-xs">{video.views}</span>
+                            <span className="text-xs">{video.duration}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                // Mensaje cuando no hay videos - MEJORADO
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-3">📺</div>
+                  <div className="text-white mb-2">No hay videos disponibles</div>
+                  <div className="text-gray-400 text-sm">
+                    {contenidoInfo.categoria === 'Película' 
+                      ? 'Esta película no está disponible' 
+                      : 'Esta temporada no tiene episodios disponibles'
+                    }
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Temporadas (si hay más de una) */}
-            {selectedContenido.temporadasDetalle.length > 1 && (
+            {temporadas?.length > 1 && !cargandoVideos && (
               <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-pink-500/20">
                 <h3 className="text-base md:text-lg font-bold !text-pink-400 mb-3 md:mb-4 flex items-center space-x-2">
                   <span>📚</span>
@@ -524,14 +629,11 @@ function ReproductorPage() {
                 </h3>
 
                 <div className="space-y-1 md:space-y-2">
-                  {selectedContenido.temporadasDetalle.map((temporada) => (
+                  {temporadas.map((temporada) => (
                     <button
-                      key={temporada.id}
-                      onClick={() => {
-                        setSelectedTemporada(temporada);
-                        setSelectedVideo(temporada.videos[0]);
-                      }}
-                      className={`w-full text-left p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 ${selectedTemporada.id === temporada.id
+                      key={temporada.idTemporada}
+                      onClick={() => handleCambiarTemporada(temporada)}
+                      className={`w-full text-left p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 ${temporadaSeleccionada?.idTemporada === temporada.idTemporada
                         ? '!bg-pink-500/20 !border !border-pink-400 !text-white'
                         : '!bg-gray-700/50 hover:!bg-gray-600/50 !text-white'
                         }`}
@@ -541,7 +643,7 @@ function ReproductorPage() {
                           {temporada.nombre}
                         </span>
                         <span className="!text-cyan-400 text-xs">
-                          {temporada.videos.length} {selectedContenido.categoria === 'Película' ? 'p' : 'e'}
+                          {contenidoInfo?.categoria === 'Película' ? 'p' : 'e'}
                         </span>
                       </div>
                     </button>

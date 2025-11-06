@@ -1,42 +1,14 @@
 import Particles from "../components/Particles";
 import { useCategoria } from "../data/useCategoria";
+import { useContenido } from "../data/useContenido";
 import PlanesCarousel from "./PlanesCarousel";
 
 function Home() {
-  // Datos para diferentes tipos de contenido
-  const seriesPopulares = [
-    { id: 1, title: "Attack on Titan", image: "https://cdn.myanimelist.net/images/anime/10/47347.jpg", rating: 4.9, type: "anime" },
-    { id: 2, title: "Demon Slayer", image: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg", rating: 4.8, type: "anime" },
-    { id: 3, title: "One Piece", image: "https://cdn.myanimelist.net/images/anime/6/73245.jpg", rating: 4.7, type: "anime" },
-    { id: 4, title: "Jujutsu Kaisen", image: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg", rating: 4.9, type: "anime" },
-    { id: 5, title: "Stranger Things", image: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", rating: 4.6, type: "serie" },
-    { id: 6, title: "The Mandalorian", image: "https://image.tmdb.org/t/p/w500/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg", rating: 4.5, type: "serie" },
-  ];
-
-  const peliculasEstreno = [
-    { id: 1, title: "Your Name", image: "https://cdn.myanimelist.net/images/anime/5/87048.jpg", rating: 4.8, type: "anime" },
-    { id: 2, title: "Spider-Man: Across the Spider-Verse", image: "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg", rating: 4.7, type: "pelicula" },
-    { id: 3, title: "Suzume", image: "https://cdn.myanimelist.net/images/anime/1598/134333.jpg", rating: 4.6, type: "anime" },
-    { id: 4, title: "Avengers: Endgame", image: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg", rating: 4.9, type: "pelicula" },
-    { id: 5, title: "Weathering With You", image: "https://cdn.myanimelist.net/images/anime/1884/101632.jpg", rating: 4.5, type: "anime" },
-    { id: 6, title: "Dune", image: "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg", rating: 4.4, type: "pelicula" },
-  ];
-
-  const tipos = [
-    { name: "Películas", icon: "🎬", count: "3.2K" },
-    { name: "Series", icon: "📺", count: "1.8K" },
-    { name: "Anime", icon: "🎌", count: "2.5K" },
-    { name: "Doramas", icon: "💞", count: "1.1K" },
-    { name: "Documentales", icon: "📹", count: "640" },
-    { name: "Infantil", icon: "👶", count: "520" },
-  ];
-
   const { categoria } = useCategoria();
-
+  const { contenidoNuevo, contenidoPopular, contenidoGrupo } = useContenido();
 
   return (
     <>
-
       {/* Hero Section Universal con Efecto Apilado */}
       <section className="relative mt-12 sm:mt-16 md:mt-20 lg:mt-24 min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-screen flex flex-col lg:flex-row items-start lg:items-center">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900/20 to-cyan-900/20"></div>
@@ -98,91 +70,100 @@ function Home() {
           <div className="lg:w-1/2 relative w-full">
             <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]">
 
-              {/* Película principal */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 w-44 sm:w-56 md:w-64 lg:w-80 group">
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-cyan-500/25 border-2 border-cyan-500/30 transform group-hover:scale-105 transition-all duration-500">
-                  <img
-                    src="https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg"
-                    alt="Spider-Verse"
-                    className="w-full h-40 sm:h-52 md:h-64 lg:h-96 object-cover transform group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
-                  <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-2xl font-bold text-xs sm:text-sm shadow-2xl z-10">
-                    ESTRENO
-                  </div>
-                  <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 bg-gray-900/90 backdrop-blur-lg border border-cyan-500/30 rounded-2xl p-2 sm:p-4">
-                    <div className="text-cyan-400 font-bold text-[9px] sm:text-xs mb-1">PELÍCULA</div>
-                    <div className="text-white font-semibold text-[10px] sm:text-lg mb-1 sm:mb-2">Spider-Verse</div>
-                    <div className="flex items-center justify-between text-[8px] sm:text-sm">
-                      <div className="flex items-center space-x-1 sm:space-x-2 text-yellow-400">★★★★★</div>
-                      <span className="text-green-400 text-[8px] sm:text-xs flex items-center">
-                        <span className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
-                        NUEVO
-                      </span>
+
+              {contenidoGrupo[1] && (
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 w-44 sm:w-56 md:w-64 lg:w-80 group">
+                  <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-cyan-500/25 border-2 border-cyan-500/30 transform group-hover:scale-105 transition-all duration-500">
+                    <img
+                      src={contenidoGrupo[1].image}
+                      alt={contenidoGrupo[1].title}
+                      className="w-full h-40 sm:h-52 md:h-64 lg:h-96 object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
+                    <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-2xl font-bold text-xs sm:text-sm shadow-2xl z-10">
+                      ESTRENO
+                    </div>
+                    <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 bg-gray-900/90 backdrop-blur-lg border border-cyan-500/30 rounded-2xl p-2 sm:p-4">
+                      <div className="text-cyan-400 font-bold text-[9px] sm:text-xs mb-1">{contenidoGrupo[1].nombre}</div>
+                      <div className="text-white font-semibold text-[10px] sm:text-lg mb-1 sm:mb-2">{contenidoGrupo[1].title}</div>
+                      <div className="flex items-center justify-between text-[8px] sm:text-sm">
+                        <div className="flex items-center space-x-1 sm:space-x-2 text-yellow-400">★★★★★</div>
+                        <span className="text-green-400 text-[8px] sm:text-xs flex items-center">
+                          <span className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
+                          NUEVO
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Serie izquierda */}
-              <div className="absolute top-5 sm:top-6 md:top-8 left-2 sm:left-4 z-20 w-36 sm:w-44 md:w-52 lg:w-60 group transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500">
-                <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-purple-500/20 border-2 border-purple-500/30">
-                  <img
-                    src="https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg"
-                    alt="The Last of Us"
-                    className="w-full h-32 sm:h-44 md:h-56 lg:h-72 object-cover"
-                  />
-                  <div className="absolute bottom-1 left-1 right-1">
-                    <div className="text-purple-400 font-bold text-[8px] sm:text-xs">SERIE</div>
-                    <div className="text-white font-semibold text-[9px] sm:text-sm">The Last of Us</div>
-                    <div className="flex text-yellow-400 text-[8px] sm:text-xs">★★★★☆</div>
+              {contenidoGrupo[0] && (
+                <div className="absolute top-5 sm:top-6 md:top-8 left-2 sm:left-4 z-20 w-36 sm:w-44 md:w-52 lg:w-60 group transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500">
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-purple-500/20 border-2 border-purple-500/30">
+                    <img
+                      src={contenidoGrupo[0].image}
+                      alt={contenidoGrupo[0].title}
+                      className="w-full h-32 sm:h-44 md:h-56 lg:h-72 object-cover"
+                    />
+                    <div className="absolute bottom-1 left-1 right-1">
+                      <div className="text-purple-400 font-bold text-[8px] sm:text-xs">{contenidoGrupo[0].nombre}</div>
+                      <div className="text-white font-semibold text-[9px] sm:text-sm">{contenidoGrupo[0].title}</div>
+                      <div className="flex text-yellow-400 text-[8px] sm:text-xs">★★★★☆</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Anime derecha */}
-              <div className="absolute top-5 sm:top-6 md:top-8 right-2 sm:right-4 z-20 w-36 sm:w-44 md:w-52 lg:w-60 group transform rotate-[5deg] hover:rotate-0 transition-transform duration-500">
-                <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-pink-500/20 border-2 border-pink-500/30">
-                  <img
-                    src="https://cdn.myanimelist.net/images/anime/1286/99889.jpg"
-                    alt="Demon Slayer"
-                    className="w-full h-32 sm:h-44 md:h-56 lg:h-72 object-cover"
-                  />
-                  <div className="absolute bottom-1 left-1 right-1">
-                    <div className="text-pink-400 font-bold text-[8px] sm:text-xs">ANIME</div>
-                    <div className="text-white font-semibold text-[9px] sm:text-sm">Demon Slayer</div>
-                    <div className="flex text-yellow-400 text-[8px] sm:text-xs">★★★★★</div>
+              {contenidoGrupo[2] && (
+                <div className="absolute top-5 sm:top-6 md:top-8 right-2 sm:right-4 z-20 w-36 sm:w-44 md:w-52 lg:w-60 group transform rotate-[5deg] hover:rotate-0 transition-transform duration-500">
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-pink-500/20 border-2 border-pink-500/30">
+                    <img
+                      src={contenidoGrupo[2].image}
+                      alt={contenidoGrupo[2].title}
+                      className="w-full h-32 sm:h-44 md:h-56 lg:h-72 object-cover"
+                    />
+                    <div className="absolute bottom-1 left-1 right-1">
+                      <div className="text-pink-400 font-bold text-[8px] sm:text-xs">{contenidoGrupo[2].nombre}</div>
+                      <div className="text-white font-semibold text-[9px] sm:text-sm">{contenidoGrupo[2].title}</div>
+                      <div className="flex text-yellow-400 text-[8px] sm:text-xs">★★★★★</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Inferior izquierdo */}
-              <div className="absolute bottom-4 left-3 sm:bottom-6 sm:left-4 md:bottom-8 md:left-6 z-10 w-32 sm:w-40 md:w-44 lg:w-48 group opacity-80 hover:opacity-100 transition-opacity duration-300">
-                <div className="relative rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 border-2 border-blue-500/30">
-                  <img
-                    src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
-                    alt="Oppenheimer"
-                    className="w-full h-28 sm:h-32 md:h-40 lg:h-48 object-cover"
-                  />
-                  <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2">
-                    <div className="text-blue-400 text-[7px] sm:text-xs font-bold">PELÍCULA</div>
+
+              {contenidoGrupo[3] && (
+                <div className="absolute bottom-4 left-3 sm:bottom-6 sm:left-4 md:bottom-8 md:left-6 z-10 w-32 sm:w-40 md:w-44 lg:w-48 group opacity-80 hover:opacity-100 transition-opacity duration-300">
+                  <div className="relative rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 border-2 border-blue-500/30">
+                    <img
+                      src={contenidoGrupo[3].image}
+                      alt={contenidoGrupo[3].title}
+                      className="w-full h-28 sm:h-32 md:h-40 lg:h-48 object-cover"
+                    />
+                    <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2">
+                      <div className="text-blue-400 text-[7px] sm:text-xs font-bold">{contenidoGrupo[3].nombre}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Inferior derecho */}
-              <div className="absolute bottom-4 right-3 sm:bottom-6 sm:right-4 md:bottom-8 md:right-6 z-10 w-32 sm:w-40 md:w-44 lg:w-48 group opacity-80 hover:opacity-100 transition-opacity duration-300">
-                <div className="relative rounded-xl overflow-hidden shadow-lg shadow-green-500/20 border-2 border-green-500/30">
-                  <img
-                    src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
-                    alt="Wednesday"
-                    className="w-full h-28 sm:h-32 md:h-40 lg:h-48 object-cover"
-                  />
-                  <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2">
-                    <div className="text-green-400 text-[7px] sm:text-xs font-bold">SERIE</div>
+
+
+              {contenidoGrupo[4] && (
+                <div className="absolute bottom-4 right-3 sm:bottom-6 sm:right-4 md:bottom-8 md:right-6 z-10 w-32 sm:w-40 md:w-44 lg:w-48 group opacity-80 hover:opacity-100 transition-opacity duration-300">
+                  <div className="relative rounded-xl overflow-hidden shadow-lg shadow-green-500/20 border-2 border-green-500/30">
+                    <img
+                      src={contenidoGrupo[4].image}
+                      alt={contenidoGrupo[4].title}
+                      className="w-full h-28 sm:h-32 md:h-40 lg:h-48 object-cover"
+                    />
+                    <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2">
+                      <div className="text-green-400 text-[7px] sm:text-xs font-bold">{contenidoGrupo[4].nombre}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Botón central flotante */}
               <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 z-40">
@@ -277,17 +258,17 @@ function Home() {
 
             {/* Scroll horizontal */}
             <div className="flex overflow-x-auto pb-4 sm:pb-6 space-x-3 sm:space-x-6 px-1 sm:px-4 custom-scrollbar snap-x snap-mandatory">
-              {seriesPopulares.map((serie) => (
+              {contenidoPopular.map((item) => (
                 <div
-                  key={serie.id}
+                  key={item.idContenido}
                   className="flex-shrink-0 w-56 sm:w-72 md:w-80 snap-center group relative bg-gray-800 rounded-xl sm:rounded-3xl overflow-hidden hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 border border-gray-600 active:scale-95"
                 >
                   {/* Badge de tipo MÁS PEQUEÑO */}
                   <div className="absolute top-2 left-2 z-10">
-                    <div className={`px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-sm font-bold shadow-md ${serie.type === 'anime' ? 'bg-pink-500' :
-                      serie.type === 'serie' ? 'bg-cyan-500' : 'bg-purple-500'
+                    <div className={`px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-sm font-bold shadow-md ${item.type === 'anime' ? 'bg-pink-500' :
+                      item.nombre === 'serie' ? 'bg-cyan-500' : 'bg-purple-500'
                       } text-white whitespace-nowrap`}>
-                      {serie.type === 'anime' ? 'ANIME' : serie.type === 'serie' ? 'SERIE' : 'PELÍCULA'}
+                      {item.nombre === 'Anime' ? 'ANIME' : item.type === 'Serie' ? 'SERIE' : 'PELÍCULA'}
                     </div>
                   </div>
 
@@ -295,15 +276,15 @@ function Home() {
                   <div className="absolute top-2 right-2 z-10">
                     <div className="bg-yellow-500 text-gray-900 px-1.5 py-0.5 rounded-full text-[10px] font-bold flex items-center space-x-0.5">
                       <span className="text-[10px]">⭐</span>
-                      <span className="text-[10px]">{serie.rating}</span>
+                      <span className="text-[10px]">{item.rating}</span>
                     </div>
                   </div>
 
                   {/* Imagen con overlay - ALTURA REDUCIDA en móviles */}
                   <div className="relative overflow-hidden">
                     <img
-                      src={serie.image}
-                      alt={serie.title}
+                      src={item.image}
+                      alt={item.title}
                       className="w-full h-40 sm:h-64 md:h-80 object-cover group-hover:scale-110 transition-transform duration-700"
                     />
 
@@ -322,7 +303,7 @@ function Home() {
                   {/* Información de la serie - MÁS COMPACTA */}
                   <div className="p-2 sm:p-4">
                     <h3 className="font-bold text-xs sm:text-base text-center group-hover:text-cyan-400 transition-colors line-clamp-2 min-h-[1.5rem] flex items-center justify-center">
-                      {serie.title}
+                      {item.title}
                     </h3>
                     <div className="flex justify-center mt-1">
                       <div className="flex text-yellow-400 text-[10px] sm:text-sm">
@@ -365,9 +346,10 @@ function Home() {
 
           {/* Grid responsive */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-            {peliculasEstreno.map((pelicula) => (
+            {contenidoNuevo.slice(0, 10).map((item) => (
+
               <div
-                key={pelicula.id}
+                key={item.idContenido}
                 className="group relative bg-gray-800 rounded-2xl sm:rounded-3xl overflow-hidden hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-purple-500/20 border border-gray-700 active:scale-95"
               >
                 {/* Badge ESTRENO */}
@@ -381,15 +363,15 @@ function Home() {
                 <div className="absolute top-2 right-2 z-10">
                   <div className="bg-yellow-500 text-gray-900 px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold flex items-center space-x-0.5">
                     <span className="text-[10px]">⭐</span>
-                    <span className="text-[10px]">{pelicula.rating}</span>
+                    <span className="text-[10px]">{item.rating}</span>
                   </div>
                 </div>
 
                 {/* Imagen con altura responsive */}
                 <div className="relative overflow-hidden">
                   <img
-                    src={pelicula.image}
-                    alt={pelicula.title}
+                    src={item.image}
+                    alt={item.title}
                     className="w-full h-36 sm:h-64 md:h-80 lg:h-96 object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
@@ -405,7 +387,7 @@ function Home() {
                 {/* Contenido */}
                 <div className="p-3 sm:p-4">
                   <h3 className="font-bold text-base sm:text-xl text-center group-hover:text-purple-400 transition-colors mb-2 line-clamp-2 leading-snug">
-                    {pelicula.title}
+                    {item.title}
                   </h3>
 
                   {/* Rating y estrellas */}
@@ -413,7 +395,7 @@ function Home() {
                     <div className="flex text-yellow-400 text-[10px] sm:text-sm">
                       {"★".repeat(5)}
                     </div>
-                    <span className="text-gray-400 text-[10px] sm:text-sm">{pelicula.rating}/5</span>
+                    <span className="text-gray-400 text-[10px] sm:text-sm">{item.rating}/5</span>
                   </div>
 
                   {/* Botón principal desktop */}
