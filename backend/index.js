@@ -1,27 +1,36 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
+const passport = require('passport');
+require('dotenv').config();
+require('./src/config/passport');
+
 const app = express();
 const PORT = 4000;
 
-const categoria = require('./src/routes/categoria.routes');
-const genero = require('./src/routes/genero.routes');
-const contenido = require('./src/routes/contenido.routes');
-const temporada = require('./src/routes/temporada.routes');
-const episodio = require('./src/routes/episodio.routes');
-
-// 🔹 Permitir solicitudes desde el frontend
-app.use(cors({
-    origin: 'http://localhost:5173', // o el puerto donde corre tu React
-    credentials: true,
-}));
-
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
-app.use('/api/v1/categoria', categoria);
-app.use('/api/v1/genero', genero);
-app.use('/api/v1/contenido', contenido);
-app.use('/api/v1/temporada', temporada);
-app.use('/api/v1/episodio', episodio);
 
-app.listen(PORT, () => {
-    console.log("Corriendo servidor en el puerto", PORT);
-});
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: { maxAge: 24 * 60 * 60 * 1000 }
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Rutas API
+app.use('/api/v1/categoria', require('./src/routes/categoria.routes'));
+app.use('/api/v1/genero', require('./src/routes/genero.routes'));
+app.use('/api/v1/contenido', require('./src/routes/contenido.routes'));
+app.use('/api/v1/temporada', require('./src/routes/temporada.routes'));
+app.use('/api/v1/episodio', require('./src/routes/episodio.routes'));
+
+// Rutas Auth
+app.use('/api/v1/auth', require('./src/routes/auth.routes'));
+
+app.listen(PORT, () => console.log(`✅ Servidor corriendo en http://localhost:${PORT}`));
