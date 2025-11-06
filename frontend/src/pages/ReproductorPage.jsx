@@ -222,15 +222,6 @@ function ReproductorPage() {
 
   return (
     <div className="pt-16 md:pt-20 min-h-screen bg-gray-950">
-      {/* Navegación */}
-      <div className="container mx-auto px-3 sm:px-4 md:px-8 py-3 md:py-4">
-        <button
-          onClick={() => navigate('/catalogo')}
-          className="hidden md:flex !bg-cyan-500 hover:bg-cyan-600 !text-white px-3 py-1.5 text-xs rounded-lg font-medium transition-all"
-        >
-          ← Volver
-        </button>
-      </div>
       <div className="container mx-auto px-3 sm:px-4 md:px-8 pb-6 md:pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
           {/* Área Principal del Video */}
@@ -433,12 +424,13 @@ function ReproductorPage() {
                   <div className="flex lg:flex-col gap-2 md:gap-3 justify-center">
                     <button className="!bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-105 flex items-center space-x-2 text-sm md:text-base">
                       <span>❤️</span>
-                      <span className="hidden sm:inline">Me gusta</span>
+                      <span className="hidden sm:inline">Agregar a mi lista</span>
                     </button>
-                    <button className="!bg-gray-700 hover:!bg-gray-600 !text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all flex items-center space-x-2 text-sm md:text-base">
-                      <span>➕</span>
-                      <span className="hidden sm:inline">Lista</span>
+                    <button className="!bg-gray-700 hover:!bg-gray-600 !text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all flex items-center space-x-2 text-sm md:text-base" onClick={() => navigate('/catalogo')}>
+                      <span>🎞️</span>
+                      <span>Ir a catálogo</span>
                     </button>
+
                   </div>
                 </div>
               </div>

@@ -1,22 +1,26 @@
 import React from "react";
 import Particles from "../components/Particles";
 
-function LoginPage({ onClose, onLogin }) {
+function LoginPage() {
+
+  // Función para iniciar sesión con Google
+  const handleGoogleLogin = () => {
+    // Redirige al backend para iniciar OAuth
+    window.location.href = "http://localhost:4000/api/v1/auth/google";
+  };
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans overflow-x-hidden relative">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center pt-16 sm:pt-20 px-4 sm:px-0">
-        {/* Fondo con gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900/20 to-cyan-900/20"></div>
 
-        {/* Efecto de partículas */}
         <Particles
           count={{ sm: 100, lg: 700 }}
           intensity={{ sm: "low", lg: "medium" }}
           className="absolute inset-0 z-0"
         />
 
-        {/* Tarjeta de login */}
         <div className="relative z-10 max-w-md w-full">
           <div className="bg-gray-900/80 backdrop-blur-xl border-2 border-cyan-500/30 rounded-3xl p-4 sm:p-8 shadow-2xl shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-500">
 
@@ -39,7 +43,7 @@ function LoginPage({ onClose, onLogin }) {
 
             {/* Botón de Google */}
             <button
-              onClick={onLogin}
+              onClick={handleGoogleLogin}
               className="group w-full !bg-white !text-gray-900 py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:!bg-gray-100 transition-all duration-300 flex items-center justify-center space-x-3 mb-6 hover:scale-105 shadow-lg hover:shadow-xl border-2 border-white/20"
             >
               <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-red-400 to-blue-500 rounded-full flex items-center justify-center">
@@ -49,7 +53,6 @@ function LoginPage({ onClose, onLogin }) {
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </button>
 
-            {/* Texto de creación de cuenta */}
             <div className="text-center text-gray-400 text-xs sm:text-sm mt-4">
               ¿Primera vez en StreamVerse?{' '}
             </div>
@@ -71,7 +74,6 @@ function LoginPage({ onClose, onLogin }) {
             </div>
           </div>
 
-          {/* Mensaje adicional */}
           <div className="text-center mt-4 sm:mt-6">
             <p className="text-gray-400 text-xs sm:text-sm">
               Únete a <span className="text-cyan-400">millones</span> de usuarios
