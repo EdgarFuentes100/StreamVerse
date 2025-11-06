@@ -31,7 +31,7 @@ function ReproductorPage() {
     setCargandoVideos(true);
     setVideosLocales([]); // Limpiar videos locales
     setVideoActualLocal(null); // Limpiar video actual local
-    
+
     // Cargar nuevo contenido
     getTemporadas(id);
     getContenidoInfo(id);
@@ -369,8 +369,8 @@ function ReproductorPage() {
                       {cargandoVideos ? "Cargando video..." : "No hay video disponible"}
                     </h3>
                     <p className="text-gray-400 mb-4">
-                      {cargandoVideos 
-                        ? "Buscando el contenido solicitado..." 
+                      {cargandoVideos
+                        ? "Buscando el contenido solicitado..."
                         : "Este video no está disponible en este momento."
                       }
                     </p>
@@ -443,57 +443,6 @@ function ReproductorPage() {
                 </div>
               </div>
             </div>
-
-            {/* Recomendaciones */}
-            {recomendacion.length > 0 && (
-              <div className="mt-6 md:mt-8">
-                <h2 className="text-xl md:text-2xl font-bold !text-cyan-400 mb-4 md:mb-6 flex items-center space-x-2">
-                  <span>🎬</span>
-                  <span>Te podría gustar</span>
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                  {recomendacion.slice(0, 8).map((item) => (
-                    <div
-                      key={item.idContenido}
-                      onClick={() => handleIrAContenido(item)}
-                      className="group !bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 border border-transparent hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10"
-                    >
-                      <div className="relative">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-24 sm:h-28 md:h-32 object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
-
-                        <div className="absolute top-1 left-1 md:top-2 md:left-2">
-                          <div className={`${getBadgeColor(item.nombre)} !text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
-                            <span className="sm:hidden">{getIcon(item.nombre)}</span>
-                            <span className="hidden sm:inline">{item.nombre}</span>
-                          </div>
-                        </div>
-
-                        <div className="absolute top-1 right-1 md:top-2 md:right-2 !bg-yellow-500 !text-gray-900 px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold flex items-center space-x-1">
-                          <span>⭐</span>
-                          <span className="hidden xs:inline">{item.rating}</span>
-                        </div>
-                      </div>
-
-                      <div className="p-2 md:p-3">
-                        <h3 className="font-semibold !text-white text-xs md:text-sm line-clamp-2 group-hover:!text-cyan-400 transition-colors mb-1 md:mb-2">
-                          {item.title}
-                        </h3>
-                        <div className="flex justify-between items-center text-xs !text-gray-400">
-                          <span>{item.year}</span>
-                          {item.duracion && <span className="hidden sm:inline">{item.duracion}</span>}
-                          {item.temporadas && <span>{item.temporadas}T</span>}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Panel Lateral */}
@@ -540,6 +489,38 @@ function ReproductorPage() {
                 </div>
               </div>
             </div>
+
+            {/* Temporadas (si hay más de una) */}
+            {temporadas?.length > 1 && !cargandoVideos && (
+              <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-pink-500/20">
+                <h3 className="text-base md:text-lg font-bold !text-pink-400 mb-3 md:mb-4 flex items-center space-x-2">
+                  <span>📚</span>
+                  <span>Temporadas</span>
+                </h3>
+
+                <div className="space-y-1 md:space-y-2">
+                  {temporadas.map((temporada) => (
+                    <button
+                      key={temporada.idTemporada}
+                      onClick={() => handleCambiarTemporada(temporada)}
+                      className={`w-full text-left p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 ${temporadaSeleccionada?.idTemporada === temporada.idTemporada
+                        ? '!bg-pink-500/20 !border !border-pink-400 !text-white'
+                        : '!bg-gray-700/50 hover:!bg-gray-600/50 !text-white'
+                        }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-sm line-clamp-1">
+                          {temporada.nombre}
+                        </span>
+                        <span className="!text-cyan-400 text-xs">
+                          {contenidoInfo?.categoria === 'Película' ? 'p' : 'e'}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Lista de Episodios/Películas - CORREGIDO */}
             <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-purple-500/20">
@@ -611,48 +592,66 @@ function ReproductorPage() {
                   <div className="text-4xl mb-3">📺</div>
                   <div className="text-white mb-2">No hay videos disponibles</div>
                   <div className="text-gray-400 text-sm">
-                    {contenidoInfo.categoria === 'Película' 
-                      ? 'Esta película no está disponible' 
+                    {contenidoInfo.categoria === 'Película'
+                      ? 'Esta película no está disponible'
                       : 'Esta temporada no tiene episodios disponibles'
                     }
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Temporadas (si hay más de una) */}
-            {temporadas?.length > 1 && !cargandoVideos && (
-              <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-pink-500/20">
-                <h3 className="text-base md:text-lg font-bold !text-pink-400 mb-3 md:mb-4 flex items-center space-x-2">
-                  <span>📚</span>
-                  <span>Temporadas</span>
-                </h3>
-
-                <div className="space-y-1 md:space-y-2">
-                  {temporadas.map((temporada) => (
-                    <button
-                      key={temporada.idTemporada}
-                      onClick={() => handleCambiarTemporada(temporada)}
-                      className={`w-full text-left p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 ${temporadaSeleccionada?.idTemporada === temporada.idTemporada
-                        ? '!bg-pink-500/20 !border !border-pink-400 !text-white'
-                        : '!bg-gray-700/50 hover:!bg-gray-600/50 !text-white'
-                        }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-sm line-clamp-1">
-                          {temporada.nombre}
-                        </span>
-                        <span className="!text-cyan-400 text-xs">
-                          {contenidoInfo?.categoria === 'Película' ? 'p' : 'e'}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
+        {/* Recomendaciones */}
+        {recomendacion.length > 0 && (
+          <div className="mt-6 md:mt-8">
+            <h2 className="text-xl md:text-2xl font-bold !text-cyan-400 mb-4 md:mb-6 flex items-center space-x-2">
+              <span>🎬</span>
+              <span>Te podría gustar</span>
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+              {recomendacion.slice(0, 8).map((item) => (
+                <div
+                  key={item.idContenido}
+                  onClick={() => handleIrAContenido(item)}
+                  className="group !bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 border border-transparent hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10"
+                >
+                  <div className="relative">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-24 sm:h-28 md:h-32 object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
+
+                    <div className="absolute top-1 left-1 md:top-2 md:left-2">
+                      <div className={`${getBadgeColor(item.nombre)} !text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
+                        <span className="sm:hidden">{getIcon(item.nombre)}</span>
+                        <span className="hidden sm:inline">{item.nombre}</span>
+                      </div>
+                    </div>
+
+                    <div className="absolute top-1 right-1 md:top-2 md:right-2 !bg-yellow-500 !text-gray-900 px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold flex items-center space-x-1">
+                      <span>⭐</span>
+                      <span className="hidden xs:inline">{item.rating}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-2 md:p-3">
+                    <h3 className="font-semibold !text-white text-xs md:text-sm line-clamp-2 group-hover:!text-cyan-400 transition-colors mb-1 md:mb-2">
+                      {item.title}
+                    </h3>
+                    <div className="flex justify-between items-center text-xs !text-gray-400">
+                      <span>{item.year}</span>
+                      {item.duracion && <span className="hidden sm:inline">{item.duracion}</span>}
+                      {item.temporadas && <span>{item.temporadas}T</span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
