@@ -1,4 +1,3 @@
-import { useAuth } from "../api/useAuth";
 import Particles from "../components/Particles";
 import { useCategoria } from "../data/useCategoria";
 import { useContenido } from "../data/useContenido";
@@ -7,7 +6,6 @@ import PlanesCarousel from "./PlanesCarousel";
 function Home() {
   const { categoria } = useCategoria();
   const { contenidoNuevo, contenidoPopular, contenidoGrupo } = useContenido();
-    const { usuario} = useAuth();
 
 
   return (

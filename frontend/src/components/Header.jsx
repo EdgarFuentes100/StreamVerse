@@ -1,14 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../api/authContext";
 
 function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { usuario, logout } = useAuth();
 
   const handleLoginClick = () => {
-    navigate("/Login");
+    if (usuario) {
+      // 🔹 Si ya está logueado → cerrar sesión
+      logout();
+    } else {
+      // 🔹 Si no está logueado → ir a página login
+      navigate("/Login");
+    }
     setIsMenuOpen(false);
   };
+
 
   const handleMenuClick = (item) => {
     const rutas = {
@@ -70,7 +79,7 @@ function Header() {
             onClick={handleLoginClick}
             className="hidden lg:block !bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all hover:scale-105 text-sm sm:text-base"
           >
-            Iniciar sesión
+            {usuario ? "Cerrar sesión" : "Iniciar sesión"}
           </button>
 
           {/* Botón hamburguesa móvil */}
@@ -114,7 +123,7 @@ function Header() {
                   onClick={handleLoginClick}
                   className="w-full !bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white py-2.5 sm:py-3 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all text-sm sm:text-base"
                 >
-                  Iniciar sesión
+                  {usuario ? "Cerrar sesión" : "Iniciar sesión"}
                 </button>
               </div>
             </nav>
