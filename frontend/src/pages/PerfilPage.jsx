@@ -1,21 +1,26 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../api/authContext";
+import { useNavigate } from "react-router-dom";
 
 function PerfilPage() {
-  const { usuario, getPerfil, perfil } = useAuth();
+  const { usuario, getPerfil, perfil, setPerfilActivo } = useAuth();
+  const navigate = useNavigate();
   const [newProfileName, setNewProfileName] = useState("");
   const [hoveredProfile, setHoveredProfile] = useState(null);
   const [editingProfile, setEditingProfile] = useState(null);
   const nameInputRef = useRef(null);
 
   useEffect(() => {
-    getPerfil(2);
-  }, []);
+    if (usuario) {
+      console.log("ID del usuario:", usuario.idUsuario);
+      getPerfil(usuario.idUsuario);
+    }
+  }, [usuario]);
 
   const getColorFromId = (id) => {
     const colors = [
       "bg-gradient-to-br from-purple-600 to-pink-500",
-      "bg-gradient-to-br from-blue-500 to-cyan-400", 
+      "bg-gradient-to-br from-blue-500 to-cyan-400",
       "bg-gradient-to-br from-green-500 to-emerald-400",
       "bg-gradient-to-br from-orange-500 to-red-500",
       "bg-gradient-to-br from-indigo-500 to-purple-400"
@@ -27,10 +32,13 @@ function PerfilPage() {
     if (!profile.idCuentaPerfil) {
       // Es el botón de agregar
       setEditingProfile({ tipo: "nuevo" });
+      console.log("nuevo");
     } else {
-      // Seleccionar perfil existente
-      console.log("Perfil seleccionado:", profile);
-      // Aquí tu lógica para manejar el perfil seleccionado
+      // 🔥 SOLO GUARDAR idCuentaPerfil
+      setPerfilActivo(profile); // Actualizar estado
+      localStorage.setItem("perfilActivo", profile.idCuentaPerfil); // 🔥 Solo el ID
+      console.log("Perfil activo guardado:", profile.idCuentaPerfil);
+      navigate("/Catalogo");
     }
   };
 
@@ -49,7 +57,7 @@ function PerfilPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-8 relative overflow-hidden">
       {/* Efectos de fondo */}
       <div className="absolute inset-0 bg-black opacity-40"></div>
-      
+
       {/* Contenido principal */}
       <div className="relative z-10 w-full max-w-6xl">
         {/* Header */}
@@ -62,35 +70,34 @@ function PerfilPage() {
           </p>
         </div>
 
-        {/* Profiles Grid - MAP DIRECTO CON TUS DATOS */}
+        {/* Profiles Grid */}
         <div className="flex justify-center gap-10 flex-wrap mb-16">
-          {/* Mapeo directo de los perfiles del backend */}
           {perfil.map((profile) => (
-            <div 
+            <div
               key={profile.idCuentaPerfil}
               className="flex flex-col items-center transition-all duration-500"
               onMouseEnter={() => setHoveredProfile(profile.idCuentaPerfil)}
               onMouseLeave={() => setHoveredProfile(null)}
             >
-              <div 
+              <div
                 className="flex flex-col items-center cursor-pointer group relative"
                 onClick={() => handleProfileClick(profile)}
               >
                 {/* Avatar del perfil */}
-                <div 
+                <div
                   className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20 transition-all duration-500 shadow-2xl ${
-                    hoveredProfile === profile.idCuentaPerfil 
-                      ? "scale-110 border-white" 
+                    hoveredProfile === profile.idCuentaPerfil
+                      ? "scale-110 border-white"
                       : ""
                   } group-hover:scale-110 group-hover:border-white`}
                 >
                   {profile.avatar || "👤"}
                 </div>
-                
+
                 {/* Nombre del perfil */}
                 <span className={`text-lg font-medium text-gray-300 transition-all duration-500 ${
-                  hoveredProfile === profile.idCuentaPerfil 
-                    ? "text-white scale-105" 
+                  hoveredProfile === profile.idCuentaPerfil
+                    ? "text-white scale-105"
                     : ""
                 } group-hover:text-white group-hover:scale-105`}>
                   {profile.nombre}
@@ -98,7 +105,7 @@ function PerfilPage() {
               </div>
             </div>
           ))}
-          
+
           {/* Botón Agregar Perfil */}
           {editingProfile?.tipo === "nuevo" ? (
             <div className="flex flex-col items-center">
@@ -116,13 +123,13 @@ function PerfilPage() {
                   autoFocus
                 />
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     onClick={handleAddProfile}
                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
                   >
                     Crear
                   </button>
-                  <button 
+                  <button
                     onClick={() => setEditingProfile(null)}
                     className="bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm"
                   >
@@ -132,7 +139,7 @@ function PerfilPage() {
               </div>
             </div>
           ) : (
-            <div 
+            <div
               className="flex flex-col items-center cursor-pointer group"
               onClick={() => setEditingProfile({ tipo: "nuevo" })}
             >

@@ -1,3 +1,4 @@
+// src/routes/routes.jsx
 import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import LoginPage from "../pages/LoginPage";
@@ -8,20 +9,53 @@ import MiListaPage from "../pages/MiListaPages";
 import NovedadesPage from "../pages/NovedadesPages";
 import MangaDetallePage from "../pages/MangaDetallePage";
 import PerfilPage from "../pages/PerfilPage";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 function AppRoutes() {
     return (
         <Routes>
-            {/* 🔓 Todo público temporalmente */}
+            {/* 🔓 Rutas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/Login" element={<LoginPage />} />
-            <Route path="/Perfil" element={<PerfilPage />} />
-            <Route path="/Catalogo" element={<CatalogoPage />} />
-            <Route path="/Mangas" element={<MangasPage />} />
-            <Route path="/MiLista" element={<MiListaPage />} />
-            <Route path="/Novedades" element={<NovedadesPage />} />
-            <Route path="/manga/:id" element={<MangaDetallePage />} />
-            <Route path="/video/:id" element={<ReproductorPage />} />
+
+            {/* 🔒 Ruta de selección de perfil - SOLO para rol 2 */}
+            <Route path="/Perfil" element={
+                <ProtectedRoute rolesPermitidos={[2]}> {/* ✅ Solo rol 2 */}
+                    <PerfilPage />
+                </ProtectedRoute>
+            } />
+
+            {/* 🔒 Rutas protegidas - TODOS los autenticados pero rol 2 necesita perfil */}
+            <Route path="/Catalogo" element={
+                <ProtectedRoute> {/* ✅ Rol 1 accede directo, Rol 2 necesita perfil */}
+                    <CatalogoPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/Mangas" element={
+                <ProtectedRoute>
+                    <MangasPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/MiLista" element={
+                <ProtectedRoute>
+                    <MiListaPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/Novedades" element={
+                <ProtectedRoute>
+                    <NovedadesPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/manga/:id" element={
+                <ProtectedRoute>
+                    <MangaDetallePage />
+                </ProtectedRoute>
+            } />
+            <Route path="/video/:id" element={
+                <ProtectedRoute>
+                    <ReproductorPage />
+                </ProtectedRoute>
+            } />
         </Routes>
     );
 }
