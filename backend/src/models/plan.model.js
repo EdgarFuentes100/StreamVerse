@@ -24,4 +24,11 @@ async function getPlanPerfil(idPerfil) {
   return rows;
 }
 
-module.exports = { getPlanPerfil };
+async function gertPermsioVideo(idContendio) {
+  const [rows] = await localDB.query(
+    `SELECT * FROM contenido_plan where idContenido = ?;`,
+    [idContendio]
+  );
+  return rows;
+}
+module.exports = { getPlanPerfil, gertPermsioVideo };

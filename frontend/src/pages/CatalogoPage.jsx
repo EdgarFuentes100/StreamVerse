@@ -33,10 +33,9 @@ function CatalogoPage() {
     { value: 'title', label: '🔤 A-Z' }
   ];
 
-
   useEffect(() => {
     getContenido();
-    getContenidoPlan(localStorage.getItem("perfilActivo"));
+    getContenidoPlan();
   }, []);
 
   // 🔹 Filtrar los contenidos DEL BACKEND

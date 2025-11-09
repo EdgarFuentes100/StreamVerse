@@ -42,6 +42,28 @@ export const AuthProvider = ({ children }) => {
             .catch(() => setPerfil([]));
     };
 
+    // 🔹 Obtener perfiles del usuario - EXACTAMENTE IGUAL
+    const getPerfilActivo = (idCuentaPerfil) => {
+        return getFetch(`perfil/firmarPerfil/${idCuentaPerfil}`)
+            .then((data) => {
+                if (data.ok && data.datos) {
+                    const { idPerfil, token } = data.datos;
+
+                    // Guardar solo ID y token
+                    localStorage.setItem("tokenPerfil", token);
+                    localStorage.setItem("perfilActivo", idPerfil);
+
+                    setPerfilActivo(idPerfil);
+
+                    return idPerfil; // 🔹 importante
+                }
+                return null;
+            })
+            .catch(() => null);
+    };
+
+
+
     // 🔹 Crear nuevo perfil - EXACTAMENTE IGUAL
     const crearPerfil = (idUsuario, nombrePerfil) => {
         return postFetch("perfil/crear", { idUsuario, nombrePerfil })
@@ -58,18 +80,18 @@ export const AuthProvider = ({ children }) => {
             setContenidoPlan([]);
             setContenidoFiltrado([]);
             localStorage.removeItem("perfilActivo");
+            localStorage.removeItem("tokenPerfil");
             setCargando(false);
         });
     };
 
-    // 🔹 Contenido permitido por plan - EXACTAMENTE IGUAL
-    const getContenidoPlan = (idPerfil) => {
-        getFetch(`plan/listaContenido/${idPerfil}`)
+    const getContenidoPlan = () => {
+        getFetch(`plan/listaContenido`) // 🔹 no pasas token, useFetch lo agrega
             .then((data) => {
                 setContenidoPlan(data.datos || []);
                 console.log("contenido plan", data.datos);
             })
-            .catch(() => setContenidoPlan([]));
+            .catch(err => console.error("Error al obtener contenido:", err));
     };
 
     // 🔹 Todos los contenidos - EXACTAMENTE IGUAL
@@ -134,7 +156,8 @@ export const AuthProvider = ({ children }) => {
                 crearPerfil,
                 logout,
                 getContenido,
-                getContenidoPlan
+                getContenidoPlan,
+                getPerfilActivo
             }}
         >
             {children}

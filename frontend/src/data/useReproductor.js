@@ -8,6 +8,7 @@ const useReproductor = () => {
     const [videoActual, setVideoActual] = useState([]);
     const [contenidoInfo, setContenidoInfo] = useState([]);
     const [recomendacion, setRecomendacion] = useState([]);
+    const [disponible, setDisponible] = useState(false);
 
     const getTemporadas = (idContenido) => {
         getFetch(`temporada/listadoTemporada/${idContenido}`)
@@ -64,6 +65,17 @@ const useReproductor = () => {
             });
     };
 
+    const getVerficarPermiso = (idContenido) => {
+        getFetch(`plan/verificarPermisoVideo/${idContenido}`)
+            .then((data) => {
+                setDisponible(data.datos.existe);
+                console.log("SI EXISTE",data.datos.existe);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
     useEffect(() => {
         getVideos();
     }, []);
@@ -85,7 +97,9 @@ const useReproductor = () => {
         getVideos,
         getVideoActual,
         getContenidoInfo,
-        recomendacion
+        recomendacion,
+        getVerficarPermiso,
+        disponible
     };
 };
 

@@ -3,7 +3,7 @@ import { useAuth } from "../api/authContext";
 import { useNavigate } from "react-router-dom";
 
 function PerfilPage() {
-  const { usuario, getPerfil, perfil, setPerfilActivo } = useAuth();
+  const { usuario, getPerfil, perfil, getPerfilActivo } = useAuth();
   const navigate = useNavigate();
   const [newProfileName, setNewProfileName] = useState("");
   const [hoveredProfile, setHoveredProfile] = useState(null);
@@ -28,19 +28,18 @@ function PerfilPage() {
     return colors[id % colors.length];
   };
 
-  const handleProfileClick = (profile) => {
-    if (!profile.idCuentaPerfil) {
-      // Es el botón de agregar
-      setEditingProfile({ tipo: "nuevo" });
-      console.log("nuevo");
-    } else {
-      // 🔥 SOLO GUARDAR idCuentaPerfil
-      setPerfilActivo(profile); // Actualizar estado
-      localStorage.setItem("perfilActivo", profile.idCuentaPerfil); // 🔥 Solo el ID
-      console.log("Perfil activo guardado:", profile.idCuentaPerfil);
-      navigate("/Catalogo");
+const handleProfileClick = async (profile) => {
+  if (!profile.idCuentaPerfil) {
+    setEditingProfile({ tipo: "nuevo" });
+    console.log("nuevo");
+  } else {
+    const idPerfilActivo = await getPerfilActivo(profile.idCuentaPerfil); // espera a que termine el fetch
+    if (idPerfilActivo) {
+      navigate("/Catalogo"); // 🔹 redirige solo después de que el perfil esté activo
     }
-  };
+  }
+};
+
 
   const handleAddProfile = () => {
     if (newProfileName.trim()) {
@@ -85,21 +84,19 @@ function PerfilPage() {
               >
                 {/* Avatar del perfil */}
                 <div
-                  className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20 transition-all duration-500 shadow-2xl ${
-                    hoveredProfile === profile.idCuentaPerfil
+                  className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20 transition-all duration-500 shadow-2xl ${hoveredProfile === profile.idCuentaPerfil
                       ? "scale-110 border-white"
                       : ""
-                  } group-hover:scale-110 group-hover:border-white`}
+                    } group-hover:scale-110 group-hover:border-white`}
                 >
                   {profile.avatar || "👤"}
                 </div>
 
                 {/* Nombre del perfil */}
-                <span className={`text-lg font-medium text-gray-300 transition-all duration-500 ${
-                  hoveredProfile === profile.idCuentaPerfil
+                <span className={`text-lg font-medium text-gray-300 transition-all duration-500 ${hoveredProfile === profile.idCuentaPerfil
                     ? "text-white scale-105"
                     : ""
-                } group-hover:text-white group-hover:scale-105`}>
+                  } group-hover:text-white group-hover:scale-105`}>
                   {profile.nombre}
                 </span>
               </div>

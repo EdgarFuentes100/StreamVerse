@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 function useFetch() {
-const urlBase = "http://localhost:4000/api/v1/";
+  const urlBase = "http://localhost:4000/api/v1/";
 
   const manejarRespuesta = async (response) => {
     const contentType = response.headers.get("content-type") || "";
@@ -28,47 +28,54 @@ const urlBase = "http://localhost:4000/api/v1/";
   };
 
   const getFetch = useCallback((urlParcial) => {
+    const token = localStorage.getItem("tokenPerfil"); // 🔹 tomar token del perfil activo
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
     return fetch(urlBase + urlParcial, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers,
       credentials: "include",
     }).then(manejarRespuesta);
   }, [urlBase]);
 
   const postFetch = useCallback((urlParcial, datos) => {
+    const token = localStorage.getItem("tokenPerfil"); 
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
     return fetch(urlBase + urlParcial, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(datos),
       credentials: "include",
     }).then(manejarRespuesta);
   }, [urlBase]);
 
+  // Igual para PUT y DELETE
   const putFetch = (urlParcial, datos) => {
-    const url = urlBase.concat(urlParcial);
-    return fetch(url, {
+    const token = localStorage.getItem("tokenPerfil");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    return fetch(urlBase + urlParcial, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(datos),
       credentials: "include",
-    })
-      .then(manejarRespuesta)
-      .catch((error) => Promise.reject(error));
+    }).then(manejarRespuesta);
   };
 
   const deleteFetch = (urlParcial) => {
-    const url = urlBase.concat(urlParcial);
-    return fetch(url, {
+    const token = localStorage.getItem("tokenPerfil");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    return fetch(urlBase + urlParcial, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       credentials: "include",
-    })
-      .then(manejarRespuesta)
-      .catch((error) => Promise.reject(error));
+    }).then(manejarRespuesta);
   };
 
   return { getFetch, postFetch, putFetch, deleteFetch };
