@@ -17,6 +17,7 @@ function AppRoutes() {
             {/* 🔓 Rutas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/Login" element={<LoginPage />} />
+            <Route path="/Novedades" element={<NovedadesPage />} />
 
             {/* 🔒 Ruta de selección de perfil - SOLO para rol 2 */}
             <Route path="/Perfil" element={
@@ -39,11 +40,6 @@ function AppRoutes() {
             <Route path="/MiLista" element={
                 <ProtectedRoute>
                     <MiListaPage />
-                </ProtectedRoute>
-            } />
-            <Route path="/Novedades" element={
-                <ProtectedRoute>
-                    <NovedadesPage />
                 </ProtectedRoute>
             } />
             <Route path="/manga/:id" element={

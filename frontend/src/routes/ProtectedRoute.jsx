@@ -28,5 +28,10 @@ export const ProtectedRoute = ({ children, rolesPermitidos }) => {
     return <Navigate to="/Perfil" replace />;
   }
 
+    // 🔹 Bloquear acceso a /Perfil si ya hay perfil activo
+  if (usuario.idRol === 2 && perfilActivo && window.location.pathname === '/Perfil') {
+    return <Navigate to="/Catalogo" replace />; // o la página principal que quieras
+  }
+
   return children;
 };

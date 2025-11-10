@@ -5,20 +5,29 @@ import { useAuth } from "../api/authContext";
 function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { usuario, logout } = useAuth();
+  const { usuario, logout, perfilActivo, setPerfilActivo } = useAuth();
 
+  // 🔹 Cerrar sesión completa
   const handleLoginClick = () => {
     if (usuario) {
-      // 🔹 Si ya está logueado → cerrar sesión
       logout();
     } else {
-      // 🔹 Si no está logueado → ir a página login
       navigate("/Login");
     }
     setIsMenuOpen(false);
   };
 
+  // 🔹 Salir solo del perfil activo
+  const handleCerrarPerfil = () => {
+    setPerfilActivo(null); // limpia el estado
+    localStorage.removeItem("perfilActivo"); // limpia el localStorage
+    localStorage.removeItem("tokenPerfil");   // opcional: limpia token del perfil
+    navigate("/Perfil"); // redirige a selección de perfiles
+    setIsMenuOpen(false);
+  };
 
+
+  // 🔹 Navegar entre rutas
   const handleMenuClick = (item) => {
     const rutas = {
       "Inicio": "/",
@@ -31,6 +40,7 @@ function Header() {
     setIsMenuOpen(false);
   };
 
+  // 🔹 Cerrar menú al redimensionar
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) setIsMenuOpen(false);
@@ -57,35 +67,46 @@ function Header() {
 
         {/* Menú desktop */}
         <nav className="hidden lg:flex space-x-8">
-          {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"].map((item) => (
-            <a
-              key={item}
-              href="#"
-              onClick={(e) => { e.preventDefault(); handleMenuClick(item); }}
-              className="relative group"
-            >
-              <span className="!text-gray-300 group-hover:!text-cyan-400 transition-all duration-300 font-medium">
-                {item}
-              </span>
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 !bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
-          ))}
+          {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"]
+            .filter(item => !(item === "Mi Lista" && !perfilActivo))
+            .map((item) => (
+              <a
+                key={item}
+                href="#"
+                onClick={(e) => { e.preventDefault(); handleMenuClick(item); }}
+                className="relative group"
+              >
+                <span className="!text-gray-300 group-hover:!text-cyan-400 transition-all duration-300 font-medium">
+                  {item}
+                </span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 !bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
+              </a>
+            ))}
         </nav>
 
-        {/* Botón login + hamburguesa */}
-        <div className="flex items-center space-x-4 lg:space-x-0">
-          {/* Botón desktop */}
+        {/* Botones desktop */}
+        <div className="hidden lg:flex items-center space-x-4">
+          {perfilActivo && (
+            <button
+              onClick={handleCerrarPerfil}
+              className="!bg-red-500 !text-white px-3 py-1 rounded-lg hover:opacity-90 transition-all text-sm sm:text-base"
+            >
+              Salir del perfil
+            </button>
+          )}
           <button
             onClick={handleLoginClick}
-            className="hidden lg:block !bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all hover:scale-105 text-sm sm:text-base"
+            className="!bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all hover:scale-105 text-sm sm:text-base"
           >
             {usuario ? "Cerrar sesión" : "Iniciar sesión"}
           </button>
+        </div>
 
-          {/* Botón hamburguesa móvil */}
+        {/* Botón hamburguesa móvil */}
+        <div className="lg:hidden">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-1.5 sm:p-2 !text-gray-300 hover:!text-cyan-400 transition-colors rounded-lg !bg-gray-800/30 hover:!bg-gray-800/50"
+            className="p-1.5 sm:p-2 !text-gray-300 hover:!text-cyan-400 transition-colors rounded-lg !bg-gray-800/30 hover:!bg-gray-800/50"
           >
             <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMenuOpen ? (
@@ -107,18 +128,28 @@ function Header() {
           />
           <div className="lg:hidden fixed top-16 left-0 right-0 !bg-gray-900/98 backdrop-blur-lg !border-b !border-cyan-500/20 !shadow-xl z-50 max-h-[80vh] overflow-y-auto">
             <nav className="flex flex-col">
-              {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => handleMenuClick(item)}
-                  className="px-1 py-0.25 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/10 text-left text-[9px] leading-[1]"
-                >
-                  {item}
-                </button>
-              ))}
+              {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"]
+                .filter(item => !(item === "Mi Lista" && !perfilActivo))
+                .map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => handleMenuClick(item)}
+                    className="px-1 py-0.25 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/10 text-left text-[9px] leading-[1]"
+                  >
+                    {item}
+                  </button>
+                ))}
 
-              {/* Botón login móvil */}
-              <div className="px-4 sm:px-6 py-3 sm:py-4 !border-t !border-gray-700/50 !bg-gray-800/30">
+              {/* Botones móviles */}
+              <div className="px-4 sm:px-6 py-3 sm:py-4 !border-t !border-gray-700/50 !bg-gray-800/30 flex flex-col gap-2">
+                {perfilActivo && (
+                  <button
+                    onClick={handleCerrarPerfil}
+                    className="w-full !bg-red-500 !text-white py-2.5 sm:py-3 rounded-xl font-semibold hover:opacity-90 transition-all text-sm sm:text-base"
+                  >
+                    Salir del perfil
+                  </button>
+                )}
                 <button
                   onClick={handleLoginClick}
                   className="w-full !bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white py-2.5 sm:py-3 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all text-sm sm:text-base"
@@ -130,8 +161,6 @@ function Header() {
           </div>
         </>
       )}
-
-
     </>
   );
 }
