@@ -4,14 +4,16 @@ import AppRoutes from "./routes/routes";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans overflow-x-hidden">
-      {/* HEADER FIJO */}
-      <Header/>
+    <div className="flex flex-col min-h-screen bg-gray-950 text-white font-sans overflow-x-hidden">
+      {/* HEADER */}
+      <Header />
 
-      {/* CONTENIDO CENTRAL */}
-      <AppRoutes />
+      {/* CONTENIDO CENTRAL FLEXIBLE */}
+      <main className="flex-1">
+        <AppRoutes />
+      </main>
 
-      {/* FOOTER FIJO */}
+      {/* FOOTER PEGADO ABAJO */}
       <Footer />
     </div>
   );

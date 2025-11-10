@@ -1,21 +1,39 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../api/authContext";
 import { useNavigate } from "react-router-dom";
+import Particles from "../components/Particles";
+import { usePerfil } from "../data/usePerfil";
 
 function PerfilPage() {
   const { usuario, getPerfil, perfil, getPerfilActivo } = useAuth();
+  const { getPagos } = usePerfil(); // ✅ hook para verificar pago
   const navigate = useNavigate();
+
   const [newProfileName, setNewProfileName] = useState("");
   const [hoveredProfile, setHoveredProfile] = useState(null);
   const [editingProfile, setEditingProfile] = useState(null);
+  const [pagoValido, setPagoValido] = useState(null);
   const nameInputRef = useRef(null);
 
   useEffect(() => {
     if (usuario) {
-      console.log("ID del usuario:", usuario.idUsuario);
-      getPerfil(usuario.idUsuario);
+      verificarPago(usuario.idUsuario);
     }
   }, [usuario]);
+
+  const verificarPago = async (idUsuario) => {
+    const data = await getPagos(idUsuario);
+    const yaPago = data?.[0]?.yaPago || 0; // ✅ se accede directo al primer elemento
+    console.log("Pago detectado:", yaPago);
+
+    if (yaPago === 1) {
+      setPagoValido(true);
+      await getPerfil(idUsuario);
+    } else {
+      setPagoValido(false);
+    }
+  };
+
 
   const getColorFromId = (id) => {
     const colors = [
@@ -28,38 +46,77 @@ function PerfilPage() {
     return colors[id % colors.length];
   };
 
-const handleProfileClick = async (profile) => {
-  if (!profile.idCuentaPerfil) {
-    setEditingProfile({ tipo: "nuevo" });
-    console.log("nuevo");
-  } else {
-    const idPerfilActivo = await getPerfilActivo(profile.idCuentaPerfil); // espera a que termine el fetch
-    if (idPerfilActivo) {
-      navigate("/Catalogo"); // 🔹 redirige solo después de que el perfil esté activo
+  const handleProfileClick = async (profile) => {
+    if (!profile.idCuentaPerfil) {
+      setEditingProfile({ tipo: "nuevo" });
+      console.log("nuevo");
+    } else {
+      const idPerfilActivo = await getPerfilActivo(profile.idCuentaPerfil);
+      if (idPerfilActivo) {
+        navigate("/Catalogo");
+      }
     }
-  }
-};
-
+  };
 
   const handleAddProfile = () => {
     if (newProfileName.trim()) {
-      // Aquí tu lógica para agregar perfil al backend
       console.log("Agregar perfil:", newProfileName);
       setEditingProfile(null);
       setNewProfileName("");
     }
   };
 
-  if (!perfil) return <div className="min-h-screen bg-black flex items-center justify-center text-white">Cargando...</div>;
+  // ⏳ Si aún no sabemos si ha pagado
+  if (pagoValido === null) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  // ❌ Si no ha pagado, mostrar mensaje
+  if (pagoValido === false) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+        <Particles
+          count={{ sm: 200, lg: 700 }}
+          intensity={{ sm: "low", lg: "medium" }}
+          className="absolute inset-0 z-0"
+        />
+        <h2 className="text-3xl font-light mb-4">Tu suscripción ha expirado 💳</h2>
+        <p className="text-gray-400 mb-8">
+          Por favor renueva tu plan para continuar viendo contenido.
+        </p>
+        <button
+          onClick={() => navigate("/Plan")}
+          className="!bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-all"
+        >
+          Renovar Plan
+        </button>
+      </div>
+    );
+  }
+
+  // ✅ Si ya pagó, mostrar los perfiles normalmente
+  if (!perfil) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+        Cargando perfiles...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-8 relative overflow-hidden">
-      {/* Efectos de fondo */}
       <div className="absolute inset-0 bg-black opacity-40"></div>
+      <Particles
+        count={{ sm: 200, lg: 700 }}
+        intensity={{ sm: "low", lg: "medium" }}
+        className="absolute inset-0 z-0"
+      />
 
-      {/* Contenido principal */}
       <div className="relative z-10 w-full max-w-6xl">
-        {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-light text-white mb-6 tracking-wide">
             ¿Quién está viendo?
@@ -69,7 +126,6 @@ const handleProfileClick = async (profile) => {
           </p>
         </div>
 
-        {/* Profiles Grid */}
         <div className="flex justify-center gap-10 flex-wrap mb-16">
           {perfil.map((profile) => (
             <div
@@ -82,28 +138,26 @@ const handleProfileClick = async (profile) => {
                 className="flex flex-col items-center cursor-pointer group relative"
                 onClick={() => handleProfileClick(profile)}
               >
-                {/* Avatar del perfil */}
                 <div
                   className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20 transition-all duration-500 shadow-2xl ${hoveredProfile === profile.idCuentaPerfil
-                      ? "scale-110 border-white"
-                      : ""
+                    ? "scale-110 border-white"
+                    : ""
                     } group-hover:scale-110 group-hover:border-white`}
                 >
                   {profile.avatar || "👤"}
                 </div>
-
-                {/* Nombre del perfil */}
-                <span className={`text-lg font-medium text-gray-300 transition-all duration-500 ${hoveredProfile === profile.idCuentaPerfil
+                <span
+                  className={`text-lg font-medium text-gray-300 transition-all duration-500 ${hoveredProfile === profile.idCuentaPerfil
                     ? "text-white scale-105"
                     : ""
-                  } group-hover:text-white group-hover:scale-105`}>
+                    } group-hover:text-white group-hover:scale-105`}
+                >
                   {profile.nombre}
                 </span>
               </div>
             </div>
           ))}
 
-          {/* Botón Agregar Perfil */}
           {editingProfile?.tipo === "nuevo" ? (
             <div className="flex flex-col items-center">
               <div className="w-36 h-36 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20">
@@ -150,7 +204,6 @@ const handleProfileClick = async (profile) => {
           )}
         </div>
 
-        {/* Footer */}
         <div className="text-center">
           <button className="border-2 border-gray-600 text-gray-400 hover:text-white hover:border-white px-8 py-3 text-lg transition-all duration-300 rounded-lg">
             Administrar perfiles

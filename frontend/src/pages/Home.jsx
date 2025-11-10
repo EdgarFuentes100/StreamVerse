@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Particles from "../components/Particles";
 import { useCategoria } from "../data/useCategoria";
 import { useContenido } from "../data/useContenido";
@@ -6,7 +7,11 @@ import PlanesCarousel from "./PlanesCarousel";
 function Home() {
   const { categoria } = useCategoria();
   const { contenidoNuevo, contenidoPopular, contenidoGrupo } = useContenido();
+  const navigate = useNavigate();
 
+  const handleCatalogo = () => {
+    navigate("/Catalogo");
+  };
 
   return (
     <>
@@ -247,7 +252,8 @@ function Home() {
                 Las series más vistas esta semana
               </p>
             </div>
-            <button className="group text-cyan-400 hover:text-purple-400 transition-colors font-bold flex items-center space-x-2 text-sm sm:text-base self-center sm:self-auto">
+            <button className="group text-cyan-400 hover:text-purple-400 transition-colors font-bold flex items-center space-x-2 text-sm sm:text-base self-center sm:self-auto"
+              onClick={handleCatalogo}>
               <span>Ver todas</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </button>
@@ -339,7 +345,7 @@ function Home() {
                 Las películas más nuevas en la plataforma
               </p>
             </div>
-            <button className="group text-purple-400 hover:text-pink-400 transition-colors font-bold flex items-center space-x-2 text-sm sm:text-base">
+            <button className="group text-purple-400 hover:text-pink-400 transition-colors font-bold flex items-center space-x-2 text-sm sm:text-base" onClick={handleCatalogo}>
               <span>Ver todas</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </button>
