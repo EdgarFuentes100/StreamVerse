@@ -19,7 +19,7 @@ const usePerfil = () => {
     const getPagos = async (idUsuario) => {
         try {
             const data = await getFetch(`pagos/pagos/${idUsuario}`);
-            console.log("contenido plan", data.datos);
+            console.log("cCUETEA ", data.datos);
             return data.datos; // ✅ esto hace que el resultado esté disponible fuera
         } catch (error) {
             console.error("Error al obtener:", error);

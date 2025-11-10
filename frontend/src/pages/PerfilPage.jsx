@@ -13,6 +13,7 @@ function PerfilPage() {
   const [hoveredProfile, setHoveredProfile] = useState(null);
   const [editingProfile, setEditingProfile] = useState(null);
   const [pagoValido, setPagoValido] = useState(null);
+  const [maxPerfiles, setMaxPerfiles] = useState(0); // ✅ límite de perfiles según plan
   const nameInputRef = useRef(null);
 
   useEffect(() => {
@@ -23,17 +24,18 @@ function PerfilPage() {
 
   const verificarPago = async (idUsuario) => {
     const data = await getPagos(idUsuario);
-    const yaPago = data?.[0]?.yaPago || 0; // ✅ se accede directo al primer elemento
-    console.log("Pago detectado:", yaPago);
+    const infoPago = data?.[0]; // primer registro del pago
 
-    if (yaPago === 1) {
+    console.log("Pago detectado:", infoPago);
+
+    if (infoPago?.yaPago === 1) {
       setPagoValido(true);
+      setMaxPerfiles(infoPago.maxPerfil || 1);
       await getPerfil(idUsuario);
     } else {
       setPagoValido(false);
     }
   };
-
 
   const getColorFromId = (id) => {
     const colors = [
@@ -75,7 +77,7 @@ function PerfilPage() {
     );
   }
 
-  // ❌ Si no ha pagado, mostrar mensaje
+  // ❌ Si no ha pagado
   if (pagoValido === false) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
@@ -98,7 +100,7 @@ function PerfilPage() {
     );
   }
 
-  // ✅ Si ya pagó, mostrar los perfiles normalmente
+  // ✅ Si ya pagó, pero los perfiles aún no cargan
   if (!perfil) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-white">
@@ -158,48 +160,59 @@ function PerfilPage() {
             </div>
           ))}
 
-          {editingProfile?.tipo === "nuevo" ? (
-            <div className="flex flex-col items-center">
-              <div className="w-36 h-36 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20">
-                +
-              </div>
-              <div className="flex flex-col items-center space-y-3">
-                <input
-                  ref={nameInputRef}
-                  type="text"
-                  placeholder="Nombre del perfil"
-                  value={newProfileName}
-                  onChange={(e) => setNewProfileName(e.target.value)}
-                  className="bg-gray-800 border-2 border-gray-600 text-white px-3 py-2 rounded-lg text-sm w-32 text-center"
-                  autoFocus
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleAddProfile}
-                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
-                  >
-                    Crear
-                  </button>
-                  <button
-                    onClick={() => setEditingProfile(null)}
-                    className="bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm"
-                  >
-                    Cancelar
-                  </button>
+          {/* ✅ Mostrar botón de agregar perfil SOLO si no ha llegado al máximo */}
+          {perfil.length < maxPerfiles ? (
+            editingProfile?.tipo === "nuevo" ? (
+              <div className="flex flex-col items-center">
+                <div className="w-36 h-36 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-white/20">
+                  +
+                </div>
+                <div className="flex flex-col items-center space-y-3">
+                  <input
+                    ref={nameInputRef}
+                    type="text"
+                    placeholder="Nombre del perfil"
+                    value={newProfileName}
+                    onChange={(e) => setNewProfileName(e.target.value)}
+                    className="bg-gray-800 border-2 border-gray-600 text-white px-3 py-2 rounded-lg text-sm w-32 text-center"
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleAddProfile}
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                    >
+                      Crear
+                    </button>
+                    <button
+                      onClick={() => setEditingProfile(null)}
+                      className="bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div
-              className="flex flex-col items-center cursor-pointer group"
-              onClick={() => setEditingProfile({ tipo: "nuevo" })}
-            >
-              <div className="w-36 h-36 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-gray-500 transition-all duration-500 group-hover:border-white group-hover:scale-110">
-                +
+            ) : (
+              <div
+                className="flex flex-col items-center cursor-pointer group"
+                onClick={() => setEditingProfile({ tipo: "nuevo" })}
+              >
+                <div className="w-36 h-36 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center text-5xl mb-4 border-2 border-gray-500 transition-all duration-500 group-hover:border-white group-hover:scale-110">
+                  +
+                </div>
+                <span className="text-lg font-medium text-gray-400 group-hover:text-white transition-colors">
+                  Agregar Perfil
+                </span>
               </div>
-              <span className="text-lg font-medium text-gray-400 group-hover:text-white transition-colors">
-                Agregar Perfil
-              </span>
+            )
+          ) : (
+            // 🧱 Mensaje si ya llegó al límite
+            <div className="flex flex-col items-center text-gray-400 mt-6">
+              <div className="w-36 h-36 bg-gray-700 rounded-2xl flex items-center justify-center text-4xl mb-4 opacity-60">
+                🚫
+              </div>
+              <span className="text-lg">Límite de perfiles alcanzado</span>
             </div>
           )}
         </div>
