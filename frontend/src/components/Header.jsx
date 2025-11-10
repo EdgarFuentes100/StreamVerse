@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../api/authContext";
+import { adminMenus } from "../data/adminMenuOptions";
 
 function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeAdminMenu, setActiveAdminMenu] = useState(null);
   const { usuario, logout, perfilActivo, setPerfilActivo } = useAuth();
+  const adminMenuRef = useRef(null);
 
   // 🔹 Cerrar sesión completa
   const handleLoginClick = () => {
@@ -15,17 +18,18 @@ function Header() {
       navigate("/Login");
     }
     setIsMenuOpen(false);
+    setActiveAdminMenu(null);
   };
 
   // 🔹 Salir solo del perfil activo
   const handleCerrarPerfil = () => {
-    setPerfilActivo(null); // limpia el estado
-    localStorage.removeItem("perfilActivo"); // limpia el localStorage
-    localStorage.removeItem("tokenPerfil");   // opcional: limpia token del perfil
-    navigate("/Perfil"); // redirige a selección de perfiles
+    setPerfilActivo(null);
+    localStorage.removeItem("perfilActivo");
+    localStorage.removeItem("tokenPerfil");
+    navigate("/Perfil");
     setIsMenuOpen(false);
+    setActiveAdminMenu(null);
   };
-
 
   // 🔹 Navegar entre rutas
   const handleMenuClick = (item) => {
@@ -40,14 +44,56 @@ function Header() {
     setIsMenuOpen(false);
   };
 
+  // 🔹 Navegar a rutas de administración
+  const handleAdminMenuClick = (ruta) => {
+    navigate(ruta);
+    setActiveAdminMenu(null);
+    setIsMenuOpen(false);
+  };
+
   // 🔹 Cerrar menú al redimensionar
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setIsMenuOpen(false);
+      if (window.innerWidth >= 1024) {
+        setIsMenuOpen(false);
+        setActiveAdminMenu(null);
+      }
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // 🔹 Función SIMPLIFICADA para manejar el toggle de menús móviles
+  const handleAdminMenuMobileClick = (menuKey, event) => {
+    // Solo toggle si es el mismo menú, si es diferente lo cambiamos
+    if (activeAdminMenu === menuKey) {
+      setActiveAdminMenu(null);
+    } else {
+      setActiveAdminMenu(menuKey);
+    }
+  };
+
+  // 🔹 Función para obtener el color del borde según el menú
+  const getMenuBorderColor = (menuKey) => {
+    const colors = {
+      usuarios: "!border-l-green-500",
+      contenido: "!border-l-blue-500",
+      finanzas: "!border-l-amber-500",
+      configuracion: "!border-l-purple-500"
+    };
+    return colors[menuKey] || "!border-l-cyan-500";
+  };
+
+  // 🔹 Función para obtener el color de fondo del header del menú
+  const getMenuHeaderBg = (menuKey) => {
+    const colors = {
+      usuarios: "!bg-green-500/10",
+      contenido: "!bg-blue-500/10",
+      finanzas: "!bg-amber-500/10",
+      configuracion: "!bg-purple-500/10"
+    };
+    return colors[menuKey] || "!bg-cyan-500/10";
+  };
 
   return (
     <>
@@ -86,6 +132,45 @@ function Header() {
 
         {/* Botones desktop */}
         <div className="hidden lg:flex items-center space-x-4">
+          {/* 🔥 MENÚS DE ADMINISTRACIÓN IMPORTADOS */}
+          <div className="flex items-center space-x-2" ref={adminMenuRef}>
+            {adminMenus.map((menu) => (
+              <div key={menu.key} className="relative">
+                <button
+                  onClick={() => setActiveAdminMenu(activeAdminMenu === menu.key ? null : menu.key)}
+                  className={`flex items-center space-x-2 !bg-gradient-to-r ${menu.color} !text-white px-3 py-2 rounded-xl font-semibold hover:!shadow-lg ${menu.hoverColor} transition-all hover:scale-105 text-sm`}
+                >
+                  <span>{menu.icon}</span>
+                  <span>{menu.label}</span>
+                  <span className={`transform transition-transform ${activeAdminMenu === menu.key ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+
+                {/* Menú desplegable */}
+                {activeAdminMenu === menu.key && (
+                  <div className="absolute top-full right-0 mt-2 w-64 !bg-white/95 backdrop-blur-lg rounded-xl !shadow-2xl !border !border-gray-300 overflow-hidden z-50">
+                    <div className="p-2">
+                      <div className="px-3 py-2 !text-gray-800 !border-b !border-gray-300 font-semibold text-sm">
+                        {menu.label}
+                      </div>
+                      {menu.options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAdminMenuClick(option.ruta)}
+                          className="w-full flex items-center space-x-3 px-3 py-3 !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900 transition-all duration-200 rounded-lg"
+                        >
+                          <span className="text-lg">{option.icon}</span>
+                          <span className="font-medium text-sm">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
           {perfilActivo && (
             <button
               onClick={handleCerrarPerfil}
@@ -128,17 +213,61 @@ function Header() {
           />
           <div className="lg:hidden fixed top-16 left-0 right-0 !bg-gray-900/98 backdrop-blur-lg !border-b !border-cyan-500/20 !shadow-xl z-50 max-h-[80vh] overflow-y-auto">
             <nav className="flex flex-col">
+              {/* Menú principal */}
               {["Inicio", "Series, Peliculas", "Mangas", "Mi Lista", "Novedades"]
                 .filter(item => !(item === "Mi Lista" && !perfilActivo))
                 .map((item) => (
                   <button
                     key={item}
                     onClick={() => handleMenuClick(item)}
-                    className="px-1 py-0.25 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/10 text-left text-[9px] leading-[1]"
+                    className="px-4 py-3 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/30 text-left text-sm"
                   >
                     {item}
                   </button>
                 ))}
+
+              {/* Separador Administración */}
+              <div className="px-4 py-2 !bg-gray-800/50 !border-y !border-gray-700/50">
+                <span className="!text-cyan-400 font-semibold text-sm">Administración</span>
+              </div>
+
+              {/* 🔥 MENÚS DE ADMINISTRACIÓN MÓVIL - LÓGICA SIMPLIFICADA */}
+              {adminMenus.map((menu) => (
+                <div key={menu.key} className="!border-b !border-gray-700/30">
+                  {/* Botón principal del menú */}
+                  <button
+                    onClick={() => handleAdminMenuMobileClick(menu.key)}
+                    className={`w-full flex items-center justify-between px-4 py-3 !text-gray-300 hover:!bg-gray-800/50 transition-all duration-200 ${getMenuHeaderBg(menu.key)}`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">{menu.icon}</span>
+                      <span className="font-medium text-sm">{menu.label}</span>
+                    </div>
+                    <span className={`transform transition-transform ${activeAdminMenu === menu.key ? 'rotate-180' : ''}`}>
+                      ▼
+                    </span>
+                  </button>
+
+                  {/* Submenú desplegable móvil */}
+                  {activeAdminMenu === menu.key && (
+                    <div className={`!bg-white !border-l-4 ${getMenuBorderColor(menu.key)}`}>
+                      <div className="px-4 py-2 !text-gray-800 font-semibold text-xs border-b !border-gray-300">
+                        Opciones de {menu.label}
+                      </div>
+                      {menu.options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAdminMenuClick(option.ruta)}
+                          className="w-full flex items-center space-x-3 px-8 py-3 !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900 transition-all duration-200 !border-b !border-gray-200 text-sm"
+                        >
+                          <span className="text-lg w-6 text-center">{option.icon}</span>
+                          <span className="text-left flex-1">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
 
               {/* Botones móviles */}
               <div className="px-4 sm:px-6 py-3 sm:py-4 !border-t !border-gray-700/50 !bg-gray-800/30 flex flex-col gap-2">
