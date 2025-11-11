@@ -7,15 +7,15 @@ const TablaToolbar = ({
   exportDisabled = false,
   onAdd,
   addLabel = "Agregar",
-  addVariant = "success"
+  addVariant = "purple"
 }) => {
   return (
-    <div className="bg-gray-800 shadow-2xl rounded-xl flex justify-between items-center flex-wrap gap-3 mb-6 p-5 rounded-lg">
+    <div className="bg-gray-600 shadow-2xl rounded-xl flex justify-between items-center flex-wrap gap-3 mb-6 p-5 rounded-lg">
 
       {/* Botón Volver */}
       {onBack && (
         <button
-          className="flex items-center px-4 py-2 !bg-gray-700 text-gray-200 rounded-md hover:bg-gray-600 transition-colors duration-200 font-medium text-sm"
+          className="flex items-center px-4 py-2 !bg-gradient-to-r !from-blue-600 !to-cyan-500 text-white rounded-md hover:!from-blue-500 hover:!to-cyan-400 transition-all duration-200 font-medium text-sm hover:!shadow-lg hover:!shadow-blue-500/25"
           onClick={onBack}
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,9 +29,9 @@ const TablaToolbar = ({
       <div className="flex gap-3">
         {onExport && (
           <button
-            className={`flex items-center px-4 py-2 border !border-gray-600 text-gray-300 rounded-md transition-colors duration-200 font-medium text-sm ${exportDisabled
-                ? 'opacity-50 cursor-not-allowed bg-gray-800'
-                : '!bg-gray-800 hover:bg-gray-700 hover:border-gray-500'
+            className={`flex items-center px-4 py-2 border !border-amber-600 text-white rounded-md transition-all duration-200 font-medium text-sm ${exportDisabled
+              ? 'opacity-50 cursor-not-allowed !bg-gradient-to-r !from-amber-700 !to-amber-600'
+              : '!bg-gradient-to-r !from-amber-600 !to-orange-500 hover:!from-amber-500 hover:!to-orange-400 hover:!border-amber-400 hover:!shadow-lg hover:!shadow-amber-500/25'
               }`}
             disabled={exportDisabled}
             onClick={onExport}
@@ -47,12 +47,15 @@ const TablaToolbar = ({
         {onAdd && (
           <button
             className={`flex items-center px-4 py-2 text-white rounded-md transition-colors duration-200 font-medium text-sm ${addVariant === 'success'
-                ? '!bg-green-700 hover:bg-green-600'
-                : addVariant === 'primary'
-                  ? '!bg-blue-700 hover:bg-blue-600'
-                  : addVariant === 'warning'
-                    ? '!bg-yellow-600 hover:bg-yellow-500'
-                    : '!bg-gray-700 hover:bg-gray-600'
+              ? '!bg-green-700 hover:bg-green-600'
+              : addVariant === 'primary'
+                ? '!bg-blue-700 hover:bg-blue-600'
+                : addVariant === 'warning'
+                  ? '!bg-yellow-600 hover:bg-yellow-500'
+                  : addVariant === 'purple'
+                    ? '!bg-gradient-to-r !from-purple-600 !to-pink-500 hover:!from-purple-500 hover:!to-pink-400 !shadow-lg !shadow-purple-500/25 border border-purple-400/50'
+                    : '!bg-gradient-to-r !from-gray-600 !to-gray-500 hover:!from-gray-500 hover:!to-gray-400 !shadow-lg !shadow-gray-500/25'
+
               }`}
             onClick={onAdd}
           >
