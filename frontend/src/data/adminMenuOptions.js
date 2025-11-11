@@ -36,14 +36,14 @@ export const usuariosOptions = [
 export const contenidoOptions = [
   {
     icon: "🎬",
-    label: "Crear Contenido",
-    ruta: "/admin/contenido/crear",
+    label: "Agregar Contenido",
+    ruta: "/Contenido",
     permisos: ["admin", "editor", "superadmin"]
   },
   {
     icon: "📺",
-    label: "Gestionar Contenido",
-    ruta: "/admin/contenido",
+    label: "Gestonar Contenido",
+    ruta: "/",
     permisos: ["admin", "editor", "superadmin"]
   },
   {
@@ -54,14 +54,14 @@ export const contenidoOptions = [
   },
   {
     icon: "📂",
-    label: "Crear Categoría",
-    ruta: "/admin/categorias/crear",
+    label: "Agregar Categoría",
+    ruta: "/Categoria",
     permisos: ["admin", "superadmin"]
   },
   {
     icon: "🗂️",
-    label: "Gestionar Categorías",
-    ruta: "/admin/categorias",
+    label: "Crear generos",
+    ruta: "/Genero",
     permisos: ["admin", "superadmin"]
   },
   {

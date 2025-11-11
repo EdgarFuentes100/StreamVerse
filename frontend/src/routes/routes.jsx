@@ -10,6 +10,9 @@ import NovedadesPage from "../pages/NovedadesPages";
 import MangaDetallePage from "../pages/MangaDetallePage";
 import PerfilPage from "../pages/PerfilPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import Categoria from "../pages/ADMIN/Gestion_Contenido/Categoria";
+import Genero from "../pages/ADMIN/Gestion_Contenido/Genero";
+import Contenido from "../pages/ADMIN/Gestion_Contenido/Contenido";
 
 function AppRoutes() {
     return (
@@ -18,6 +21,11 @@ function AppRoutes() {
             <Route path="/" element={<Home />} />
             <Route path="/Login" element={<LoginPage />} />
             <Route path="/Novedades" element={<NovedadesPage />} />
+
+
+            <Route path="/Categoria" element={<Categoria />} />
+            <Route path="/Genero" element={<Genero />} />
+            <Route path="/Contenido" element={<Contenido />} />
 
             {/* 🔒 Ruta de selección de perfil - SOLO para rol 2 */}
             <Route path="/Perfil" element={
