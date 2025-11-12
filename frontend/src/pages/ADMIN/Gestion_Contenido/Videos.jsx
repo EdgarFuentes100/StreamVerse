@@ -4,6 +4,9 @@ import TablaToolbar from "../../../components/TablaToolbar";
 import { useContenido } from "../../../data/useContenido";
 import { useCategoria } from "../../../data/useCategoria";
 import { useReproductor } from "../../../data/useReproductor";
+import { useModelEpisodio } from "./data/useModelEpisodio";
+import SubModal from "../../../components/SubModal";
+import SubModalEpisodio from "./Modal/SubModalEpisodio";
 
 function Videos() {
     const { contenidoCategoria, getContenidoCategoria } = useContenido();
@@ -14,17 +17,21 @@ function Videos() {
     const [selectedTemporada, setSelectedTemporada] = useState("");
     const [selectedCategoria, setSelectedCategoria] = useState("");
 
-    const openSubModal = (tipo, item) => {
-        console.log("Editar:", item);
-        alert(`Editando: ${item.nombre}`);
-    };
+    const {
+        showSubModal,
+        handleContinue,
+        closeSubModal,
+        operacion,
+        openSubModal,
+        episodioSeleccionado,
+        handleChange,
+        errores
+    } = useModelEpisodio();
 
     const deleteOnClick = (id) => {
-        console.log("Eliminar ID:", id);
-        if (confirm(`¿Estás seguro de eliminar la categoría con ID: ${id}?`)) {
-            alert(`Categoría con ID: ${id} eliminada`);
-        }
-    };
+        console.log('Eliminar episodio con ID:', id);
+        // Aquí tu lógica para eliminar
+    }
 
     const handleCategoria = (categoriaId) => {
         setSelectedCategoria(categoriaId);
@@ -59,11 +66,11 @@ function Videos() {
     return (
         <>
             <div className="container-fluid p-3 pt-24">
-                
+
                 <TablaToolbar
                     onBack={() => console.log("Exportar")}
                     onExport={() => console.log("Exportar")}
-                    onAdd={() => console.log("Exportar")}
+                    onAdd={() => openSubModal(1)}
                     addLabel="Agregar Ingrediente"
                 />
 
@@ -146,6 +153,27 @@ function Videos() {
                     ]}
                     idKey="idContenido"
                 />
+
+                <SubModal
+                    show={showSubModal}
+                    handleContinue={handleContinue}
+                    handleClose={closeSubModal}
+                    titulo={operacion === 2 ? "Editar Episodio" : "Agregar Episodio"}
+                    width={700}
+                    continueText={operacion === 2 ? "Guardar Cambios" : "Agregar"}
+                    cancelText="Cancelar"
+                    continueVariant="success"
+                    backdrop={true}
+                    scrollable={false}
+                >
+                    {/* 📄 Contenido del modal */}
+                    <SubModalEpisodio
+                        episodio={episodioSeleccionado}
+                        onChange={handleChange}
+                        errores={errores}
+                        operacion={operacion}
+                    />
+                </SubModal>
             </div>
         </>
     );

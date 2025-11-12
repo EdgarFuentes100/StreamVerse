@@ -1,21 +1,26 @@
+import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
 import { useReproductor } from "../../../data/useReproductor";
+import { useModelTemporada } from "./data/useModelTemporada";
+import SubModalTemporada from "./Modal/SubModalTemporada";
 
 function Temporada() {
     const { listaTemporas } = useReproductor();
 
-    // Funciones de ejemplo para las acciones
-    const openSubModal = (tipo, item) => {
-        console.log("Editar:", item);
-        alert(`Editando: ${item.nombre}`);
-    };
+    const {
+        showSubModal,
+        handleContinue,
+        closeSubModal,
+        operacion,
+        openSubModal,
+        temporadaSeleccionada,
+        handleChange,
+        errores
+    } = useModelTemporada();
 
     const deleteOnClick = (id) => {
-        console.log("Eliminar ID:", id);
-        if (confirm(`¿Estás seguro de eliminar la categoría con ID: ${id}?`)) {
-            alert(`Categoría con ID: ${id} eliminada`);
-        }
+        console.log('Eliminar temporada con ID:', id);
     };
 
     return (
@@ -24,7 +29,7 @@ function Temporada() {
                 <TablaToolbar
                     onBack={() => console.log("Exportar")}
                     onExport={() => console.log("Exportar")}
-                    onAdd={() => console.log("Exportar")}
+                    onAdd={() => openSubModal(1)}
                     addLabel="Agregar Ingrediente"
                 />
 
@@ -44,6 +49,25 @@ function Temporada() {
                     ]}
                     idKey="idTemporada"
                 />
+                <SubModal
+                    show={showSubModal}
+                    handleContinue={handleContinue}
+                    handleClose={closeSubModal}
+                    titulo={operacion === 2 ? "Editar Temporada" : "Agregar Temporada"}
+                    width={600}
+                    continueText={operacion === 2 ? "Guardar Cambios" : "Agregar"}
+                    cancelText="Cancelar"
+                    continueVariant="success"
+                    backdrop={true}
+                    scrollable={false}
+                >
+                    <SubModalTemporada
+                        temporada={temporadaSeleccionada}
+                        onChange={handleChange}
+                        errores={errores}
+                        operacion={operacion}
+                    />
+                </SubModal>
             </div>
         </>
     );

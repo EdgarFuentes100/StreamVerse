@@ -1,22 +1,29 @@
+import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
 import { useGenero } from "../../../data/useGenero";
+import { useModelGenero } from "./data/useModelGenero";
+import SubModalGenero from "./Modal/SubModalGenero";
 
 function Genero() {
     const { genero } = useGenero();
 
-    // Funciones de ejemplo para las acciones
-    const openSubModal = (tipo, item) => {
-        console.log("Editar:", item);
-        alert(`Editando: ${item.nombre}`);
-    };
+    const {
+        showSubModal,
+        handleContinue,
+        closeSubModal,
+        operacion,
+        openSubModal,
+        generoSeleccionado,
+        handleChange,
+        errores
+    } = useModelGenero();
 
     const deleteOnClick = (id) => {
-        console.log("Eliminar ID:", id);
-        if (confirm(`¿Estás seguro de eliminar la categoría con ID: ${id}?`)) {
-            alert(`Categoría con ID: ${id} eliminada`);
-        }
+        console.log('Eliminar género con ID:', id);
+        // Aquí tu lógica para eliminar
     };
+
 
     return (
         <>
@@ -24,7 +31,7 @@ function Genero() {
                 <TablaToolbar
                     onBack={() => console.log("Exportar")}
                     onExport={() => console.log("Exportar")}
-                    onAdd={() => console.log("Exportar")}
+                    onAdd={() => openSubModal(1)}
                     addLabel="Agregar Ingrediente"
                 />
 
@@ -43,6 +50,26 @@ function Genero() {
                     ]}
                     idKey="idGenero"
                 />
+                <SubModal
+                    show={showSubModal}
+                    handleContinue={handleContinue}
+                    handleClose={closeSubModal}
+                    titulo={operacion === 2 ? "Editar Género" : "Agregar Género"}
+                    width={500}
+                    continueText={operacion === 2 ? "Guardar Cambios" : "Agregar"}
+                    cancelText="Cancelar"
+                    continueVariant="success"
+                    backdrop={true}
+                    scrollable={false}
+                >
+                    {/* 📄 Contenido del modal */}
+                    <SubModalGenero
+                        genero={generoSeleccionado}
+                        onChange={handleChange}
+                        errores={errores}
+                        operacion={operacion}
+                    />
+                </SubModal>
             </div>
         </>
     );

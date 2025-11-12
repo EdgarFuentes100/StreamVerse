@@ -1,21 +1,26 @@
+import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
 import { useContenido } from "../../../data/useContenido";
+import { useModelContenido } from "./data/useModelContenido";
+import SubModalContenido from "./Modal/SubModalContenido";
 
 function Contenido() {
     const { contenido } = useContenido();
 
-    // Funciones de ejemplo para las acciones
-    const openSubModal = (tipo, item) => {
-        console.log("Editar:", item);
-        alert(`Editando: ${item.nombre}`);
-    };
+    const {
+        showSubModal,
+        handleContinue,
+        closeSubModal,
+        operacion,
+        openSubModal,
+        contenidoSeleccionado,
+        handleChange,
+        errores
+    } = useModelContenido();
 
     const deleteOnClick = (id) => {
-        console.log("Eliminar ID:", id);
-        if (confirm(`¿Estás seguro de eliminar la categoría con ID: ${id}?`)) {
-            alert(`Categoría con ID: ${id} eliminada`);
-        }
+        console.log('Eliminar contenido con ID:', id);
     };
 
     return (
@@ -24,7 +29,7 @@ function Contenido() {
                 <TablaToolbar
                     onBack={() => console.log("Exportar")}
                     onExport={() => console.log("Exportar")}
-                    onAdd={() => console.log("Exportar")}
+                    onAdd={() => openSubModal(1)}
                     addLabel="Agregar Ingrediente"
                 />
 
@@ -52,6 +57,27 @@ function Contenido() {
                     ]}
                     idKey="idContenido"
                 />
+
+                {/* Modal */}
+                <SubModal
+                    show={showSubModal}
+                    handleContinue={handleContinue}
+                    handleClose={closeSubModal}
+                    titulo={operacion === 2 ? "Editar Contenido" : "Agregar Contenido"}
+                    width={900}
+                    continueText={operacion === 2 ? "Guardar Cambios" : "Agregar"}
+                    cancelText="Cancelar"
+                    continueVariant="success"
+                    backdrop={true}
+                    scrollable={true}
+                >
+                    <SubModalContenido
+                        contenido={contenidoSeleccionado}
+                        onChange={handleChange}
+                        errores={errores}
+                        operacion={operacion}
+                    />
+                </SubModal>
             </div>
         </>
     );
