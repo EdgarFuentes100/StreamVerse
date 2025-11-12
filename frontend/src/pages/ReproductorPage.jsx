@@ -505,7 +505,7 @@ function ReproductorPage() {
                       <span>❤️</span>
                       <span className="hidden sm:inline">Agregar a mi lista</span>
                     </button>
-                    <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all flex items-center space-x-2 text-sm md:text-base" onClick={() => navigate('/catalogo')}>
+                    <button className="!bg-gray-700 hover:bg-gray-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all flex items-center space-x-2 text-sm md:text-base" onClick={() => navigate('/catalogo')}>
                       <span>🎞️</span>
                       <span>Ir a catálogo</span>
                     </button>
@@ -562,7 +562,7 @@ function ReproductorPage() {
 
             {/* Temporadas (si hay más de una) */}
             {temporadas?.length > 1 && !cargandoVideos && (
-              <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-pink-500/20">
+              <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-pink-500/20">
                 <h3 className="text-base md:text-lg font-bold text-pink-400 mb-3 md:mb-4 flex items-center space-x-2">
                   <span>📚</span>
                   <span>Temporadas</span>
@@ -574,8 +574,8 @@ function ReproductorPage() {
                       key={temporada.idTemporada}
                       onClick={() => handleCambiarTemporada(temporada)}
                       className={`w-full text-left p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 ${temporadaSeleccionada?.idTemporada === temporada.idTemporada
-                        ? 'bg-pink-500/20 border border-pink-400 text-white'
-                        : 'bg-gray-700/50 hover:bg-gray-600/50 text-white'
+                        ? '!bg-pink-500/20 border border-pink-400 text-white'
+                        : '!bg-gray-700/50 hover:bg-gray-600/50 text-white'
                         }`}
                     >
                       <div className="flex justify-between items-center">

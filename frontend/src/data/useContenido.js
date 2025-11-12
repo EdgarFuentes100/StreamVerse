@@ -7,6 +7,7 @@ const useContenido = () => {
     const [contenidoPopular, setContenidoPopular] = useState([]);
     const [contenidoNuevo, setContenidoNuevo] = useState([]);
     const [contenidoGrupo, setContenidoGrupo] = useState([]);
+    const [contenidoCategoria, setContenidoCategoria] = useState([]);
 
     const getContenido = () => {
         getFetch('contenido/listado')
@@ -52,6 +53,17 @@ const useContenido = () => {
             });
     };
 
+    const getContenidoCategoria = (idCategoria) => {
+        getFetch(`contenido/contenidoCategoria/${idCategoria}`)
+            .then((data) => {
+                setContenidoCategoria(data.datos || []);
+                console.log("pctagoriaaa", data.datos);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
     useEffect(() => {
         getContenido();
     }, []);
@@ -72,7 +84,9 @@ const useContenido = () => {
         contenido,
         contenidoPopular,
         contenidoNuevo,
-        contenidoGrupo
+        contenidoGrupo,
+        getContenidoCategoria,
+        contenidoCategoria
     };
 };
 

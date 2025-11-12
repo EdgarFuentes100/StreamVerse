@@ -13,6 +13,8 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import Categoria from "../pages/ADMIN/Gestion_Contenido/Categoria";
 import Genero from "../pages/ADMIN/Gestion_Contenido/Genero";
 import Contenido from "../pages/ADMIN/Gestion_Contenido/Contenido";
+import Temporada from "../pages/ADMIN/Gestion_Contenido/Temporadas";
+import Videos from "../pages/ADMIN/Gestion_Contenido/Videos";
 
 function AppRoutes() {
     return (
@@ -26,6 +28,8 @@ function AppRoutes() {
             <Route path="/Categoria" element={<Categoria />} />
             <Route path="/Genero" element={<Genero />} />
             <Route path="/Contenido" element={<Contenido />} />
+            <Route path="/Temporada" element={<Temporada />} />
+            <Route path="/Video" element={<Videos />} />
 
             {/* 🔒 Ruta de selección de perfil - SOLO para rol 2 */}
             <Route path="/Perfil" element={

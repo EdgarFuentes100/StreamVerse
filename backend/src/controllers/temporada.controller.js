@@ -13,4 +13,17 @@ async function listaTemporada(req, res, next) {
     }
 }
 
-module.exports = { listaTemporada };
+async function listaTemporadas(req, res, next) {
+    try {
+        const datos = await Data.getListaTemporada();
+        res.json({
+            ok: true,
+            message: "datos cargados",
+            datos
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports = { listaTemporada, listaTemporadas };

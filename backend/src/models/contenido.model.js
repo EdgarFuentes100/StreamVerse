@@ -80,10 +80,19 @@ async function getContenidoInfo(idContendio) {
 }
 
 
+async function getContenidoCategoria(idCategoria) {
+    const [rows] = await localDB.query(
+        `SELECT  idContenido, title, idCategoria FROM nextview.contenido
+        where idCategoria = ?`, [idCategoria]);
+    return rows;
+}
+
+
 module.exports = {
     getContenido,
     getPopular,
     getNuevo,
     getGrupo,
-    getContenidoInfo
+    getContenidoInfo,
+    getContenidoCategoria
 };

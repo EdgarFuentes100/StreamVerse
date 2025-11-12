@@ -41,34 +41,28 @@ export const contenidoOptions = [
     permisos: ["admin", "editor", "superadmin"]
   },
   {
-    icon: "📺",
-    label: "Gestonar Contenido",
-    ruta: "/",
-    permisos: ["admin", "editor", "superadmin"]
-  },
-  {
     icon: "🎞️",
-    label: "Episodios y Temporadas",
-    ruta: "/admin/episodios",
+    label: "Episodios y Peliculas",
+    ruta: "/Video",
     permisos: ["admin", "editor", "superadmin"]
   },
   {
     icon: "📂",
-    label: "Agregar Categoría",
+    label: "Temporada y Grupos",
+    ruta: "/Temporada",
+    permisos: ["admin", "superadmin"]
+  },
+  {
+    icon: "📂",
+    label: "Categorías",
     ruta: "/Categoria",
     permisos: ["admin", "superadmin"]
   },
   {
     icon: "🗂️",
-    label: "Crear generos",
+    label: "Generos",
     ruta: "/Genero",
     permisos: ["admin", "superadmin"]
-  },
-  {
-    icon: "⭐",
-    label: "Gestionar Reseñas",
-    ruta: "/admin/resenas",
-    permisos: ["admin", "moderador", "superadmin"]
   },
   {
     icon: "🚫",
@@ -188,14 +182,14 @@ export const adminMenus = [
 
 // 🔹 Función para filtrar opciones por permisos (opcional)
 export const filtrarOpcionesPorPermiso = (opciones, rolUsuario) => {
-  return opciones.filter(opcion => 
+  return opciones.filter(opcion =>
     !opcion.permisos || opcion.permisos.includes(rolUsuario)
   );
 };
 
 // 🔹 Función para obtener todos los menús disponibles para un rol
 export const getMenusPorRol = (rolUsuario) => {
-  return adminMenus.filter(menu => 
+  return adminMenus.filter(menu =>
     !menu.permisos || menu.permisos.includes(rolUsuario)
   ).map(menu => ({
     ...menu,

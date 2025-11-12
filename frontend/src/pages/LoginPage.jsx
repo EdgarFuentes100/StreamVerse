@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Particles from "../components/Particles";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../api/authContext";
 
 function LoginPage() {
+  const { usuario } = useAuth();
+  const navigate = useNavigate();
 
-  // Función para iniciar sesión con Google
   const handleGoogleLogin = () => {
     // Redirige al backend para iniciar OAuth
     window.location.href = "http://localhost:4000/api/v1/auth/google";
   };
+
+  useEffect(() => {
+    if (usuario) {
+      navigate(-1); // 🔙 vuelve a la página anterior
+    }
+  }, [usuario, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans overflow-x-hidden relative">

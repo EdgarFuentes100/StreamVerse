@@ -4,6 +4,7 @@ import { useFetch } from '../api/useFetch';
 const useReproductor = () => {
     const { getFetch } = useFetch();
     const [temporadas, setTemporadas] = useState([]);
+    const [listaTemporas, setListaTemporada] = useState([]);
     const [videos, setVideos] = useState([]);
     const [videoActual, setVideoActual] = useState([]);
     const [contenidoInfo, setContenidoInfo] = useState([]);
@@ -15,6 +16,16 @@ const useReproductor = () => {
             .then((data) => {
                 setTemporadas(data.datos || []);
                 console.log("Temporada", data.datos);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
+    const getListaTemporada = () => {
+        getFetch(`temporada/listadoTemporada`)
+            .then((data) => {
+                setListaTemporada(data.datos || []);
             })
             .catch((error) => {
                 console.error('Error al obtener:', error);
@@ -69,7 +80,7 @@ const useReproductor = () => {
         getFetch(`plan/verificarPermisoVideo/${idContenido}`)
             .then((data) => {
                 setDisponible(data.datos.existe);
-                console.log("SI EXISTE",data.datos.existe);
+                console.log("SI EXISTE", data.datos.existe);
             })
             .catch((error) => {
                 console.error('Error al obtener:', error);
@@ -88,6 +99,10 @@ const useReproductor = () => {
         getRecomendaciones();
     }, []);
 
+    useEffect(() => {
+        getListaTemporada();
+    }, []);
+
     return {
         temporadas,
         videos,
@@ -99,7 +114,8 @@ const useReproductor = () => {
         getContenidoInfo,
         recomendacion,
         getVerficarPermiso,
-        disponible
+        disponible, 
+        listaTemporas
     };
 };
 

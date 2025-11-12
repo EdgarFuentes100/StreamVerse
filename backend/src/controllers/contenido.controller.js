@@ -65,10 +65,24 @@ async function contenidoInfo(req, res, next) {
     }
 }
 
+async function contenidoCategoria(req, res, next) {
+    try {
+        const datos = await Data.getContenidoCategoria(req.params.idCategoria); // función en el modelo que obtiene las mesas por salón
+        res.json({
+            ok: true,
+            message: "datos cargado",
+            datos   // siempre usar "datos" como convención
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
     listaContenido,
     listaPopular,
     listaNuevo,
     listaGrupo,
-    contenidoInfo
+    contenidoInfo,
+    contenidoCategoria
 };

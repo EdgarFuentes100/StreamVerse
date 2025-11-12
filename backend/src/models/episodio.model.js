@@ -14,6 +14,7 @@ async function getEpisodioActual(idEpisodio) {
     );
     return rows;
 }
+
 module.exports = {
     getEpisodio,
     getEpisodioActual
