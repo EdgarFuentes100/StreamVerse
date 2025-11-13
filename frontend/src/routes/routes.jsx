@@ -15,6 +15,9 @@ import Genero from "../pages/ADMIN/Gestion_Contenido/Genero";
 import Contenido from "../pages/ADMIN/Gestion_Contenido/Contenido";
 import Temporada from "../pages/ADMIN/Gestion_Contenido/Temporadas";
 import Videos from "../pages/ADMIN/Gestion_Contenido/Videos";
+import Plan from "../pages/ADMIN/Gestion_Contenido/Plan";
+import Usuario from "../pages/ADMIN/Gestion_Usuario/Usuario";
+import Rol from "../pages/ADMIN/Gestion_Usuario/Rol";
 
 function AppRoutes() {
     return (
@@ -30,6 +33,11 @@ function AppRoutes() {
             <Route path="/Contenido" element={<Contenido />} />
             <Route path="/Temporada" element={<Temporada />} />
             <Route path="/Video" element={<Videos />} />
+            <Route path="/Plan" element={<Plan />} />
+
+            <Route path="/Usuario" element={<Usuario />} />
+            <Route path="/Rol" element={<Rol />} />
+
 
             {/* 🔒 Ruta de selección de perfil - SOLO para rol 2 */}
             <Route path="/Perfil" element={

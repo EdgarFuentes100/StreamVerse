@@ -8,6 +8,7 @@ const useContenido = () => {
     const [contenidoNuevo, setContenidoNuevo] = useState([]);
     const [contenidoGrupo, setContenidoGrupo] = useState([]);
     const [contenidoCategoria, setContenidoCategoria] = useState([]);
+    const [plan, setPlan] = useState([]);
 
     const getContenido = () => {
         getFetch('contenido/listado')
@@ -64,6 +65,18 @@ const useContenido = () => {
             });
     };
 
+
+    const getPlanes = () => {
+        getFetch(`plan/listadoPlan`)
+            .then((data) => {
+                setPlan(data.datos || []);
+                console.log("plan", data.datos);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
     useEffect(() => {
         getContenido();
     }, []);
@@ -80,13 +93,19 @@ const useContenido = () => {
         getContenidoGrupo();
     }, []);
 
+    useEffect(() => {
+        getPlanes();
+    }, []);
+
+
     return {
         contenido,
         contenidoPopular,
         contenidoNuevo,
         contenidoGrupo,
         getContenidoCategoria,
-        contenidoCategoria
+        contenidoCategoria,
+        plan
     };
 };
 

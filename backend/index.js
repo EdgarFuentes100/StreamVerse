@@ -32,7 +32,8 @@ app.use('/api/v1/episodio', require('./src/routes/episodio.routes'));
 app.use('/api/v1/perfil', require('./src/routes/perfil.routes'));
 app.use('/api/v1/plan', require('./src/routes/plan.routes'));
 app.use('/api/v1/pagos', require('./src/routes/pagos.routes'));
-
+app.use('/api/v1/rol', require('./src/routes/rol.routes'));
+app.use('/api/v1/usuario', require('./src/routes/usuario.routes'));
 // Rutas Auth
 app.use('/api/v1/auth', require('./src/routes/auth.routes'));
 

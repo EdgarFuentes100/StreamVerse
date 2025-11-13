@@ -3,36 +3,17 @@ export const usuariosOptions = [
   {
     icon: "👥",
     label: "Gestionar Usuarios",
-    ruta: "/admin/usuarios",
+    ruta: "/Usuario",
     permisos: ["admin", "superadmin"]
   },
   {
     icon: "🎭",
     label: "Roles y Permisos",
-    ruta: "/admin/roles",
-    permisos: ["superadmin"]
-  },
-  {
-    icon: "👤",
-    label: "Perfiles de Usuario",
-    ruta: "/admin/perfiles",
-    permisos: ["admin", "superadmin"]
-  },
-  {
-    icon: "📋",
-    label: "Registros de Actividad",
-    ruta: "/admin/actividad",
-    permisos: ["admin", "superadmin"]
-  },
-  {
-    icon: "🛡️",
-    label: "Seguridad y Accesos",
-    ruta: "/admin/seguridad",
+    ruta: "/Rol",
     permisos: ["superadmin"]
   }
 ];
 
-// 🔹 Opciones del menú de CONTENIDO
 export const contenidoOptions = [
   {
     icon: "🎬",
@@ -42,101 +23,66 @@ export const contenidoOptions = [
   },
   {
     icon: "🎞️",
-    label: "Episodios y Peliculas",
+    label: "Episodios y Películas",
     ruta: "/Video",
     permisos: ["admin", "editor", "superadmin"]
   },
   {
-    icon: "📂",
-    label: "Temporada y Grupos",
+    icon: "📺",
+    label: "Temporadas y Grupos",
     ruta: "/Temporada",
     permisos: ["admin", "superadmin"]
   },
   {
-    icon: "📂",
+    icon: "🏷️",
     label: "Categorías",
     ruta: "/Categoria",
     permisos: ["admin", "superadmin"]
   },
   {
-    icon: "🗂️",
-    label: "Generos",
+    icon: "🎭",
+    label: "Géneros",
     ruta: "/Genero",
     permisos: ["admin", "superadmin"]
   },
   {
-    icon: "🚫",
-    label: "Contenido Reportado",
-    ruta: "/admin/reportes-contenido",
+    icon: "💳",
+    label: "Planes",
+    ruta: "/Plan",
     permisos: ["admin", "moderador", "superadmin"]
   }
 ];
 
-// 🔹 Opciones del menú de FINANZAS
-export const finanzasOptions = [
-  {
-    icon: "💰",
-    label: "Pagos y Suscripciones",
-    ruta: "/admin/pagos",
-    permisos: ["admin", "finance", "superadmin"]
-  },
+export const reportesOptions = [
   {
     icon: "📊",
-    label: "Estadísticas Financieras",
-    ruta: "/admin/estadisticas",
-    permisos: ["admin", "finance", "superadmin"]
-  },
-  {
-    icon: "🧾",
-    label: "Facturación",
-    ruta: "/admin/facturacion",
-    permisos: ["admin", "finance", "superadmin"]
+    label: "Resumen General",
+    ruta: "/reportes/resumen",
+    permisos: ["admin", "superadmin"]
   },
   {
     icon: "💳",
-    label: "Métodos de Pago",
-    ruta: "/admin/metodos-pago",
+    label: "Reporte de Planes",
+    ruta: "/reportes/planes",
     permisos: ["admin", "superadmin"]
   },
   {
-    icon: "📈",
-    label: "Reportes de Ingresos",
-    ruta: "/admin/reportes",
-    permisos: ["admin", "finance", "superadmin"]
+    icon: "👥",
+    label: "Reporte de Usuarios",
+    ruta: "/reportes/usuarios",
+    permisos: ["admin", "superadmin"]
   },
   {
-    icon: "🔔",
-    label: "Suscripciones Activas",
-    ruta: "/admin/suscripciones",
-    permisos: ["admin", "finance", "superadmin"]
-  }
-];
-
-// 🔹 Opciones del menú de CONFIGURACIÓN
-export const configuracionOptions = [
-  {
-    icon: "⚙️",
-    label: "Configuración General",
-    ruta: "/admin/configuracion",
+    icon: "💰",
+    label: "Reporte de Ingresos",
+    ruta: "/reportes/ingresos",
     permisos: ["superadmin"]
   },
   {
-    icon: "🎨",
-    label: "Apariencia y Tema",
-    ruta: "/admin/apariencia",
+    icon: "🎬",
+    label: "Reporte de Contenido",
+    ruta: "/reportes/contenido",
     permisos: ["admin", "superadmin"]
-  },
-  {
-    icon: "🔔",
-    label: "Notificaciones",
-    ruta: "/admin/notificaciones",
-    permisos: ["admin", "superadmin"]
-  },
-  {
-    icon: "📧",
-    label: "Configuración de Email",
-    ruta: "/admin/email",
-    permisos: ["superadmin"]
   }
 ];
 
@@ -161,21 +107,12 @@ export const adminMenus = [
     permisos: ["admin", "editor", "moderador", "superadmin"]
   },
   {
-    key: "finanzas",
-    icon: "💰",
-    label: "Finanzas",
-    color: "from-amber-500 to-orange-500",
-    hoverColor: "hover:!shadow-amber-500/25",
-    options: finanzasOptions,
-    permisos: ["admin", "finance", "superadmin"]
-  },
-  {
-    key: "configuracion",
-    icon: "⚙️",
-    label: "Configuración",
+    key: "reportes",
+    icon: "📈",
+    label: "Reportes",
     color: "from-purple-500 to-pink-500",
     hoverColor: "hover:!shadow-purple-500/25",
-    options: configuracionOptions,
+    options: reportesOptions,
     permisos: ["admin", "superadmin"]
   }
 ];
@@ -201,8 +138,7 @@ export const getMenusPorRol = (rolUsuario) => {
 export default {
   usuariosOptions,
   contenidoOptions,
-  finanzasOptions,
-  configuracionOptions,
+  reportesOptions,
   adminMenus,
   filtrarOpcionesPorPermiso,
   getMenusPorRol

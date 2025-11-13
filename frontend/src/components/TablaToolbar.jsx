@@ -29,9 +29,9 @@ const TablaToolbar = ({
       <div className="flex gap-3">
         {onExport && (
           <button
-            className={`flex items-center px-4 py-2 border !border-amber-600 text-white rounded-md transition-all duration-200 font-medium text-sm ${exportDisabled
+            className={`flex items-center px-4 py-2 border !border-blue-600 text-white rounded-md transition-all duration-200 font-medium text-sm ${exportDisabled
               ? 'opacity-50 cursor-not-allowed !bg-gradient-to-r !from-amber-700 !to-amber-600'
-              : '!bg-gradient-to-r !from-amber-600 !to-orange-500 hover:!from-amber-500 hover:!to-orange-400 hover:!border-amber-400 hover:!shadow-lg hover:!shadow-amber-500/25'
+              : '!bg-gradient-to-r !from-blue-600 !to-blue-500 hover:!from-blue-500 hover:!to-blue-400 hover:!border-blue-400 hover:!shadow-lg hover:!shadow-blue-500/25'
               }`}
             disabled={exportDisabled}
             onClick={onExport}

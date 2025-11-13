@@ -31,4 +31,11 @@ async function gertPermsioVideo(idContendio) {
   );
   return rows;
 }
-module.exports = { getPlanPerfil, gertPermsioVideo };
+
+async function getPlanes() {
+  const [rows] = await localDB.query(
+    `SELECT * FROM plan`
+  );
+  return rows;
+}
+module.exports = { getPlanPerfil, gertPermsioVideo, getPlanes };
