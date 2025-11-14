@@ -3,15 +3,17 @@ import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
 import { useContenido } from "../../../data/useContenido";
 import { useCategoria } from "../../../data/useCategoria";
-import { useReproductor } from "../../../data/useReproductor";
 import { useModelEpisodio } from "./data/useModelEpisodio";
 import SubModal from "../../../components/SubModal";
 import SubModalEpisodio from "./Modal/SubModalEpisodio";
+import { useTemporada } from "../../../data/useTemporada";
+import { useVideo } from "../../../data/useVideo";
 
 function Videos() {
     const { contenidoCategoria, getContenidoCategoria } = useContenido();
     const { categoria } = useCategoria();
-    const { temporadas, getTemporadas, videos, getVideos } = useReproductor();
+    const { videos, getVideos } = useVideo  ();
+    const { temporadas, getTemporadas } = useTemporada();
 
     const [selectedContenido, setSelectedContenido] = useState("");
     const [selectedTemporada, setSelectedTemporada] = useState("");

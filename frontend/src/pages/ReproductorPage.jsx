@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { useReproductor } from "../data/useReproductor";
+import { useVideo } from "../data/useVideo";
+import { useContenido } from "../data/useContenido";
+import { useTemporada } from "../data/useTemporada";
+import { usePlan } from "../data/usePlan";
 
 function ReproductorPage() {
   const { id } = useParams();
@@ -21,25 +24,16 @@ function ReproductorPage() {
   const [videoActualLocal, setVideoActualLocal] = useState(null);
   const [verificandoContenido, setVerificandoContenido] = useState(true);
 
-  const { 
-    getTemporadas, 
-    temporadas, 
-    getVideos, 
-    videos, 
-    getVideoActual, 
-    videoActual, 
-    getContenidoInfo, 
-    contenidoInfo, 
-    recomendacion, 
-    getVerficarPermiso, 
-    disponible 
-  } = useReproductor();
+  const { getVideos, videos, getVideoActual, videoActual } = useVideo();
+  const { getContenidoInfo, contenidoInfo, recomendacion } = useContenido();
+  const { getTemporadas, temporadas } = useTemporada();
+  const { getVerficarPermiso, disponible } = usePlan();
 
   // Verificar contenido cuando cambia el ID - CORREGIDO
   useEffect(() => {
     const verificarContenido = async () => {
       setVerificandoContenido(true);
-      
+
       // Limpiar estados anteriores
       setTemporadaSeleccionada(null);
       setIsPlaying(false);
@@ -50,7 +44,7 @@ function ReproductorPage() {
 
       // Verificar permiso/existencia del contenido
       await getVerficarPermiso(id);
-      
+
       setVerificandoContenido(false);
     };
 
@@ -254,7 +248,7 @@ function ReproductorPage() {
           <div className="text-6xl mb-6">🔒</div>
           <h1 className="text-2xl font-bold text-white mb-4">Contenido No Disponible</h1>
           <p className="text-gray-400 mb-6">
-            {!contenidoInfo 
+            {!contenidoInfo
               ? "Este contenido no existe en nuestro catálogo."
               : "Este contenido no está disponible en tu plan actual."
             }

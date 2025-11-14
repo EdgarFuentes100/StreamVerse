@@ -1,12 +1,12 @@
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
-import { useReproductor } from "../../../data/useReproductor";
+import { useTemporada } from "../../../data/useTemporada";
 import { useModelTemporada } from "./data/useModelTemporada";
 import SubModalTemporada from "./Modal/SubModalTemporada";
 
 function Temporada() {
-    const { listaTemporas } = useReproductor();
+    const { listaTemporas } = useTemporada();
 
     const {
         showSubModal,

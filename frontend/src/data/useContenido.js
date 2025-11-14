@@ -8,6 +8,8 @@ const useContenido = () => {
     const [contenidoNuevo, setContenidoNuevo] = useState([]);
     const [contenidoGrupo, setContenidoGrupo] = useState([]);
     const [contenidoCategoria, setContenidoCategoria] = useState([]);
+    const [contenidoInfo, setContenidoInfo] = useState([]);
+    const [recomendacion, setRecomendacion] = useState([]);
 
     const getContenido = () => {
         getFetch('contenido/listado')
@@ -64,6 +66,29 @@ const useContenido = () => {
             });
     };
 
+    const getContenidoInfo = (idContenido) => {
+        getFetch(`contenido/contenidoInfo/${idContenido}`)
+            .then((data) => {
+                setContenidoInfo(data.datos[0] || []);
+                console.log("informacion", data.datos[0]);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
+    const getRecomendaciones = () => {
+        getFetch('contenido/listado')
+            .then((data) => {
+                setRecomendacion(data.datos || []);
+                console.log("informacion", data.datos);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
+
     useEffect(() => {
         getContenido();
     }, []);
@@ -80,13 +105,20 @@ const useContenido = () => {
         getContenidoGrupo();
     }, []);
 
+    useEffect(() => {
+        getRecomendaciones();
+    }, []);
+
     return {
         contenido,
         contenidoPopular,
         contenidoNuevo,
         contenidoGrupo,
         getContenidoCategoria,
-        contenidoCategoria
+        getContenidoInfo,
+        contenidoCategoria,
+        contenidoInfo,
+        recomendacion
     };
 };
 

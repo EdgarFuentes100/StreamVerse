@@ -4,12 +4,24 @@ import { useFetch } from '../api/useFetch';
 const usePlan = () => {
     const { getFetch, postFetch, putFetch, deleteFetch } = useFetch();
     const [plan, setPlan] = useState([]);
+    const [disponible, setDisponible] = useState(false);
 
     const getPlanes = () => {
         getFetch(`plan/listadoPlan`)
             .then((data) => {
                 setPlan(data.datos || []);
                 console.log("plan", data.datos);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
+    const getVerficarPermiso = (idContenido) => {
+        getFetch(`plan/verificarPermisoVideo/${idContenido}`)
+            .then((data) => {
+                setDisponible(data.datos.existe);
+                console.log("SI EXISTE", data.datos.existe);
             })
             .catch((error) => {
                 console.error('Error al obtener:', error);
@@ -57,6 +69,8 @@ const usePlan = () => {
 
     return {
         plan,
+        getVerficarPermiso,
+        disponible,
         crearPlan,
         actualizarPlan,
         eliminarPlan
