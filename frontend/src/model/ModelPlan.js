@@ -3,14 +3,14 @@ function ModelPlan(
   nombre = '',
   precio = 0,
   maxPerfil = 0,
-  cantidad = 0
+  calidad = 0
 ) {
   return {
     idPlan,
     nombre,
     precio,
     maxPerfil,
-    cantidad
+    calidad
   };
 }
 

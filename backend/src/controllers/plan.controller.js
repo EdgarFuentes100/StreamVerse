@@ -40,4 +40,63 @@ async function listadoPlanes(req, res, next) {
         next(err);
     }
 }
-module.exports = { listaContendio, verificarPermisoVideo, listadoPlanes };
+
+// CREAR
+async function crearPlan(req, res, next) {
+
+    try {
+        const resultado = await Data.crearPlanModelo(req.body);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(400).json({ ok: false, mensaje: "No se pudo insertar", datos: null });
+        }
+
+        return res.json({
+            ok: true,
+            mensaje: "Insertado correctamente",
+            //datos: { idRol: resultado.insertId, ...datos }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+// ACTUALIZAR
+async function actualizarPlan(req, res, next) {
+    try {
+        const { id } = req.params;
+        const resultado = await Data.actualizarPlanModelo(id, req.body);
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "Elemento no encontrado", datos: null });
+        }
+
+        if (resultado.changedRows === 0) {
+            return res.json({ ok: true, mensaje: "No hubo cambios", datos: null });
+        }
+
+        return res.json({ ok: true, mensaje: "Actualizado correctamente", datos: null });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+// ELIMINAR
+async function eliminarPlan(req, res, next) {
+    try {
+        const id = req.params.id;
+        const resultado = await Data.eliminarPlanModelo(id);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No encontrado", datos: null });
+        }
+
+        return res.json({ ok: true, mensaje: "Eliminado correctamente", datos: null });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports = { listaContendio, verificarPermisoVideo, listadoPlanes, crearPlan, actualizarPlan, eliminarPlan };

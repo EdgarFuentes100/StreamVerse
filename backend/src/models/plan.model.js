@@ -38,4 +38,39 @@ async function getPlanes() {
   );
   return rows;
 }
-module.exports = { getPlanPerfil, gertPermsioVideo, getPlanes };
+
+// Crear una categoría
+async function crearPlanModelo(body) {
+  const { nombre, precio, maxPerfil, calidad } = body;
+
+  const [result] = await localDB.query(
+    `INSERT INTO plan (nombre, precio, maxPerfil, calidad) VALUES (?,?,?,?)`,
+    [nombre, precio, maxPerfil, calidad]
+  );
+
+  return result;
+}
+
+// Actualizar una categoría
+async function actualizarPlanModelo(id, body) {
+  const { nombre, precio, maxPerfil, calidad } = body;
+
+  const [result] = await localDB.query(
+    `UPDATE Plan SET nombre = ?, precio = ?, maxPerfil = ?, calidad = ? WHERE idPlan = ?`,
+    [nombre, precio, maxPerfil, calidad, id]
+  );
+
+  return result;
+}
+
+// Eliminar una categoría
+async function eliminarPlanModelo(id) {
+  const [result] = await localDB.query(
+    `DELETE FROM Plan WHERE idPlan = ?`,
+    [id]
+  );
+
+  return result;
+}
+
+module.exports = { getPlanPerfil, gertPermsioVideo, getPlanes, crearPlanModelo, actualizarPlanModelo, eliminarPlanModelo };

@@ -1,12 +1,13 @@
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
-import { useContenido } from "../../../data/useContenido";
+import { usePlan } from "../../../data/usePlan";
 import { useModelPlan } from "./data/useModelPlan";
 import SubModalPlan from "./Modal/SubModalPlan";
 
 function Plan() {
-    const { plan } = useContenido();
+    const planHook = usePlan()
+    const { plan, eliminarPlan } = planHook;
 
     const {
         showSubModal,
@@ -17,11 +18,7 @@ function Plan() {
         planSeleccionado,
         handleChange,
         errores
-    } = useModelPlan();
-
-    const deleteOnClick = (id) => {
-        console.log('Eliminar temporada con ID:', id);
-    };
+    } = useModelPlan(planHook);
 
     return (
         <>
@@ -46,7 +43,7 @@ function Plan() {
                     ]}
                     acciones={[
                         { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idFamilia) }
+                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarPlan(item.idPlan) }
                     ]}
                     idKey="idPlan"
                 />

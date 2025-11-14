@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelPlan } from "../../../../model/ModelPlan";
 
-const useModelPlan = () => {
+const useModelPlan = ({ crearPlan, actualizarPlan }) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [planSeleccionado, setPlanSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -34,15 +34,19 @@ const useModelPlan = () => {
             return;
         }
 
-        console.log('Guardando género:', generoSeleccionado);
+        console.warn("DATOS.", planSeleccionado);
+
+        if (operacion === 1) crearPlan(planSeleccionado);
+        else actualizarPlan(planSeleccionado.idPlan, planSeleccionado);
+
         closeSubModal();
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setPlanSeleccionado(prev => ({ 
-            ...prev, 
-            [name]: value 
+        setPlanSeleccionado(prev => ({
+            ...prev,
+            [name]: value
         }));
         setErrores(prev => ({ ...prev, [name]: false }));
     };
