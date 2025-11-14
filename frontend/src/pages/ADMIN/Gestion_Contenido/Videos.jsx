@@ -10,14 +10,21 @@ import { useTemporada } from "../../../data/useTemporada";
 import { useVideo } from "../../../data/useVideo";
 
 function Videos() {
+
+    const videoHook = useVideo();
+    const {
+        videos,
+        getVideos, eliminarVideo,
+        selectedCategoria,
+        setSelectedCategoria,
+        selectedContenido,
+        setSelectedContenido,
+        selectedTemporada,
+        setSelectedTemporada } = videoHook;
+
     const { contenidoCategoria, getContenidoCategoria } = useContenido();
     const { categoria } = useCategoria();
-    const { videos, getVideos } = useVideo  ();
     const { temporadas, getTemporadas } = useTemporada();
-
-    const [selectedContenido, setSelectedContenido] = useState("");
-    const [selectedTemporada, setSelectedTemporada] = useState("");
-    const [selectedCategoria, setSelectedCategoria] = useState("");
 
     const {
         showSubModal,
@@ -28,12 +35,7 @@ function Videos() {
         episodioSeleccionado,
         handleChange,
         errores
-    } = useModelEpisodio();
-
-    const deleteOnClick = (id) => {
-        console.log('Eliminar episodio con ID:', id);
-        // Aquí tu lógica para eliminar
-    }
+    } = useModelEpisodio(videoHook);
 
     const handleCategoria = (categoriaId) => {
         setSelectedCategoria(categoriaId);
@@ -147,13 +149,14 @@ function Videos() {
                         { key: "capitulo", label: "Capitulo" },
                         { key: "duration", label: "Diracion" },
                         { key: "image", label: "Imagen" },
+                        { key: "videoUrl", label: "Video" },
                     ]}
                     expandible={[]}
                     acciones={[
                         { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idContenido) }
+                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarVideo(item.idEpisodio) }
                     ]}
-                    idKey="idContenido"
+                    idKey="idEpisodio"
                 />
 
                 <SubModal

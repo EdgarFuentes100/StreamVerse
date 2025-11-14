@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelEpisodio } from "../../../../model/ModelEpisodio";
 
-const useModelEpisodio = () => {
+const useModelEpisodio = ({crearVideo, actualizarVideo}) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [episodioSeleccionado, setEpisodioSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -41,14 +41,17 @@ const useModelEpisodio = () => {
         }
 
         console.log('Guardando episodio:', episodioSeleccionado);
+        if(operacion === 1) crearVideo(episodioSeleccionado);
+        else actualizarVideo(episodioSeleccionado.idEpisodio, episodioSeleccionado);
+        
         closeSubModal();
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setEpisodioSeleccionado(prev => ({ 
-            ...prev, 
-            [name]: name.includes('id') || name === 'capitulo' ? Number(value) : value 
+        setEpisodioSeleccionado(prev => ({
+            ...prev,
+            [name]: value
         }));
         setErrores(prev => ({ ...prev, [name]: false }));
     };
