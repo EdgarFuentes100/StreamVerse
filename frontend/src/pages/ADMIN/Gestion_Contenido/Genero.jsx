@@ -6,7 +6,9 @@ import { useModelGenero } from "./data/useModelGenero";
 import SubModalGenero from "./Modal/SubModalGenero";
 
 function Genero() {
-    const { genero } = useGenero();
+
+    const generoHook = useGenero();
+    const { genero, eliminarGenero } = generoHook;
 
     const {
         showSubModal,
@@ -17,13 +19,7 @@ function Genero() {
         generoSeleccionado,
         handleChange,
         errores
-    } = useModelGenero();
-
-    const deleteOnClick = (id) => {
-        console.log('Eliminar género con ID:', id);
-        // Aquí tu lógica para eliminar
-    };
-
+    } = useModelGenero(generoHook);
 
     return (
         <>
@@ -46,7 +42,7 @@ function Genero() {
                     ]}
                     acciones={[
                         { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idFamilia) }
+                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarGenero(item.idGenero) }
                     ]}
                     idKey="idGenero"
                 />

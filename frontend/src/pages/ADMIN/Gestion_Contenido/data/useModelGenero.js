@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelGenero } from "../../../../model/ModelGenero";
 
-const useModelGenero = () => {
+const useModelGenero = ({ crearGenero, actualizarGenero }) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [generoSeleccionado, setGeneroSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -34,15 +34,18 @@ const useModelGenero = () => {
             return;
         }
 
-        console.log('Guardando género:', generoSeleccionado);
+        console.warn("DATOS.", generoSeleccionado);
+        if (operacion === 1) crearGenero(generoSeleccionado);
+        else actualizarGenero(generoSeleccionado.idGenero, generoSeleccionado);
+
         closeSubModal();
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setGeneroSeleccionado(prev => ({ 
-            ...prev, 
-            [name]: value 
+        setGeneroSeleccionado(prev => ({
+            ...prev,
+            [name]: value
         }));
         setErrores(prev => ({ ...prev, [name]: false }));
     };
