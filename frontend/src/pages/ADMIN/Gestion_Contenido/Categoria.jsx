@@ -6,8 +6,9 @@ import { useModelCategoria } from "./data/useModelCategoria";
 import SubModalCategoria from "./Modal/SubModalCategoria";
 
 function Categoria() {
-    const { categoria } = useCategoria();
-    const { showSubModal, handleContinue, closeSubModal, operacion, openSubModal, categoriaSeleccionada, handleChange, errores } = useModelCategoria();
+    const categoriaHook = useCategoria();
+    const { categoria, eliminarCategoria } = categoriaHook;
+    const { showSubModal, handleContinue, closeSubModal, operacion, openSubModal, categoriaSeleccionada, handleChange, errores } = useModelCategoria(categoriaHook);
 
     return (
         <div className="container-fluid p-3 pt-24">
@@ -38,7 +39,7 @@ function Categoria() {
                         label: "Eliminar",
                         variant: "danger",
                         icon: "trash",
-                        onClick: (item) => deleteOnClick(item.idCategoria)
+                        onClick: (item) => eliminarCategoria(item.idCategoria)
                     }
                 ]}
                 idKey="idCategoria"

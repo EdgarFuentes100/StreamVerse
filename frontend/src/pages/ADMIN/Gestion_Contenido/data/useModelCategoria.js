@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelCategoria } from "../../../../model/ModelCategoria";
 
-const useModelCategoria = () => {
+const useModelCategoria = ({ crearCategoria, actualizarCategoria }) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -33,7 +33,10 @@ const useModelCategoria = () => {
             return;
         }
 
-        console.log('Guardando categoría:', categoriaSeleccionada);
+        console.warn("DATOS.", categoriaSeleccionada);
+        if (operacion === 1) crearCategoria(categoriaSeleccionada);
+        else actualizarCategoria(categoriaSeleccionada.idCategoria, categoriaSeleccionada);
+
         closeSubModal();
     };
 
