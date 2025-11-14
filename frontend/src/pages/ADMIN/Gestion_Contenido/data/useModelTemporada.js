@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelTemporada } from "../../../../model/ModelTemporada";
 
-const useModelTemporada = () => {
+const useModelTemporada = ({ crearTemporada, actualizarTemporada }) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [temporadaSeleccionada, setTemporadaSeleccionada] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -37,15 +37,18 @@ const useModelTemporada = () => {
             return;
         }
 
-        console.log('Guardando temporada:', temporadaSeleccionada);
+        console.warn("DATOS.", temporadaSeleccionada);
+        if (operacion === 1) crearTemporada(temporadaSeleccionada);
+        else actualizarTemporada(temporadaSeleccionada.idTemporada, temporadaSeleccionada);
+
         closeSubModal();
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setTemporadaSeleccionada(prev => ({ 
-            ...prev, 
-            [name]: name === 'idContenido' ? Number(value) : value 
+        setTemporadaSeleccionada(prev => ({
+            ...prev,
+            [name]: name === 'idContenido' ? Number(value) : value
         }));
         setErrores(prev => ({ ...prev, [name]: false }));
     };

@@ -17,4 +17,37 @@ async function getListaTemporada() {
   return rows;
 }
 
-module.exports = { getTemporadaId, getListaTemporada };
+// Crear una categoría
+async function crearTemporadaModelo(body) {
+  const { nombre, idContenido } = body;
+
+  const [result] = await localDB.query(
+    `INSERT INTO temporada (nombre, idContenido) VALUES (?,?)`,
+    [nombre, idContenido]
+  );
+
+  return result;
+}
+
+// Actualizar una categoría
+async function actualizarTemporadaModelo(id, body) {
+  const { nombre, idContenido } = body;
+
+  const [result] = await localDB.query(
+    `UPDATE temporada SET nombre = ?, idContenido = ? WHERE idTemporada = ?`,
+    [nombre, idContenido, id]
+  );
+
+  return result;
+}
+
+// Eliminar una categoría
+async function eliminarTemporadaModelo(id) {
+  const [result] = await localDB.query(
+    `DELETE FROM temporada WHERE idTemporada = ?`,
+    [id]
+  );
+
+  return result;
+}
+module.exports = { getTemporadaId, getListaTemporada, crearTemporadaModelo, actualizarTemporadaModelo, eliminarTemporadaModelo };

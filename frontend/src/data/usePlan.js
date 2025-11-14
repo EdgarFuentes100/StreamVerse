@@ -28,7 +28,11 @@ const usePlan = () => {
             });
     };
 
-    // ======== PETICIONES CRUD ========
+    useEffect(() => {
+        getPlanes();
+    }, []);
+
+        // ======== PETICIONES CRUD ========
     const crearPlan = (body) => {
         return postFetch('plan/crear', body)
             .then((data) => {
@@ -61,10 +65,6 @@ const usePlan = () => {
                 console.error('Error al eliminar:', err);
             });
     };
-
-    useEffect(() => {
-        getPlanes();
-    }, []);
 
 
     return {

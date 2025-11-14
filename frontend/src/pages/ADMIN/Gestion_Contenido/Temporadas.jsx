@@ -6,7 +6,8 @@ import { useModelTemporada } from "./data/useModelTemporada";
 import SubModalTemporada from "./Modal/SubModalTemporada";
 
 function Temporada() {
-    const { listaTemporas } = useTemporada();
+    const temporadaHook = useTemporada();
+    const { listaTemporas, eliminarTemporada } = temporadaHook;
 
     const {
         showSubModal,
@@ -17,11 +18,7 @@ function Temporada() {
         temporadaSeleccionada,
         handleChange,
         errores
-    } = useModelTemporada();
-
-    const deleteOnClick = (id) => {
-        console.log('Eliminar temporada con ID:', id);
-    };
+    } = useModelTemporada(temporadaHook);
 
     return (
         <>
@@ -45,7 +42,7 @@ function Temporada() {
                     ]}
                     acciones={[
                         { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idFamilia) }
+                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarTemporada(item.idTemporada) }
                     ]}
                     idKey="idTemporada"
                 />
