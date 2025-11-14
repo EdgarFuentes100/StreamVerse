@@ -5,10 +5,12 @@ import TablaToolbar from "../../../components/TablaToolbar";
 import { useUsuario } from "../../../data/useUsuario";
 import { useModelUsuario } from "./data/useModelUsuario";
 import SubModalUsuario from "./Modal/SubModalUsuario";
+import { useRol } from "../../../data/useRol";
 
 function Usuario() {
-    const { usuarios, roles, getUsuarioId } = useUsuario();
-    const [selectedRol, setSelectedRol] = useState("");
+    const usuarioHook = useUsuario();
+    const { usuarios, selectedRol, handleRol, eliminarUsuario } = usuarioHook;
+    const { roles } = useRol();
 
     const {
         showSubModal,
@@ -19,25 +21,14 @@ function Usuario() {
         usuarioSeleccionado,
         handleChange,
         errores
-    } = useModelUsuario();
-
-    const deleteOnClick = (id) => {
-        console.log("Eliminar usuario con ID:", id);
-    };
-
-    const handleRol = (RolId) => {
-        setSelectedRol(RolId);
-        if (RolId) {
-            getUsuarioId(RolId);
-        }
-    };
+    } = useModelUsuario(usuarioHook);
 
     return (
         <div className="container-fluid p-3 pt-24">
             <TablaToolbar
                 onBack={() => console.log("Volver")}
                 onExport={() => console.log("Exportar")}
-                onAdd={() => openSubModal(1)}
+                // onAdd={() => openSubModal(1)}
                 addLabel="Agregar Usuario"
             />
             {/* Selects para filtrar */}
@@ -75,7 +66,7 @@ function Usuario() {
                 ]}
                 acciones={[
                     { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                    { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idUsuario) }
+                //{ label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarUsuario(item.idUsuario) }
                 ]}
                 idKey="idUsuario"
             />

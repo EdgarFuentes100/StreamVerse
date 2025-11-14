@@ -1,6 +1,6 @@
 function ModelUsuario(
     idUsuario = 0,
-    googleId = "",
+    googleId = "00",
     nombre = "",
     email = "",
     avatar = "",

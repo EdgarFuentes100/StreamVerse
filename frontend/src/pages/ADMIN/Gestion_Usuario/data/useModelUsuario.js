@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelUsuario } from "../../../../model/ModelUsuario";
 
-const useModelUsuario = () => {
+const useModelUsuario = ({crearUsuario, actualizarUsuario}) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -41,6 +41,8 @@ const useModelUsuario = () => {
         }
 
         console.log('Guardando usuario:', usuarioSeleccionado);
+        if(operacion === 1) crearUsuario(usuarioSeleccionado);
+        else actualizarUsuario(usuarioSeleccionado.idUsuario, usuarioSeleccionado);
         closeSubModal();
     };
 
