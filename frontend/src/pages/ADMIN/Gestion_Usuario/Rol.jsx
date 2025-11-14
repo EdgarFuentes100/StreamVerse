@@ -1,12 +1,13 @@
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
-import { useUsuario } from "../../../data/useUsuario";
+import { useRol } from "../../../data/useRol";
 import { useModelRol } from "./data/useModelRol";
 import SubModalRol from "./Modal/SubModalRol";
 
 function Rol() {
-    const { roles } = useUsuario();
+    const rolHook = useRol();
+    const { roles, eliminarRol } = rolHook;
 
     const {
         showSubModal,
@@ -17,11 +18,7 @@ function Rol() {
         rolSeleccionado,
         handleChange,
         errores
-    } = useModelRol();
-
-    const deleteOnClick = (id) => {
-        console.log("Eliminar rol con ID:", id);
-    };
+    } = useModelRol(rolHook);
 
     return (
         <div className="container-fluid p-3 pt-24">
@@ -40,7 +37,7 @@ function Rol() {
                 ]}
                 acciones={[
                     { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                    { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idRol) }
+                    { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarRol(item.idRol) }
                 ]}
                 idKey="idRol"
             />

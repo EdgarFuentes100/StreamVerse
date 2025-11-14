@@ -3,9 +3,7 @@ import { useFetch } from '../api/useFetch';
 
 const useUsuario = () => {
     const { getFetch } = useFetch();
-
     const [usuarios, setUsuarios] = useState([]);
-    const [roles, setRoles] = useState([]);
 
     // 🔹 Obtener todos los usuarios
     const getUsuarioId = (idRol) => {
@@ -19,25 +17,8 @@ const useUsuario = () => {
             });
     };
 
-    // 🔹 Obtener todos los roles
-    const getRoles = () => {
-        getFetch('rol/listadoRol')
-            .then((data) => {
-                setRoles(data.datos || []);
-                console.log("Roles:", data.datos);
-            })
-            .catch((error) => {
-                console.error('Error al obtener roles:', error);
-            });
-    };
-
-    useEffect(() => {
-        getRoles();
-    }, []);
-
     return {
         usuarios,
-        roles,
         getUsuarioId
     };
 };

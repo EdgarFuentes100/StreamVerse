@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ModelRol } from "../../../../model/ModelRol";
 
-const useModelRol = () => {
+const useModelRol = ({ crearRol, actualizarRol }) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [rolSeleccionado, setRolSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -35,6 +35,8 @@ const useModelRol = () => {
         }
 
         console.log('Guardando rol:', rolSeleccionado);
+        if (operacion === 1) crearRol(rolSeleccionado);
+        else actualizarRol(rolSeleccionado.idRol, rolSeleccionado);
         closeSubModal();
     };
 
