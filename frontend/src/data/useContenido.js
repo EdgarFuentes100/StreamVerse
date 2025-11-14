@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useFetch } from '../api/useFetch';
 
 const useContenido = () => {
-    const { getFetch } = useFetch();
+    const { getFetch, postFetch, putFetch, deleteFetch } = useFetch();
     const [contenido, setContenido] = useState([]);
     const [contenidoPopular, setContenidoPopular] = useState([]);
     const [contenidoNuevo, setContenidoNuevo] = useState([]);
@@ -109,6 +109,41 @@ const useContenido = () => {
         getRecomendaciones();
     }, []);
 
+    // ======== PETICIONES CRUD ========
+    const crearContenido = (body) => {
+        return postFetch('contenido/crear', body)
+            .then((data) => {
+                if (data.datos.ok) getContenido();
+                return data;
+            })
+            .catch((err) => {
+                console.error('Error al crear:', err);
+            });
+    };
+
+    const actualizarContenido = (id, body) => {
+        return putFetch(`contenido/editar/${id}`, body)
+            .then((data) => {
+                if (data.datos.ok) getContenido();
+                return data;
+            })
+            .catch((err) => {
+                console.error('Error al actualizar:', err);
+            });
+    };
+
+    const eliminarContenido = (id) => {
+        return deleteFetch(`contenido/eliminar/${id}`)
+            .then((data) => {
+                if (data.datos.ok) getContenido();
+                return data;
+            })
+            .catch((err) => {
+                console.error('Error al eliminar:', err);
+            });
+    };
+
+
     return {
         contenido,
         contenidoPopular,
@@ -118,7 +153,10 @@ const useContenido = () => {
         getContenidoInfo,
         contenidoCategoria,
         contenidoInfo,
-        recomendacion
+        recomendacion,
+        crearContenido,
+        actualizarContenido,
+        eliminarContenido
     };
 };
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import {  ModelContenido } from "../../../../model/ModelContenido";
+import { ModelContenido } from "../../../../model/ModelContenido";
 
-const useModelContenido = () => {
+const useModelContenido = ({ crearContenido, actualizarContenido }) => {
     const [showSubModal, setSubModalOpen] = useState(false);
     const [contenidoSeleccionado, setContenidoSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
@@ -37,25 +37,27 @@ const useModelContenido = () => {
             return;
         }
 
-        console.log('Guardando contenido:', contenidoSeleccionado);
+        console.warn('Guardando contenido:', contenidoSeleccionado);
+        if (operacion === 1) crearContenido(contenidoSeleccionado);
+        else actualizarContenido(contenidoSeleccionado.idContenido, contenidoSeleccionado);
         closeSubModal();
     };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
+
         if (type === 'checkbox') {
-            setContenidoSeleccionado(prev => ({ 
-                ...prev, 
-                [name]: checked ? 1 : 0 
+            setContenidoSeleccionado(prev => ({
+                ...prev,
+                [name]: checked ? 1 : 0
             }));
         } else {
-            setContenidoSeleccionado(prev => ({ 
-                ...prev, 
-                [name]: type === 'number' ? Number(value) : value 
+            setContenidoSeleccionado(prev => ({
+                ...prev,
+                [name]: type === 'number' ? Number(value) : value
             }));
         }
-        
+
         setErrores(prev => ({ ...prev, [name]: false }));
     };
 

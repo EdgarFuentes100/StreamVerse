@@ -87,6 +87,47 @@ async function getContenidoCategoria(idCategoria) {
     return rows;
 }
 
+// Crear una categoría
+async function crearContenidoModelo(body) {
+    const { title, image, rating, year, descripcion, duracion, temporadas, episodios,
+        isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria } = body;
+
+    const [result] = await localDB.query(
+        `INSERT INTO contenido 
+        (title, image, rating, year, descripcion, duracion, temporadas, episodios, isNew, isPopular, 
+        isTrending, isExclusive, isFavorito, idCategoria)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        [title, image, rating, year, descripcion, duracion, temporadas,
+            episodios, isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria]
+    );
+
+    return result;
+}
+
+// Actualizar una categoría
+async function actualizarContenidoModelo(id, body) {
+    const { title, image, rating, year, descripcion, duracion, temporadas, episodios,
+        isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria } = body;
+
+    const [result] = await localDB.query(
+        `UPDATE contenido SET title = ?, image = ?, rating = ?, year = ?, descripcion = ?, duracion = ?, temporadas = ?,
+         episodios = ?, isNew = ?, isPopular = ?, isTrending = ?, isExclusive = ?, isFavorito = ?,
+          idCategoria = ? WHERE idContenido = ?`,
+        [title, image, rating, year, descripcion, duracion, temporadas,
+            episodios, isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria, id]);
+
+    return result;
+}
+
+// Eliminar una categoría
+async function eliminarContenidoModelo(id) {
+    const [result] = await localDB.query(
+        `DELETE FROM contenido WHERE idContenido = ?`,
+        [id]
+    );
+
+    return result;
+}
 
 module.exports = {
     getContenido,
@@ -94,5 +135,8 @@ module.exports = {
     getNuevo,
     getGrupo,
     getContenidoInfo,
-    getContenidoCategoria
+    getContenidoCategoria,
+    crearContenidoModelo,
+    actualizarContenidoModelo,
+    eliminarContenidoModelo
 };

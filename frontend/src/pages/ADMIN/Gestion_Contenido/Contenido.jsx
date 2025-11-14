@@ -6,7 +6,8 @@ import { useModelContenido } from "./data/useModelContenido";
 import SubModalContenido from "./Modal/SubModalContenido";
 
 function Contenido() {
-    const { contenido } = useContenido();
+    const contenidoHook = useContenido();
+    const { contenido, eliminarContenido } = contenidoHook;
 
     const {
         showSubModal,
@@ -17,11 +18,7 @@ function Contenido() {
         contenidoSeleccionado,
         handleChange,
         errores
-    } = useModelContenido();
-
-    const deleteOnClick = (id) => {
-        console.log('Eliminar contenido con ID:', id);
-    };
+    } = useModelContenido(contenidoHook);
 
     return (
         <>
@@ -53,7 +50,7 @@ function Contenido() {
                     ]}
                     acciones={[
                         { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => deleteOnClick(item.idFamilia) }
+                        { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarContenido(item.idContenido) }
                     ]}
                     idKey="idContenido"
                 />
