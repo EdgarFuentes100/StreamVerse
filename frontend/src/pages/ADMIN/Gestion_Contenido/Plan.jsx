@@ -36,7 +36,11 @@ function Plan() {
                         { key: "idPlan", label: "ID" },
                         { key: "nombre", label: "Plan" },
                         { key: "precio", label: "Precio" },
-                        { key: "maxPerfil", label: "Cantidad perfiles" }
+                        { key: "maxPerfil", label: "Cantidad perfiles" },
+                        { key: "contenidoExclusivo", label: "Contenido nuevo", isBoolean: true },
+                        { key: "contenidoNuevo", label: "Contendio exclusivo", isBoolean: true },
+                        { key: "contenidoNuevo", label: "Sin anuncio", isBoolean: true }
+
                     ]}
                     expandible={[
 

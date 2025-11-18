@@ -85,9 +85,9 @@ function SubModalPlan({
                         }`}
                 >
                     <option value="">Seleccionar calidad</option>
-                    <option value="SD">SD (480p)</option>
-                    <option value="HD">HD (720p)</option>
-                    <option value="Full HD">Full HD (1080p)</option>
+                    <option value="480">SD (480p)</option>
+                    <option value="720">HD (720p)</option>
+                    <option value="1080">Full HD (1080p)</option>
                     <option value="4K">4K (2160p)</option>
                 </select>
                 {errores.calidad && (
@@ -97,6 +97,78 @@ function SubModalPlan({
                 )}
             </div>
 
+            {/* Características Adicionales */}
+            <div className="border-t pt-4 mt-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                    Características Adicionales
+                </h3>
+                
+                {/* Contenido Exclusivo */}
+                <div className="flex items-center mb-3">
+                    <input
+                        type="checkbox"
+                        id="contenidoExclusivo"
+                        name="contenidoExclusivo"
+                        checked={plan?.contenidoExclusivo || false}
+                        onChange={(e) => {
+                            onChange({
+                                target: {
+                                    name: 'contenidoExclusivo',
+                                    value: e.target.checked
+                                }
+                            });
+                        }}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="contenidoExclusivo" className="ml-2 block text-sm text-gray-900">
+                        🎬 Contenido Exclusivo
+                    </label>
+                </div>
+
+                {/* Contenido Nuevo Semanal */}
+                <div className="flex items-center mb-3">
+                    <input
+                        type="checkbox"
+                        id="contenidoNuevo"
+                        name="contenidoNuevo"
+                        checked={plan?.contenidoNuevo || false}
+                        onChange={(e) => {
+                            onChange({
+                                target: {
+                                    name: 'contenidoNuevo',
+                                    value: e.target.checked
+                                }
+                            });
+                        }}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="contenidoNuevo" className="ml-2 block text-sm text-gray-900">
+                        🆕 Contenido Nuevo Semanal
+                    </label>
+                </div>
+
+                {/* Sin Anuncios */}
+                <div className="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="sinAnuncios"
+                        name="sinAnuncios"
+                        checked={plan?.sinAnuncios || false}
+                        onChange={(e) => {
+                            onChange({
+                                target: {
+                                    name: 'sinAnuncios',
+                                    value: e.target.checked
+                                }
+                            });
+                        }}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="sinAnuncios" className="ml-2 block text-sm text-gray-900">
+                        🚫 Sin Anuncios
+                    </label>
+                </div>
+            </div>
         </div>
     );
 }
