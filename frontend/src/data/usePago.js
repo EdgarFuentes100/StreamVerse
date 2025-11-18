@@ -12,7 +12,7 @@ export const usePago = () => {
         setError(null);
         
         try {
-            const data = await postFetch('pago/crear', body);
+            const data = await postFetch('pagos/crear', body);
             if (data.datos && data.datos.ok) {
                 return data;
             } else {

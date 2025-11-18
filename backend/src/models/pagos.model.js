@@ -24,7 +24,24 @@ async function getPago(idUsuario) {
     return rows;
 }
 
+
+async function crearPagoModelo(body) {
+    console.log("si llego", body);
+    const { idCuenta, idPlan, monto, fechaPago, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles } = body;
+
+    // ✅ Convertir fecha ISO a formato MySQL
+    const fechaPagoMySQL = new Date(fechaPago).toISOString().slice(0, 19).replace('T', ' ');
+
+    const [result] = await localDB.query(
+        `INSERT INTO pagos (idCuenta, idPlan, monto, fechaPago, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idCuenta, idPlan, monto, fechaPagoMySQL, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles]
+    );
+
+    return result;
+}
+
 module.exports = {
-    getPago
+    getPago, crearPagoModelo
 };
 

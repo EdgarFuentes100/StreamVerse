@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PayPalButton from "./PayPalButton";
 
 function PayPalModal({ 
@@ -11,12 +11,17 @@ function PayPalModal({
 }) {
     const [procesando, setProcesando] = useState(false);
     const [mostrarPayPal, setMostrarPayPal] = useState(false);
+    const modalRef = useRef();
 
     useEffect(() => {
         if (mostrar && planSeleccionado) {
+            // Resetear estados
+            setProcesando(false);
+            
+            // Delay más largo para asegurar que el modal esté completamente en el DOM
             const timer = setTimeout(() => {
                 setMostrarPayPal(true);
-            }, 100);
+            }, 300);
             
             return () => {
                 clearTimeout(timer);
@@ -35,16 +40,29 @@ function PayPalModal({
         }
     };
 
+    const handleError = (error) => {
+        console.error('Error en PayPalModal:', error);
+        setProcesando(false);
+        onError(error);
+    };
+
     const handleClose = () => {
         setMostrarPayPal(false);
         setProcesando(false);
-        onClose();
+        
+        // Pequeño delay antes de cerrar para evitar conflictos
+        setTimeout(() => {
+            onClose();
+        }, 100);
     };
 
     if (!mostrar || !planSeleccionado) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+        <div 
+            ref={modalRef}
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+        >
             <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-cyan-500/30 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
                 <div className="p-6 border-b border-gray-700/50 flex-shrink-0">
                     <div className="text-center">
@@ -67,7 +85,7 @@ function PayPalModal({
                             <PayPalButton
                                 amount={planSeleccionado.precio}
                                 onSuccess={handleSuccess}
-                                onError={onError}
+                                onError={handleError}
                                 onCancel={onCancel}
                                 key={`paypal-${planSeleccionado.idPlan}-${Date.now()}`}
                             />
@@ -75,7 +93,7 @@ function PayPalModal({
                             <div className="flex flex-col items-center justify-center space-y-4">
                                 <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-500"></div>
                                 <p className="text-gray-400 text-center">
-                                    {procesando ? "Procesando tu pago..." : "Cargando PayPal..."}
+                                    {procesando ? "Procesando tu pago..." : "Inicializando PayPal..."}
                                 </p>
                             </div>
                         )}

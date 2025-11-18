@@ -13,4 +13,26 @@ async function consultarPago(req, res, next) {
     }
 }
 
-module.exports = { consultarPago };
+// CREAR
+async function crearPago(req, res, next) {
+
+    try {
+        const resultado = await Data.crearPagoModelo(req.body);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(400).json({ ok: false, mensaje: "No se pudo insertar", datos: null });
+        }
+
+        return res.json({
+            ok: true,
+            mensaje: "Pago realizado con exito",
+            //datos: { idRol: resultado.insertId, ...datos }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+
+module.exports = { consultarPago, crearPago };

@@ -3,7 +3,6 @@ import { useAuth } from "../api/authContext";
 import { useNavigate } from "react-router-dom";
 import Particles from "../components/Particles";
 import { usePerfil } from "../data/usePerfil";
-import PaymentWall from "../components/PaymentWall";
 import PlanesCarousel from "./PlanesCarousel";
 
 function PerfilPage() {

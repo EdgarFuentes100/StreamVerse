@@ -41,11 +41,11 @@ async function getPlanes() {
 
 // Crear una categoría
 async function crearPlanModelo(body) {
-  const { nombre, precio, maxPerfil, calidad } = body;
+  const { nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios } = body;
 
   const [result] = await localDB.query(
-    `INSERT INTO plan (nombre, precio, maxPerfil, calidad) VALUES (?,?,?,?)`,
-    [nombre, precio, maxPerfil, calidad]
+    `INSERT INTO plan (nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo) VALUES (?,?,?,?,?,?,?)`,
+    [nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios]
   );
 
   return result;
@@ -53,11 +53,12 @@ async function crearPlanModelo(body) {
 
 // Actualizar una categoría
 async function actualizarPlanModelo(id, body) {
-  const { nombre, precio, maxPerfil, calidad } = body;
+  const { nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios} = body;
 
   const [result] = await localDB.query(
-    `UPDATE Plan SET nombre = ?, precio = ?, maxPerfil = ?, calidad = ? WHERE idPlan = ?`,
-    [nombre, precio, maxPerfil, calidad, id]
+    `UPDATE Plan SET nombre = ?, precio = ?, maxPerfil = ?, calidad = ?, contenidoExclusivo = ?, contenidoNuevo = ?,
+            sinAnuncios = ? WHERE idPlan = ?`,
+    [nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios, id]
   );
 
   return result;
