@@ -3,6 +3,8 @@ import { useAuth } from "../api/authContext";
 import { useNavigate } from "react-router-dom";
 import Particles from "../components/Particles";
 import { usePerfil } from "../data/usePerfil";
+import PaymentWall from "../components/PaymentWall";
+import PlanesCarousel from "./PlanesCarousel";
 
 function PerfilPage() {
   const { usuario, getPerfil, perfil, getPerfilActivo } = useAuth();
@@ -79,25 +81,7 @@ function PerfilPage() {
 
   // ❌ Si no ha pagado
   if (pagoValido === false) {
-    return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
-        <Particles
-          count={{ sm: 200, lg: 700 }}
-          intensity={{ sm: "low", lg: "medium" }}
-          className="absolute inset-0 z-0"
-        />
-        <h2 className="text-3xl font-light mb-4">Tu suscripción ha expirado 💳</h2>
-        <p className="text-gray-400 mb-8">
-          Por favor renueva tu plan para continuar viendo contenido.
-        </p>
-        <button
-          onClick={() => navigate("/Plan")}
-          className="!bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-all"
-        >
-          Renovar Plan
-        </button>
-      </div>
-    );
+    return <PlanesCarousel />;
   }
 
   // ✅ Si ya pagó, pero los perfiles aún no cargan
