@@ -1,62 +1,123 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 function PayPalButton({ amount, onSuccess, onError, onCancel }) {
-  useEffect(() => {
-    const CLIENT_ID = "AURqz2S_Oy-E2Y4QBFstJzJ6BgukOjqiQJqdbXhZKIDqQoxyNM4_tiRH96n_NkjOnIhqGHvUUzz9ZBiq";
+    const paypalRef = useRef();
+    const buttonsRendered = useRef(false);
+    const [sdkLoaded, setSdkLoaded] = useState(false);
 
-    const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${CLIENT_ID}&currency=USD`;
-    script.async = true;
-    
-    script.addEventListener("load", () => {
-      if (window.paypal) {
-        window.paypal.Buttons({
-          style: {
-            layout: 'vertical',
-            color: 'blue',
-            shape: 'rect',
-            height: 45,
-            label: 'pay',
-            tagline: false
-          },
-          createOrder: (data, actions) => {
-            return actions.order.create({
-              purchase_units: [{ 
-                amount: { 
-                  value: amount.toString(),
-                  currency_code: "USD"
-                } 
-              }],
-            });
-          },
-          onApprove: async (data, actions) => {
-            try {
-              const details = await actions.order.capture();
-              onSuccess(details);
-            } catch (error) {
-              onError(error);
+    useEffect(() => {
+        const checkPayPalSDK = () => {
+            if (window.paypal) {
+                setSdkLoaded(true);
+                return true;
             }
-          },
-          onCancel: onCancel,
-          onError: onError,
-        }).render("#paypal-button-container");
-      }
-    });
+            return false;
+        };
 
-    document.body.appendChild(script);
+        if (!checkPayPalSDK()) {
+            const interval = setInterval(() => {
+                if (checkPayPalSDK()) {
+                    clearInterval(interval);
+                }
+            }, 100);
 
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, [amount, onSuccess, onError, onCancel]);
+            return () => clearInterval(interval);
+        }
+    }, []);
 
-  return (
-    <div className="w-full min-h-[400px]">
-      <div id="paypal-button-container" className="w-full h-full"></div>
-    </div>
-  );
+    useEffect(() => {
+        if (!sdkLoaded || !paypalRef.current || !amount) {
+            return;
+        }
+
+        const renderPayPalButtons = async () => {
+            try {
+                if (paypalRef.current.innerHTML) {
+                    paypalRef.current.innerHTML = '';
+                }
+
+                if (buttonsRendered.current) {
+                    return;
+                }
+
+                if (!window.paypal) {
+                    throw new Error('PayPal SDK no está disponible');
+                }
+
+                const buttons = window.paypal.Buttons({
+                    style: {
+                        layout: 'vertical',
+                        color: 'gold',
+                        shape: 'rect',
+                        label: 'paypal'
+                    },
+                    createOrder: (data, actions) => {
+                        return actions.order.create({
+                            intent: 'CAPTURE',
+                            purchase_units: [{
+                                amount: {
+                                    currency_code: 'USD',
+                                    value: amount.toString()
+                                }
+                            }]
+                        });
+                    },
+                    onApprove: async (data, actions) => {
+                        try {
+                            const details = await actions.order.capture();
+                            onSuccess(details);
+                        } catch (error) {
+                            console.error('Error capturing order:', error);
+                            onError(error);
+                        }
+                    },
+                    onError: (err) => {
+                        console.error('PayPal Button Error:', err);
+                        onError(err);
+                    },
+                    onCancel: (data) => {
+                        console.log('Payment cancelled by user');
+                        onCancel(data);
+                    }
+                });
+
+                if (buttons.isEligible()) {
+                    await buttons.render(paypalRef.current);
+                    buttonsRendered.current = true;
+                } else {
+                    throw new Error('PayPal buttons not eligible');
+                }
+
+            } catch (error) {
+                console.error('Error rendering PayPal buttons:', error);
+                onError(error);
+            }
+        };
+
+        renderPayPalButtons();
+
+        return () => {
+            buttonsRendered.current = false;
+            if (paypalRef.current) {
+                paypalRef.current.innerHTML = '';
+            }
+        };
+    }, [sdkLoaded, amount, onSuccess, onError, onCancel]);
+
+    if (!sdkLoaded) {
+        return (
+            <div className="flex flex-col items-center justify-center p-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-2"></div>
+                <p className="text-gray-400 text-sm">Cargando PayPal...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-full">
+            <div ref={paypalRef} className="paypal-buttons-container" />
+        </div>
+    );
 }
 
 export default PayPalButton;
