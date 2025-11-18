@@ -21,9 +21,18 @@ async function createUser({ googleId, name, email, avatar }) {
 // 🔹 Buscar usuario por ID (para Passport)
 async function getUserById(id) {
     const [rows] = await localDB.query(
-        `SELECT u.idUsuario, u.nombre, u.email, u.avatar, r.idRol, r.rol FROM usuario u
-                LEFT JOIN rol r ON u.idRol = r.idRol
-        where u.idUsuario = ?`,[id]
+        `SELECT 
+            u.idUsuario, 
+            u.nombre, 
+            u.email, 
+            u.avatar, 
+            r.idRol, 
+            r.rol,
+            c.idCuenta
+        FROM usuario u
+        LEFT JOIN rol r ON u.idRol = r.idRol
+        LEFT JOIN cuenta c ON u.idUsuario = c.idUsuario  -- JOIN con tabla cuenta
+        WHERE u.idUsuario = ?`, [id]
     );
     return rows[0] || null;
 }
