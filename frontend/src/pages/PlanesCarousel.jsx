@@ -4,7 +4,7 @@ import { usePlan } from "../data/usePlan";
 import PayPalModal from "../components/PayPalModal";
 import { usePayPalSDK } from "../data/usePayPalSDK";
 
-function PlanesCarousel() {
+function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
     const [planActivo, setPlanActivo] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [mostrarPayPal, setMostrarPayPal] = useState(false);
@@ -24,6 +24,7 @@ function PlanesCarousel() {
     const getPlanColor = (index) => {
         return colores[index % colores.length];
     };
+
     const getPlanFeatures = (planItem) => {
         const features = [
             `Calidad ${planItem.calidad}p`,
@@ -55,14 +56,25 @@ function PlanesCarousel() {
     };
 
     const handlePaymentSuccess = async (details) => {
-        const resultado = await procesarPagoExitoso(planSeleccionado, details);
+        try {
+            const resultado = await procesarPagoExitoso(planSeleccionado, details);
 
-        if (resultado.success) {
-            alert(resultado.message);
-            setMostrarPayPal(false);
-            setPlanSeleccionado(null);
-        } else {
-            alert(resultado.message);
+            if (resultado.success) {
+                alert(resultado.message);
+                setMostrarPayPal(false);
+                setPlanSeleccionado(null);
+
+                // ✅ Llamar al callback para notificar pago exitoso
+                if (onPagoExitoso) {
+                    console.log("Notificando pago exitoso al componente padre...");
+                    onPagoExitoso();
+                }
+            } else {
+                alert(resultado.message);
+            }
+        } catch (error) {
+            console.error("Error en el procesamiento del pago:", error);
+            alert("Error al procesar el pago. Por favor, contacta con soporte.");
         }
     };
 

@@ -7,40 +7,51 @@ import PlanesCarousel from "./PlanesCarousel";
 
 function PerfilPage() {
   const { usuario, getPerfil, perfil, getPerfilActivo } = useAuth();
-  const { getPagos, crearPerfil } = usePerfil(); // ✅ hook para verificar pago
+  const { getPagos, crearPerfil } = usePerfil();
   const navigate = useNavigate();
 
   const [newProfileName, setNewProfileName] = useState("");
-  const [selectedAvatar, setSelectedAvatar] = useState("👤"); // ✅ Avatar por defecto
+  const [selectedAvatar, setSelectedAvatar] = useState("👤");
   const [hoveredProfile, setHoveredProfile] = useState(null);
   const [editingProfile, setEditingProfile] = useState(null);
   const [pagoValido, setPagoValido] = useState(null);
-  const [maxPerfiles, setMaxPerfiles] = useState(0); // ✅ límite de perfiles según plan
+  const [maxPerfiles, setMaxPerfiles] = useState(0);
   const nameInputRef = useRef(null);
 
-  // ✅ Lista de avatares disponibles
   const avatares = ["👤", "😊", "🎮", "🌟", "🦄", "🐱", "🦁", "🐶", "🦊", "🐼", "🎯", "🎨", "⚽", "🎸", "🎭"];
+
+  const reVerificarPago = async () => {
+    console.log("Re-verificando pago después de pago exitoso...");
+    if (usuario) {
+      await verificarPago(usuario.idUsuario);
+    }
+  };
+
+  const verificarPago = async (idUsuario) => {
+    try {
+      const data = await getPagos(idUsuario);
+      const infoPago = data?.[0];
+
+      console.log("Pago detectado:", infoPago);
+
+      if (infoPago?.yaPago === 1) {
+        setPagoValido(true);
+        setMaxPerfiles(infoPago.maxPerfil || 1);
+        await getPerfil(idUsuario);
+      } else {
+        setPagoValido(false);
+      }
+    } catch (error) {
+      console.error("Error verificando pago:", error);
+      setPagoValido(false);
+    }
+  };
 
   useEffect(() => {
     if (usuario) {
       verificarPago(usuario.idUsuario);
     }
   }, [usuario]);
-
-  const verificarPago = async (idUsuario) => {
-    const data = await getPagos(idUsuario);
-    const infoPago = data?.[0]; // primer registro del pago
-
-    console.log("Pago detectado:", infoPago);
-
-    if (infoPago?.yaPago === 1) {
-      setPagoValido(true);
-      setMaxPerfiles(infoPago.maxPerfil || 1);
-      await getPerfil(idUsuario);
-    } else {
-      setPagoValido(false);
-    }
-  };
 
   const getColorFromId = (id) => {
     const colors = [
@@ -57,7 +68,7 @@ function PerfilPage() {
     if (!profile.idCuentaPerfil) {
       setEditingProfile({ tipo: "nuevo" });
       setNewProfileName("");
-      setSelectedAvatar("👤"); // ✅ Resetear avatar al crear nuevo
+      setSelectedAvatar("👤");
       console.log("nuevo");
     } else {
       const idPerfilActivo = await getPerfilActivo(profile.idCuentaPerfil);
@@ -87,7 +98,6 @@ function PerfilPage() {
     setSelectedAvatar(avatar);
   };
 
-  // ⏳ Si aún no sabemos si ha pagado
   if (pagoValido === null) {
     return (
       <div className="min-h-screen !bg-black flex items-center justify-center !text-white">
@@ -96,12 +106,10 @@ function PerfilPage() {
     );
   }
 
-  // ❌ Si no ha pagado
   if (pagoValido === false) {
-    return <PlanesCarousel />;
+    return <PlanesCarousel onPagoExitoso={reVerificarPago} />;
   }
 
-  // ✅ Si ya pagó, pero los perfiles aún no cargan
   if (!perfil) {
     return (
       <div className="min-h-screen !bg-black flex items-center justify-center !text-white">
@@ -143,16 +151,16 @@ function PerfilPage() {
               >
                 <div
                   className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 !border-2 !border-white/20 transition-all duration-500 shadow-2xl ${hoveredProfile === profile.idCuentaPerfil
-                    ? "scale-110 !border-white"
-                    : ""
+                      ? "scale-110 !border-white"
+                      : ""
                     } group-hover:scale-110 group-hover:!border-white`}
                 >
                   {profile.avatar || "👤"}
                 </div>
                 <span
                   className={`text-lg font-medium !text-gray-300 transition-all duration-500 ${hoveredProfile === profile.idCuentaPerfil
-                    ? "!text-white scale-105"
-                    : ""
+                      ? "!text-white scale-105"
+                      : ""
                     } group-hover:!text-white group-hover:scale-105`}
                 >
                   {profile.nombre}
@@ -161,17 +169,14 @@ function PerfilPage() {
             </div>
           ))}
 
-          {/* ✅ Mostrar botón de agregar perfil SOLO si no ha llegado al máximo */}
           {perfil.length < maxPerfiles ? (
             editingProfile?.tipo === "nuevo" ? (
               <div className="flex flex-col items-center">
-                {/* ✅ Vista previa del avatar seleccionado */}
                 <div className="w-36 h-36 !bg-gradient-to-br !from-gray-600 !to-gray-700 rounded-2xl flex items-center justify-center text-5xl mb-4 !border-2 !border-white/20">
                   {selectedAvatar}
                 </div>
 
                 <div className="flex flex-col items-center space-y-4">
-                  {/* ✅ Input para nombre */}
                   <input
                     ref={nameInputRef}
                     type="text"
@@ -183,7 +188,6 @@ function PerfilPage() {
                     maxLength={15}
                   />
 
-                  {/* ✅ Selector de avatares */}
                   <div className="bg-gray-800/80 p-3 rounded-lg">
                     <p className="!text-gray-300 text-sm mb-2">Selecciona un avatar:</p>
                     <div className="grid grid-cols-5 gap-2 max-w-xs">
@@ -192,8 +196,8 @@ function PerfilPage() {
                           key={index}
                           onClick={() => handleAvatarSelect(avatar)}
                           className={`w-8 h-8 rounded-full flex items-center justify-center text-lg transition-all duration-200 ${selectedAvatar === avatar
-                            ? "!bg-purple-500 scale-110 !border-2 !border-white"
-                            : "!bg-gray-700 hover:!bg-gray-600"
+                              ? "!bg-purple-500 scale-110 !border-2 !border-white"
+                              : "!bg-gray-700 hover:!bg-gray-600"
                             }`}
                         >
                           {avatar}
@@ -202,7 +206,6 @@ function PerfilPage() {
                     </div>
                   </div>
 
-                  {/* ✅ Botones de acción */}
                   <div className="flex gap-2">
                     <button
                       onClick={handleAddProfile}
@@ -237,7 +240,6 @@ function PerfilPage() {
               </div>
             )
           ) : (
-            // 🧱 Mensaje si ya llegó al límite
             <div className="flex flex-col items-center !text-gray-400 mt-6">
               <div className="w-36 h-36 !bg-gray-700 rounded-2xl flex items-center justify-center text-4xl mb-4 opacity-60">
                 🚫
