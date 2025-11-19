@@ -43,4 +43,25 @@ async function firmarPerfil(req, res, next) {
     }
 }
 
-module.exports = { listaPerfil, firmarPerfil };
+// CREAR
+async function crearPerfil(req, res, next) {
+
+    try {
+        const resultado = await Data.crearPerfilModelo(req.body);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(400).json({ ok: false, mensaje: "No se pudo insertar", datos: null });
+        }
+
+        return res.json({
+            ok: true,
+            mensaje: "Insertado correctamente",
+            //datos: { idRol: resultado.insertId, ...datos }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports = { listaPerfil, firmarPerfil, crearPerfil };

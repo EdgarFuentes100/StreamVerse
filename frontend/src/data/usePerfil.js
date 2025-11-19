@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useFetch } from '../api/useFetch';
 
 const usePerfil = () => {
-    const { getFetch } = useFetch();
+    const { getFetch, postFetch } = useFetch();
     const [contenidoPlan, setContenidoPlan] = useState([]);
 
     const getContendioPlan = (idPerfil) => {
@@ -27,10 +27,23 @@ const usePerfil = () => {
         }
     };
 
+    // ======== PETICIONES CRUD ========
+    const crearPerfil = (body) => {
+        return postFetch('perfil/crear', body)
+            .then((data) => {
+                if (data.datos.ok);
+                return data;
+            })
+            .catch((err) => {
+                console.error('Error al crear:', err);
+            });
+    };
+
     return {
         contenidoPlan,
         getContendioPlan,
-        getPagos,
+        getPagos, 
+        crearPerfil
     };
 };
 
