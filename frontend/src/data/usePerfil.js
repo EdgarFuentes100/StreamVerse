@@ -28,10 +28,10 @@ const usePerfil = () => {
     };
 
     // ======== PETICIONES CRUD ========
-    const crearPerfil = (body) => {
+    const crearPerfil = (body, idUsuario, getPerfil) => {
         return postFetch('perfil/crear', body)
             .then((data) => {
-                if (data.datos.ok);
+                if (data.datos.ok) getPerfil(idUsuario);
                 return data;
             })
             .catch((err) => {

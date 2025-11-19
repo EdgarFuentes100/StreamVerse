@@ -27,15 +27,36 @@ async function getPago(idUsuario) {
 
 async function crearPagoModelo(body) {
     console.log("si llego", body);
-    const { idCuenta, idPlan, monto, fechaPago, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles } = body;
+    const {
+        idCuenta, idPlan, monto,
+        fechaPago, periodoInicio, periodoFin,
+        estado, metodoPago, referencia, detalles
+    } = body;
 
-    // ✅ Convertir fecha ISO a formato MySQL
-    const fechaPagoMySQL = new Date(fechaPago).toISOString().slice(0, 19).replace('T', ' ');
+    // Convertir fecha ISO a MySQL DATETIME
+    const fechaPagoMySQL = new Date(fechaPago)
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
 
+    // 1️⃣ Insertar el pago
     const [result] = await localDB.query(
-        `INSERT INTO pagos (idCuenta, idPlan, monto, fechaPago, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles) 
+        `INSERT INTO pagos 
+        (idCuenta, idPlan, monto, fechaPago, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idCuenta, idPlan, monto, fechaPagoMySQL, periodoInicio, periodoFin, estado, metodoPago, referencia, detalles]
+        [
+            idCuenta, idPlan, monto,
+            fechaPagoMySQL, periodoInicio, periodoFin,
+            estado, metodoPago, referencia, detalles
+        ]
+    );
+
+    // 2️⃣ Actualizar la tabla cuenta
+    await localDB.query(
+        `UPDATE cuenta 
+         SET idPlan = ?, fechaInicio = ?, fechaFin = ?, estado = 'activa'
+         WHERE idCuenta = ?`,
+        [idPlan, periodoInicio, periodoFin, idCuenta]
     );
 
     return result;

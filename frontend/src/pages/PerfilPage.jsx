@@ -21,7 +21,6 @@ function PerfilPage() {
   const avatares = ["👤", "😊", "🎮", "🌟", "🦄", "🐱", "🦁", "🐶", "🦊", "🐼", "🎯", "🎨", "⚽", "🎸", "🎭"];
 
   const reVerificarPago = async () => {
-    console.log("Re-verificando pago después de pago exitoso...");
     if (usuario) {
       await verificarPago(usuario.idUsuario);
     }
@@ -86,8 +85,7 @@ function PerfilPage() {
         avatar: selectedAvatar
       };
 
-      crearPerfil(body);
-      getPerfil(usuario.idUsuario);
+      crearPerfil(body, usuario.idUsuario, getPerfil);
       setEditingProfile(null);
       setNewProfileName("");
       setSelectedAvatar("👤");
