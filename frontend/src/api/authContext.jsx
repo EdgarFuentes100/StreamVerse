@@ -18,9 +18,53 @@ export const AuthProvider = ({ children }) => {
     const [contenidoFiltrado, setContenidoFiltrado] = useState([]);
     const [cargando, setCargando] = useState(true);
 
-    // 🔹 Obtener usuario - CORREGIDO para retornar Promise
+    // ✅ SOLO AGREGAR ESTOS DOS ESTADOS
+    const [pagoValido, setPagoValido] = useState(false);
+    const [maxPerfiles, setMaxPerfiles] = useState(1);
+
+    // ✅ SOLO AGREGAR ESTA FUNCIÓN
+    const getPagos = (idUsuario) => {
+        return getFetch(`pagos/pagos/${idUsuario}`)
+            .then(data => data.datos || [])
+            .catch((error) => {
+                console.error("Error en getPagos:", error);
+                return [];
+            });
+    };
+
+    // ✅ SOLO AGREGAR ESTA FUNCIÓN
+    const verificarPago = async (idUsuario) => {
+        if (!idUsuario) {
+            console.log("No hay usuario para verificar pago");
+            return false;
+        }
+
+        try {
+            const data = await getPagos(idUsuario);
+            const infoPago = data?.[0];
+
+            console.log("Pago detectado:", infoPago);
+
+            if (infoPago?.yaPago === 1) {
+                setPagoValido(true);
+                setMaxPerfiles(infoPago.maxPerfil || 1);
+                return true;
+            } else {
+                setPagoValido(false);
+                setMaxPerfiles(1);
+                return false;
+            }
+        } catch (error) {
+            console.error("Error verificando pago:", error);
+            setPagoValido(false);
+            setMaxPerfiles(1);
+            return false;
+        }
+    };
+
+    // 🔹 Obtener usuario - EXACTAMENTE IGUAL
     const getUsuario = () => {
-        return getFetch("auth/user") // ✅ Ya retorna Promise
+        return getFetch("auth/user")
             .then((data) => {
                 setUsuario(data.datos || null);
                 console.log("user", data.datos);
@@ -62,14 +106,6 @@ export const AuthProvider = ({ children }) => {
             .catch(() => null);
     };
 
-
-
-    // 🔹 Crear nuevo perfil - EXACTAMENTE IGUAL
-    const crearPerfil = (idUsuario, nombrePerfil) => {
-        return postFetch("perfil/crear", { idUsuario, nombrePerfil })
-            .then(() => getPerfil(idUsuario));
-    };
-
     // 🔹 Cerrar sesión - EXACTAMENTE IGUAL
     const logout = () => {
         getFetch("auth/logout").then(() => {
@@ -86,7 +122,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const getContenidoPlan = () => {
-        getFetch(`plan/listaContenido`) // 🔹 no pasas token, useFetch lo agrega
+        getFetch(`plan/listaContenido`)
             .then((data) => {
                 setContenidoPlan(data.datos || []);
                 console.log("contenido plan", data.datos);
@@ -125,15 +161,19 @@ export const AuthProvider = ({ children }) => {
         combinarContenido();
     }, [contenido, contenidoPlan, usuario]);
 
-    // 🔹 Cargar usuario al iniciar app - CORREGIDO
     useEffect(() => {
         const inicializarAuth = async () => {
             try {
-                await getUsuario(); // ✅ Ahora sí podemos usar await
+                const user = await getUsuario();
+
+                // ✅ AGREGAR: Verificar pago si hay usuario
+                if (user && user.idRol === 2) {
+                    await verificarPago(user.idUsuario);
+                }
             } catch (error) {
                 console.error("Error inicializando auth:", error);
             } finally {
-                setCargando(false); // ✅ Siempre dejar de cargar
+                setCargando(false);
             }
         };
 
@@ -150,14 +190,17 @@ export const AuthProvider = ({ children }) => {
                 contenidoPlan,
                 contenidoFiltrado,
                 cargando,
+                pagoValido,
+                maxPerfiles,
+                getPagos,
                 setPerfilActivo,
                 getUsuario,
                 getPerfil,
-                crearPerfil,
                 logout,
                 getContenido,
                 getContenidoPlan,
-                getPerfilActivo
+                getPerfilActivo,
+                verificarPago
             }}
         >
             {children}

@@ -18,6 +18,7 @@ import Videos from "../pages/ADMIN/Gestion_Contenido/Videos";
 import Plan from "../pages/ADMIN/Gestion_Contenido/Plan";
 import Usuario from "../pages/ADMIN/Gestion_Usuario/Usuario";
 import Rol from "../pages/ADMIN/Gestion_Usuario/Rol";
+import PlanesPage from "../pages/PlanesPage";
 
 function AppRoutes() {
     return (
@@ -26,18 +27,48 @@ function AppRoutes() {
             <Route path="/" element={<Home />} />
             <Route path="/Login" element={<LoginPage />} />
             <Route path="/Novedades" element={<NovedadesPage />} />
+            <Route path="/Planes" element={<PlanesPage />} />
 
-
-            <Route path="/Categoria" element={<Categoria />} />
-            <Route path="/Genero" element={<Genero />} />
-            <Route path="/Contenido" element={<Contenido />} />
-            <Route path="/Temporada" element={<Temporada />} />
-            <Route path="/Video" element={<Videos />} />
-            <Route path="/Plan" element={<Plan />} />
-
-            <Route path="/Usuario" element={<Usuario />} />
-            <Route path="/Rol" element={<Rol />} />
-
+            <Route path="/Categoria" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Categoria />
+                </ProtectedRoute>
+            } />
+            <Route path="/Genero" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Genero />
+                </ProtectedRoute>
+            } />
+            <Route path="/Contenido" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Contenido />
+                </ProtectedRoute>
+            } />
+            <Route path="/Temporada" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Temporada />
+                </ProtectedRoute>
+            } />
+            <Route path="/Video" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Videos />
+                </ProtectedRoute>
+            } />
+            <Route path="/Plan" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Plan />
+                </ProtectedRoute>
+            } />
+            <Route path="/Usuario" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Usuario />
+                </ProtectedRoute>
+            } />
+            <Route path="/Rol" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <Rol />
+                </ProtectedRoute>
+            } />
 
             {/* 🔒 Ruta de selección de perfil - SOLO para rol 2 */}
             <Route path="/Perfil" element={

@@ -2,10 +2,12 @@ import { useNavigate } from "react-router-dom";
 import Particles from "../components/Particles";
 import { useCategoria } from "../data/useCategoria";
 import { useContenido } from "../data/useContenido";
-import PlanesCarousel from "./PlanesCarousel";
+import PlanesPage from "./PlanesPage";
+import { useAuth } from "../api/authContext";
 
 function Home() {
   const { categoria } = useCategoria();
+  const { pagoValido } = useAuth();
   const { contenidoNuevo, contenidoPopular, contenidoGrupo } = useContenido();
   const navigate = useNavigate();
 
@@ -436,7 +438,8 @@ function Home() {
         </div>
       </section>
 
-      <PlanesCarousel />
+      {/* ✅ CORREGIDO: Mostrar PlanesPage solo si NO hay pago válido */}
+      {!pagoValido && <PlanesPage />}
     </>
   );
 }

@@ -130,62 +130,64 @@ function Header() {
             ))}
         </nav>
 
-        {/* Botones desktop */}
-        <div className="hidden lg:flex items-center space-x-4">
-          {/* 🔥 MENÚS DE ADMINISTRACIÓN IMPORTADOS */}
-          <div className="flex items-center space-x-2" ref={adminMenuRef}>
-            {adminMenus.map((menu) => (
-              <div key={menu.key} className="relative">
-                <button
-                  onClick={() => setActiveAdminMenu(activeAdminMenu === menu.key ? null : menu.key)}
-                  className={`flex items-center space-x-2 !bg-gradient-to-r ${menu.color} !text-white px-3 py-2 rounded-xl font-semibold hover:!shadow-lg ${menu.hoverColor} transition-all hover:scale-105 text-sm`}
-                >
-                  <span>{menu.icon}</span>
-                  <span>{menu.label}</span>
-                  <span className={`transform transition-transform ${activeAdminMenu === menu.key ? 'rotate-180' : ''}`}>
-                    ▼
-                  </span>
-                </button>
-
-                {/* Menú desplegable */}
-                {activeAdminMenu === menu.key && (
-                  <div className="absolute top-full right-0 mt-2 w-64 !bg-white/95 backdrop-blur-lg rounded-xl !shadow-2xl !border !border-gray-300 overflow-hidden z-50">
-                    <div className="p-2">
-                      <div className="px-3 py-2 !text-gray-800 !border-b !border-gray-300 font-semibold text-sm">
-                        {menu.label}
-                      </div>
-                      {menu.options.map((option, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleAdminMenuClick(option.ruta)}
-                          className="w-full flex items-center space-x-3 px-3 py-3 !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900 transition-all duration-200 rounded-lg"
-                        >
-                          <span className="text-lg">{option.icon}</span>
-                          <span className="font-medium text-sm">{option.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {perfilActivo && (
-            <button
-              onClick={handleCerrarPerfil}
-              className="!bg-red-500 !text-white px-3 py-1 rounded-lg hover:opacity-90 transition-all text-sm sm:text-base"
-            >
-              Salir del perfil
-            </button>
-          )}
+{/* Botones desktop */}
+<div className="hidden lg:flex items-center space-x-4">
+  {/* 🔥 MENÚS DE ADMINISTRACIÓN - SOLO PARA ROL 1 */}
+  {usuario && usuario.idRol === 1 && (
+    <div className="flex items-center space-x-2" ref={adminMenuRef}>
+      {adminMenus.map((menu) => (
+        <div key={menu.key} className="relative">
           <button
-            onClick={handleLoginClick}
-            className="!bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all hover:scale-105 text-sm sm:text-base"
+            onClick={() => setActiveAdminMenu(activeAdminMenu === menu.key ? null : menu.key)}
+            className={`flex items-center space-x-2 !bg-gradient-to-r ${menu.color} !text-white px-3 py-2 rounded-xl font-semibold hover:!shadow-lg ${menu.hoverColor} transition-all hover:scale-105 text-sm`}
           >
-            {usuario ? "Cerrar sesión" : "Iniciar sesión"}
+            <span>{menu.icon}</span>
+            <span>{menu.label}</span>
+            <span className={`transform transition-transform ${activeAdminMenu === menu.key ? 'rotate-180' : ''}`}>
+              ▼
+            </span>
           </button>
+
+          {/* Menú desplegable */}
+          {activeAdminMenu === menu.key && (
+            <div className="absolute top-full right-0 mt-2 w-64 !bg-white/95 backdrop-blur-lg rounded-xl !shadow-2xl !border !border-gray-300 overflow-hidden z-50">
+              <div className="p-2">
+                <div className="px-3 py-2 !text-gray-800 !border-b !border-gray-300 font-semibold text-sm">
+                  {menu.label}
+                </div>
+                {menu.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAdminMenuClick(option.ruta)}
+                    className="w-full flex items-center space-x-3 px-3 py-3 !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900 transition-all duration-200 rounded-lg"
+                  >
+                    <span className="text-lg">{option.icon}</span>
+                    <span className="font-medium text-sm">{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+      ))}
+    </div>
+  )}
+
+  {perfilActivo && (
+    <button
+      onClick={handleCerrarPerfil}
+      className="!bg-red-500 !text-white px-3 py-1 rounded-lg hover:opacity-90 transition-all text-sm sm:text-base"
+    >
+      Salir del perfil
+    </button>
+  )}
+  <button
+    onClick={handleLoginClick}
+    className="!bg-gradient-to-r !from-cyan-500 !to-purple-500 !text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-semibold hover:!shadow-lg hover:!shadow-cyan-500/25 transition-all hover:scale-105 text-sm sm:text-base"
+  >
+    {usuario ? "Cerrar sesión" : "Iniciar sesión"}
+  </button>
+</div>
 
         {/* Botón hamburguesa móvil */}
         <div className="lg:hidden">

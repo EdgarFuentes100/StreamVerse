@@ -3,8 +3,10 @@ import { usePayPal } from "../data/usePayPal";
 import { usePlan } from "../data/usePlan";
 import PayPalModal from "../components/PayPalModal";
 import { usePayPalSDK } from "../data/usePayPalSDK";
+import { useAuth } from "../api/authContext";
+import { useNavigate } from "react-router-dom";
 
-function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
+function PlanesPage() {
     const [planActivo, setPlanActivo] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [mostrarPayPal, setMostrarPayPal] = useState(false);
@@ -13,6 +15,8 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
     const { plan } = usePlan();
     const { procesarPagoExitoso } = usePayPal();
     const { sdkReady, error } = usePayPalSDK();
+    const { usuario, pagoValido, verificarPago } = useAuth();
+    const navigate = useNavigate();
 
     const colores = [
         "!from-cyan-500 !to-blue-500",
@@ -20,6 +24,17 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
         "!from-green-500 !to-emerald-500",
         "!from-orange-500 !to-red-500",
     ];
+
+    // ✅ REDIRIGIR SI YA TIENE PAGO VÁLIDO
+    useEffect(() => {
+        if (usuario && pagoValido) {
+            if (!usuario.perfilActivo) {
+                navigate("/Perfil");
+            } else {
+                navigate("/Catalogo");
+            }
+        }
+    }, [usuario, pagoValido, navigate]);
 
     const getPlanColor = (index) => {
         return colores[index % colores.length];
@@ -64,10 +79,10 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
                 setMostrarPayPal(false);
                 setPlanSeleccionado(null);
 
-                // ✅ Llamar al callback para notificar pago exitoso
-                if (onPagoExitoso) {
-                    console.log("Notificando pago exitoso al componente padre...");
-                    onPagoExitoso();
+                // ✅ VERIFICAR PAGO Y REDIRIGIR
+                if (usuario) {
+                    await verificarPago(usuario.idUsuario);
+                    navigate("/Perfil");
                 }
             } else {
                 alert(resultado.message);
@@ -124,7 +139,7 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
     // ✅ Mostrar estado de carga de PayPal
     if (error) {
         return (
-            <section className="py-12 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20">
+            <section className="min-h-screen py-12 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20 flex items-center justify-center">
                 <div className="container mx-auto text-center">
                     <div className="!text-red-500 text-xl mb-4">❌ Error al cargar PayPal</div>
                     <p className="!text-gray-300 mb-4">{error}</p>
@@ -141,7 +156,7 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
 
     if (!plan || plan.length === 0) {
         return (
-            <section className="py-12 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20">
+            <section className="min-h-screen py-12 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20 flex items-center justify-center">
                 <div className="container mx-auto text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 !border-purple-500 mx-auto"></div>
                     <p className="!text-gray-300 mt-4">Cargando planes...</p>
@@ -153,7 +168,7 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
     // ✅ Mostrar carga de PayPal SDK
     if (!sdkReady) {
         return (
-            <section className="py-12 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20">
+            <section className="min-h-screen py-12 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20 flex items-center justify-center">
                 <div className="container mx-auto text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 !border-blue-500 mx-auto"></div>
                     <p className="!text-gray-300 mt-4">Inicializando PayPal...</p>
@@ -164,7 +179,7 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
     }
 
     return (
-        <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20">
+        <section className="min-h-screen py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 !bg-gradient-to-br !from-gray-900 !via-purple-900/20 !to-cyan-900/20">
             <div className="container mx-auto">
 
                 <PayPalModal
@@ -301,4 +316,4 @@ function PlanesCarousel({ onPagoExitoso }) { // ✅ Recibir callback como prop
     );
 }
 
-export default PlanesCarousel;
+export default PlanesPage;
