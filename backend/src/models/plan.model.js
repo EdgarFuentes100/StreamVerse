@@ -24,14 +24,29 @@ async function getPlanPerfil(idPerfil) {
   return rows;
 }
 
-async function gertPermsioVideo(idContendio) {
-  const [rows] = await localDB.query(
-    `SELECT * FROM contenido_plan where idContenido = ?;`,
-    [idContendio]
+async function getPermisoVideo(idUsuario, idContenido) {
+  // Verificar si es admin
+  const [adminRows] = await localDB.query(
+    `SELECT idRol FROM usuario WHERE idUsuario = ? AND idRol = 1`,
+    [idUsuario]
   );
+  
+  // Si es admin, retornar un objeto indicando permiso
+  if (adminRows.length > 0) {
+    return [{ idContenido: idContenido, tienePermiso: 1 }];
+  }
+  
+  // Si no es admin, verificar si está en su plan
+  const [rows] = await localDB.query(
+    `SELECT cp.* 
+     FROM contenido_plan cp
+     INNER JOIN cuenta c ON cp.idPlan = c.idPlan
+     WHERE c.idUsuario = ? AND cp.idContenido = ?`,
+    [idUsuario, idContenido]
+  );
+  
   return rows;
 }
-
 async function getPlanes() {
   const [rows] = await localDB.query(
     `SELECT * FROM plan`
@@ -53,7 +68,7 @@ async function crearPlanModelo(body) {
 
 // Actualizar una categoría
 async function actualizarPlanModelo(id, body) {
-  const { nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios} = body;
+  const { nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios } = body;
 
   const [result] = await localDB.query(
     `UPDATE Plan SET nombre = ?, precio = ?, maxPerfil = ?, calidad = ?, contenidoExclusivo = ?, contenidoNuevo = ?,
@@ -74,4 +89,4 @@ async function eliminarPlanModelo(id) {
   return result;
 }
 
-module.exports = { getPlanPerfil, gertPermsioVideo, getPlanes, crearPlanModelo, actualizarPlanModelo, eliminarPlanModelo };
+module.exports = { getPlanPerfil, getPermisoVideo, getPlanes, crearPlanModelo, actualizarPlanModelo, eliminarPlanModelo };

@@ -87,6 +87,43 @@ async function getContenidoCategoria(idCategoria) {
     return rows;
 }
 
+
+async function getContenidoRecomendacion(idCuenta, idContenidoActual, esAdmin = false) {
+    console.log(idCuenta, idContenidoActual, esAdmin);
+    const [rows] = await localDB.query(
+        `SELECT 
+            c.*,
+            GROUP_CONCAT(DISTINCT g.nombre) as genero,
+            CASE 
+                WHEN ? = true THEN 1  -- Admin: siempre disponible
+                ELSE 
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1 FROM contenido_plan cp 
+                            WHERE cp.idContenido = c.idContenido 
+                            AND cp.idPlan = (SELECT idPlan FROM cuenta WHERE idCuenta = ?)
+                        ) THEN 1 
+                        ELSE 0 
+                    END
+            END as enPlan
+        FROM contenido c
+        INNER JOIN contenido_genero cg ON c.idContenido = cg.idContenido
+        INNER JOIN genero g ON cg.idGenero = g.idGenero
+        WHERE g.nombre IN (
+            SELECT DISTINCT g2.nombre 
+            FROM genero g2
+            INNER JOIN contenido_genero cg2 ON g2.idGenero = cg2.idGenero
+            WHERE cg2.idContenido = ?
+        )
+        AND c.idContenido != ?
+        GROUP BY c.idContenido
+        ORDER BY c.rating DESC
+        LIMIT 12`,
+        [esAdmin, idCuenta, idContenidoActual, idContenidoActual]
+    );
+
+    return rows;
+}
 // Crear una categoría
 async function crearContenidoModelo(body) {
     const { title, image, rating, year, descripcion, duracion, temporadas, episodios,
@@ -138,5 +175,6 @@ module.exports = {
     getContenidoCategoria,
     crearContenidoModelo,
     actualizarContenidoModelo,
-    eliminarContenidoModelo
+    eliminarContenidoModelo,
+    getContenidoRecomendacion
 };

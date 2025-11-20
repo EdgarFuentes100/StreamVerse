@@ -78,6 +78,26 @@ async function contenidoCategoria(req, res, next) {
     }
 }
 
+async function getRecomendaciones(req, res, next) {
+    try {
+        const { idCuenta, idContenido, esAdmin } = req.params;
+
+        const datos = await Data.getContenidoRecomendacion(
+            idCuenta,
+            idContenido,
+            esAdmin === 'true' // Convertir string a boolean
+        );
+
+        res.json({
+            ok: true,
+            message: "Recomendaciones cargadas",
+            datos
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 // CREAR
 async function crearContenido(req, res, next) {
 
@@ -130,7 +150,7 @@ async function eliminarContenido(req, res, next) {
         }
 
         return res.json({ ok: true, mensaje: "Eliminado correctamente", datos: null });
-        
+
     } catch (err) {
         next(err);
     }
@@ -144,5 +164,6 @@ module.exports = {
     contenidoCategoria,
     crearContenido,
     actualizarContenido,
-    eliminarContenido
+    eliminarContenido,
+    getRecomendaciones
 };

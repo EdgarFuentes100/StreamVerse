@@ -77,17 +77,17 @@ const useContenido = () => {
             });
     };
 
-    const getRecomendaciones = () => {
-        getFetch('contenido/listado')
+    const getRecomendaciones = (idCuenta, idContenido, esAdmin = false) => {
+        console.log(idCuenta, idContenido, esAdmin, "aaa");
+        getFetch(`contenido/recomendaciones/${idCuenta}/${idContenido}/${esAdmin}`)
             .then((data) => {
                 setRecomendacion(data.datos || []);
-                console.log("informacion", data.datos);
+                console.log("recomendaciones", data.datos);
             })
             .catch((error) => {
-                console.error('Error al obtener:', error);
+                console.error('Error al obtener recomendaciones:', error);
             });
     };
-
 
     useEffect(() => {
         getContenido();
@@ -105,9 +105,6 @@ const useContenido = () => {
         getContenidoGrupo();
     }, []);
 
-    useEffect(() => {
-        getRecomendaciones();
-    }, []);
 
     // ======== PETICIONES CRUD ========
     const crearContenido = (body) => {
@@ -156,7 +153,8 @@ const useContenido = () => {
         recomendacion,
         crearContenido,
         actualizarContenido,
-        eliminarContenido
+        eliminarContenido,
+        getRecomendaciones
     };
 };
 

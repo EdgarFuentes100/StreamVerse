@@ -4,12 +4,14 @@ import { useVideo } from "../data/useVideo";
 import { useContenido } from "../data/useContenido";
 import { useTemporada } from "../data/useTemporada";
 import { usePlan } from "../data/usePlan";
+import { useAuth } from "../api/authContext";
 
 function ReproductorPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const videoRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
+  const { usuario } = useAuth();
 
   // Estados
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,7 +27,7 @@ function ReproductorPage() {
   const [verificandoContenido, setVerificandoContenido] = useState(true);
 
   const { getVideos, videos, getVideoActual, videoActual } = useVideo();
-  const { getContenidoInfo, contenidoInfo, recomendacion } = useContenido();
+  const { getContenidoInfo, contenidoInfo, recomendacion, getRecomendaciones } = useContenido();
   const { getTemporadas, temporadas } = useTemporada();
   const { getVerficarPermiso, disponible } = usePlan();
 
@@ -43,7 +45,7 @@ function ReproductorPage() {
       setVideoActualLocal(null);
 
       // Verificar permiso/existencia del contenido
-      await getVerficarPermiso(id);
+      await getVerficarPermiso(usuario.idUsuario, id);
 
       setVerificandoContenido(false);
     };
@@ -51,14 +53,20 @@ function ReproductorPage() {
     verificarContenido();
   }, [id]);
 
-  // Cuando la verificación está completa y el contenido está disponible
+
   useEffect(() => {
     if (!verificandoContenido && disponible) {
-      // Cargar contenido solo si está disponible
       getTemporadas(id);
       getContenidoInfo(id);
+
+      console.log("verifivando rol", usuario);
+      if (usuario) {
+        // Determinar si es admin (rol 1 = admin)
+        const esAdmin = usuario.idRol === 1;
+        getRecomendaciones(usuario.idCuenta, id, esAdmin); // idContenido como segundo parámetro
+      }
     }
-  }, [verificandoContenido, disponible]);
+  }, [verificandoContenido, disponible, id, usuario]);
 
   // Sincronizar videos del hook con estado local
   useEffect(() => {
@@ -255,15 +263,15 @@ function ReproductorPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
-              onClick={() => navigate('/catalogo')}
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+              onClick={() => navigate('/Catalogo')}
+              className="!bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
             >
               Volver al Catálogo
             </button>
             {contenidoInfo && (
               <button
-                onClick={() => navigate('/planes')}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                onClick={() => navigate('/Planes')}
+                className="!bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
               >
                 Ver Planes
               </button>
@@ -674,25 +682,44 @@ function ReproductorPage() {
               <span>🎬</span>
               <span>Te podría gustar</span>
             </h2>
+
+            {/* Leyenda de estados */}
+            <div className="flex items-center gap-4 mb-4 p-3 bg-gray-800/50 rounded-lg border border-cyan-500/20">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-4 h-4 bg-cyan-500 rounded"></div>
+                <span className="text-gray-300">Contenido disponible</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-4 h-4 bg-red-500 rounded flex items-center justify-center">
+                  <span className="text-xs text-white">🔒</span>
+                </div>
+                <span className="text-gray-300">No incluido en tu plan</span>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
               {recomendacion.slice(0, 8).map((item) => (
                 <div
                   key={item.idContenido}
-                  onClick={() => handleIrAContenido(item)}
-                  className="group bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 border border-transparent hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10"
+                  onClick={() => item.enPlan ? handleIrAContenido(item) : handleContenidoBloqueado(item)}
+                  className={`group bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border ${item.enPlan
+                    ? 'border-transparent hover:border-cyan-400/50 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/10'
+                    : 'border-red-500/50 hover:border-red-400/70 hover:shadow-lg hover:shadow-red-500/20'
+                    }`}
                 >
                   <div className="relative">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-24 sm:h-28 md:h-32 object-cover group-hover:scale-110 transition-transform duration-700"
+                      className={`w-full h-24 sm:h-28 md:h-32 object-cover transition-transform duration-700 ${item.enPlan ? 'group-hover:scale-110' : 'filter grayscale blur-[1px]'
+                        }`}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
 
                     <div className="absolute top-1 left-1 md:top-2 md:left-2">
-                      <div className={`${getBadgeColor(item.nombre)} text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
-                        <span className="sm:hidden">{getIcon(item.nombre)}</span>
-                        <span className="hidden sm:inline">{item.nombre}</span>
+                      <div className={`${getBadgeColor(item.categoria || item.nombre)} text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
+                        <span className="sm:hidden">{getIcon(item.categoria || item.nombre)}</span>
+                        <span className="hidden sm:inline">{item.categoria || item.nombre}</span>
                       </div>
                     </div>
 
@@ -700,10 +727,19 @@ function ReproductorPage() {
                       <span>⭐</span>
                       <span className="hidden xs:inline">{item.rating}</span>
                     </div>
+
+                    {/* Overlay de bloqueado */}
+                    {!item.enPlan && (
+                      <div className="absolute inset-0 bg-gray-900/80 flex flex-col items-center justify-center p-2">
+                        <div className="text-2xl mb-1">🔒</div>
+                        <div className="text-white text-xs font-bold text-center">No disponible en tu plan</div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="p-2 md:p-3">
-                    <h3 className="font-semibold text-white text-xs md:text-sm line-clamp-2 group-hover:text-cyan-400 transition-colors mb-1 md:mb-2">
+                    <h3 className={`font-semibold text-xs md:text-sm line-clamp-2 transition-colors mb-1 md:mb-2 ${item.enPlan ? 'text-white group-hover:text-cyan-400' : 'text-gray-500'
+                      }`}>
                       {item.title}
                     </h3>
                     <div className="flex justify-between items-center text-xs text-gray-400">

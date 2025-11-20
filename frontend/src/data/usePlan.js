@@ -17,8 +17,8 @@ const usePlan = () => {
             });
     };
 
-    const getVerficarPermiso = (idContenido) => {
-        getFetch(`plan/verificarPermisoVideo/${idContenido}`)
+    const getVerficarPermiso = (idCuenta, idContenido) => {
+    getFetch(`plan/verificarPermisoVideo/${idCuenta}/${idContenido}`)
             .then((data) => {
                 setDisponible(data.datos.existe);
                 console.log("SI EXISTE", data.datos.existe);

@@ -16,7 +16,7 @@ async function listaContendio(req, res, next) {
 
 async function verificarPermisoVideo(req, res, next) {
     try {
-        const datos = await Data.gertPermsioVideo(req.params.id);
+        const datos = await Data.getPermisoVideo(req.params.idCuenta, req.params.idContenido);
         const existe = datos && datos.length > 0;
         // Si exite es que esta disponible para ver
         res.json({
