@@ -6,6 +6,7 @@ import { usePayPalSDK } from "../data/usePayPalSDK";
 import PayPalModal from "../components/PayPalModal";
 import { useNavigate } from "react-router-dom";
 import Particles from '../components/Particles';
+import Toast from '../components/Toast';
 
 function CambiarPlanPage() {
     const { usuario } = useAuth();
@@ -13,11 +14,13 @@ function CambiarPlanPage() {
     const { procesarPagoExitoso } = usePayPal();
     const { sdkReady, error } = usePayPalSDK();
     const navigate = useNavigate();
-
     const [cargando, setCargando] = useState(true);
     const [planSeleccionado, setPlanSeleccionado] = useState(null);
     const [mostrarPayPal, setMostrarPayPal] = useState(false);
-
+    const [toast, setToast] = useState(null);
+    const mostrarToast = (tipo, mensaje) => {
+        setToast({ tipo, mensaje });
+    };
     useEffect(() => {
         const cargarPlanes = async () => {
             if (usuario?.idCuenta) {
@@ -34,7 +37,7 @@ function CambiarPlanPage() {
 
     const handleSeleccionarPlan = (planItem) => {
         if (!sdkReady) {
-            alert("PayPal aún no está listo. Por favor, espera un momento.");
+            mostrarToast("error", "PayPal aún no está listo. Por favor, espera un momento");
             return;
         }
         setPlanSeleccionado(planItem);
@@ -46,28 +49,27 @@ function CambiarPlanPage() {
             const resultado = await procesarPagoExitoso(planSeleccionado, details);
 
             if (resultado.success) {
-                alert(resultado.message);
+                mostrarToast("success", resultado.message);
                 setMostrarPayPal(false);
                 setPlanSeleccionado(null);
 
-                // ✅ REDIRIGIR A CATÁLOGO DESPUÉS DE PAGO EXITOSO
-                navigate("/Catalogo");
+                setTimeout(() => navigate("/Catalogo"), 2000);
             } else {
-                alert(resultado.message);
+                mostrarToast("error", resultado.message);
             }
         } catch (error) {
             console.error("Error en el procesamiento del pago:", error);
-            alert("Error al procesar el pago. Por favor, contacta con soporte.");
+            mostrarToast("error", "Error al procesar el pago. Por favor, contacta con soporte.");
         }
     };
 
     const handlePaymentError = (error) => {
         console.error('Error en PayPal:', error);
-        alert("Error en el pago. Por favor, intenta nuevamente.");
+        mostrarToast("error", "Error en el pago. Por favor, intenta nuevamente.");
     };
 
     const handlePaymentCancel = () => {
-        alert("Pago cancelado");
+        mostrarToast("error", "Pago cancelado");
         setMostrarPayPal(false);
         setPlanSeleccionado(null);
     };
@@ -116,6 +118,14 @@ function CambiarPlanPage() {
 
     return (
         <div className="min-h-screen bg-gray-950 pt-20">
+            {toast && (
+                <Toast
+                    tipo={toast.tipo}
+                    mensaje={toast.mensaje}
+                    onClose={() => setToast(null)}
+                />
+            )}
+
             <Particles
                 count={{ sm: 200, lg: 700 }}      // Cantidad de partículas según tamaño
                 intensity={{ sm: "low", lg: "medium" }}  // Opacidad según tamaño
