@@ -131,6 +131,86 @@ function ReproductorPage() {
     showControlsTemporarily();
   };
 
+  const handleContenidoBloqueado = (contenido) => {
+    // Crear overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  `;
+
+    // Crear diálogo
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+  `;
+
+    // Contenido del diálogo
+    dialog.innerHTML = `
+    <h3 style="margin: 0 0 15px 0; color: #333; font-size: 1.3em;">🔒 Contenido Bloqueado</h3>
+    <p style="margin: 0 0 20px 0; color: #666; line-height: 1.4;">
+      "<strong>${contenido.title}</strong>" no está disponible en tu plan actual.
+    </p>
+    <p style="margin: 0 0 25px 0; color: #666;">
+      ¿Quieres ver los planes disponibles?
+    </p>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+      <button id="btnCancelar" style="
+        padding: 10px 20px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #666;
+      ">Cancelar</button>
+      <button id="btnVerPlanes" style="
+        padding: 10px 20px;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      ">Ver Planes</button>
+    </div>
+  `;
+
+    // Agregar al DOM
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Eventos
+    document.getElementById('btnCancelar').onclick = () => {
+      document.body.removeChild(overlay);
+    };
+
+    document.getElementById('btnVerPlanes').onclick = () => {
+      document.body.removeChild(overlay);
+      navigate('/CambiarPlan');
+    };
+
+    // Cerrar al hacer clic fuera
+    overlay.onclick = (e) => {
+      if (e.target === overlay) {
+        document.body.removeChild(overlay);
+      }
+    };
+  };
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime);
