@@ -5,6 +5,7 @@ import { useContenido } from "../data/useContenido";
 import { useTemporada } from "../data/useTemporada";
 import { usePlan } from "../data/usePlan";
 import { useAuth } from "../api/authContext";
+import ModalUniversal from "../components/ModalUniversal";
 
 function ReproductorPage() {
   const { id } = useParams();
@@ -30,6 +31,14 @@ function ReproductorPage() {
   const { getContenidoInfo, contenidoInfo, recomendacion, getRecomendaciones } = useContenido();
   const { getTemporadas, temporadas } = useTemporada();
   const { getVerficarPermiso, disponible } = usePlan();
+  const [modal, setModal] = useState({
+    mostrar: false,
+    titulo: "",
+    mensaje: "",
+    onAceptar: () => { },
+    textoAceptar: "Aceptar",
+    tipo: "info"
+  });
 
   // Verificar contenido cuando cambia el ID - CORREGIDO
   useEffect(() => {
@@ -132,85 +141,16 @@ function ReproductorPage() {
   };
 
   const handleContenidoBloqueado = (contenido) => {
-    // Crear overlay
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  `;
-
-    // Crear diálogo
-    const dialog = document.createElement('div');
-    dialog.style.cssText = `
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-  `;
-
-    // Contenido del diálogo
-    dialog.innerHTML = `
-    <h3 style="margin: 0 0 15px 0; color: #333; font-size: 1.3em;">🔒 Contenido Bloqueado</h3>
-    <p style="margin: 0 0 20px 0; color: #666; line-height: 1.4;">
-      "<strong>${contenido.title}</strong>" no está disponible en tu plan actual.
-    </p>
-    <p style="margin: 0 0 25px 0; color: #666;">
-      ¿Quieres ver los planes disponibles?
-    </p>
-    <div style="display: flex; gap: 10px; justify-content: center;">
-      <button id="btnCancelar" style="
-        padding: 10px 20px;
-        border: 1px solid #ddd;
-        background: white;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #666;
-      ">Cancelar</button>
-      <button id="btnVerPlanes" style="
-        padding: 10px 20px;
-        border: none;
-        background: #007bff;
-        color: white;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-      ">Ver Planes</button>
-    </div>
-  `;
-
-    // Agregar al DOM
-    overlay.appendChild(dialog);
-    document.body.appendChild(overlay);
-
-    // Eventos
-    document.getElementById('btnCancelar').onclick = () => {
-      document.body.removeChild(overlay);
-    };
-
-    document.getElementById('btnVerPlanes').onclick = () => {
-      document.body.removeChild(overlay);
-      navigate('/CambiarPlan');
-    };
-
-    // Cerrar al hacer clic fuera
-    overlay.onclick = (e) => {
-      if (e.target === overlay) {
-        document.body.removeChild(overlay);
-      }
-    };
+    setModal({
+      mostrar: true,
+      titulo: "🔒 Contenido Bloqueado",
+      mensaje: `"${contenido.title}" no está disponible en tu plan actual. ¿Te gustaría ver los planes disponibles?`,
+      onAceptar: () => navigate("/CambiarPlan"),
+      textoAceptar: "Ver Planes",
+      tipo: "warning"
+    });
   };
+
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime);
@@ -297,12 +237,12 @@ function ReproductorPage() {
 
   const getBadgeColor = (categoria) => {
     const colors = {
-      'Anime': 'bg-pink-500',
-      'Película': 'bg-purple-500',
-      'Serie': 'bg-cyan-500',
-      'Dorama': 'bg-red-500'
+      'Anime': '!bg-pink-500',
+      'Película': '!bg-purple-500',
+      'Serie': '!bg-cyan-500',
+      'Dorama': '!bg-red-500'
     };
-    return colors[categoria] || 'bg-gray-500';
+    return colors[categoria] || '!bg-gray-500';
   };
 
   const getIcon = (categoria) => {
@@ -318,7 +258,7 @@ function ReproductorPage() {
   // 🔥 PANTALLA DE CARGA durante la verificación
   if (verificandoContenido) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center pt-20 px-4">
+      <div className="min-h-screen !bg-gray-950 flex items-center justify-center pt-20 px-4">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🔍</div>
           <h2 className="text-2xl font-bold text-white mb-2">Verificando contenido</h2>
@@ -331,7 +271,7 @@ function ReproductorPage() {
   // 🔥 PANTALLA DE CONTENIDO BLOQUEADO/NO DISPONIBLE
   if (disponible === false) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center pt-20 px-4">
+      <div className="min-h-screen !bg-gray-950 flex items-center justify-center pt-20 px-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-6">🔒</div>
           <h1 className="text-2xl font-bold text-white mb-4">Contenido No Disponible</h1>
@@ -382,16 +322,25 @@ function ReproductorPage() {
   }
 
   return (
-    <div className="pt-16 md:pt-20 min-h-screen bg-gray-950">
+    <div className="pt-16 md:pt-20 min-h-screen !bg-gray-950">
+      <ModalUniversal
+        mostrar={modal.mostrar}
+        onClose={() => setModal({ ...modal, mostrar: false })}
+        onAceptar={modal.onAceptar}
+        titulo={modal.titulo}
+        mensaje={modal.mensaje}
+        textoAceptar={modal.textoAceptar}
+        tipo={modal.tipo}
+      />
       <div className="container mx-auto px-3 sm:px-4 md:px-8 pb-6 md:pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
           {/* Área Principal del Video */}
           <div className="lg:col-span-3">
             {/* Reproductor */}
-            <div className="bg-gray-900 rounded-xl md:rounded-2xl overflow-hidden border border-cyan-500/30 shadow-2xl shadow-cyan-500/10">
+            <div className="!bg-gray-900 rounded-xl md:rounded-2xl overflow-hidden border border-cyan-500/30 shadow-2xl shadow-cyan-500/10">
               {/* Video Container */}
               <div
-                className="relative bg-black aspect-video group"
+                className="relative !bg-black aspect-video group"
                 onMouseEnter={() => setShowControls(true)}
                 onMouseLeave={() => setShowControls(false)}
                 onTouchStart={showControlsTemporarily}
@@ -411,7 +360,7 @@ function ReproductorPage() {
                     />
 
                     {/* Overlay de controles */}
-                    <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    <div className={`absolute inset-0 !bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
                       }`}>
 
                       {/* Controles superiores */}
@@ -422,14 +371,14 @@ function ReproductorPage() {
                             <span className="hidden sm:inline">{getIcon(contenidoInfo.categoria)} {contenidoInfo.categoria}</span>
                           </span>
                           {contenidoInfo.isNew && (
-                            <span className="bg-green-500 text-white px-1 py-1 rounded text-xs font-bold backdrop-blur-sm">
+                            <span className="!bg-green-500 text-white px-1 py-1 rounded text-xs font-bold backdrop-blur-sm">
                               NUEVO
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-center space-x-2">
-                          <span className="bg-yellow-500 text-gray-900 px-2 py-1 rounded text-xs font-bold flex items-center space-x-1">
+                          <span className="!bg-yellow-500 text-gray-900 px-2 py-1 rounded text-xs font-bold flex items-center space-x-1">
                             <span>⭐</span>
                             <span className="hidden xs:inline">{contenidoInfo.rating}</span>
                           </span>
@@ -442,7 +391,7 @@ function ReproductorPage() {
                           onClick={togglePlay}
                           className="transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
                         >
-                          <div className="bg-black/50 backdrop-blur-sm rounded-full p-3 md:p-4">
+                          <div className="!bg-black/50 backdrop-blur-sm rounded-full p-3 md:p-4">
                             <span className="text-white text-3xl md:text-4xl">
                               {isPlaying ? '⏸️' : '▶️'}
                             </span>
@@ -451,7 +400,7 @@ function ReproductorPage() {
                       </div>
 
                       {/* Controles inferiores */}
-                      <div className="absolute bottom-0 left-0 right-0 p-2 md:p-4 bg-gradient-to-t from-black/90 to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-2 md:p-4 !bg-gradient-to-t from-black/90 to-transparent">
                         {/* Barra de progreso */}
                         <div className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-3">
                           <span className="text-white text-xs md:text-sm font-mono min-w-[35px] md:min-w-[40px]">
@@ -463,7 +412,7 @@ function ReproductorPage() {
                             max={duration || 0}
                             value={currentTime}
                             onChange={handleSeek}
-                            className="flex-1 h-1.5 md:h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 md:[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-3 md:[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg"
+                            className="flex-1 h-1.5 md:h-1 !bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 md:[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-3 md:[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:!bg-cyan-400 [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg"
                           />
                           <span className="text-white text-xs md:text-sm font-mono min-w-[35px] md:min-w-[40px]">
                             {formatTime(duration)}
@@ -475,7 +424,7 @@ function ReproductorPage() {
                           <div className="flex items-center space-x-3 md:space-x-4">
                             <button
                               onClick={togglePlay}
-                              className="bg-gray-800 text-white hover:text-cyan-400 transition-colors text-lg md:text-base p-2 rounded-lg"
+                              className="!bg-gray-800 text-white hover:text-cyan-400 transition-colors text-lg md:text-base p-2 rounded-lg"
                             >
                               {isPlaying ? '⏸️' : '▶️'}
                             </button>
@@ -490,7 +439,7 @@ function ReproductorPage() {
                                 step="0.1"
                                 value={volume}
                                 onChange={handleVolumeChange}
-                                className="w-16 md:w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-400"
+                                className="w-16 md:w-20 h-1 !bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:!bg-cyan-400"
                               />
                             </div>
 
@@ -502,7 +451,7 @@ function ReproductorPage() {
                           <div className="flex items-center space-x-2 md:space-x-3">
                             <button
                               onClick={toggleFullscreen}
-                              className="bg-gray-800 text-white hover:text-cyan-400 transition-colors text-lg md:text-base"
+                              className="!bg-gray-800 text-white hover:text-cyan-400 transition-colors text-lg md:text-base"
                             >
                               {isFullscreen ? '⤢' : '⤡'}
                             </button>
@@ -529,7 +478,7 @@ function ReproductorPage() {
                     {!cargandoVideos && (
                       <button
                         onClick={() => navigate('/catalogo')}
-                        className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+                        className="!bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
                       >
                         Explorar Catálogo
                       </button>
@@ -569,7 +518,7 @@ function ReproductorPage() {
                       {generosArray.map((genero) => (
                         <span
                           key={genero}
-                          className="bg-gray-700 px-2 py-1 rounded-lg text-xs text-gray-300 whitespace-nowrap flex-shrink-0"
+                          className="!bg-gray-700 px-2 py-1 rounded-lg text-xs text-gray-300 whitespace-nowrap flex-shrink-0"
                         >
                           {genero}
                         </span>
@@ -583,11 +532,11 @@ function ReproductorPage() {
 
                   {/* Botones de acción */}
                   <div className="flex lg:flex-col gap-2 md:gap-3 justify-center">
-                    <button className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-105 flex items-center space-x-2 text-sm md:text-base">
+                    <button className="!bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-105 flex items-center space-x-2 text-sm md:text-base">
                       <span>❤️</span>
                       <span className="hidden sm:inline">Agregar a mi lista</span>
                     </button>
-                    <button className="!bg-gray-700 hover:bg-gray-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all flex items-center space-x-2 text-sm md:text-base" onClick={() => navigate('/catalogo')}>
+                    <button className="!bg-gray-700 hover:!bg-gray-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all flex items-center space-x-2 text-sm md:text-base" onClick={() => navigate('/catalogo')}>
                       <span>🎞️</span>
                       <span>Ir a catálogo</span>
                     </button>
@@ -600,7 +549,7 @@ function ReproductorPage() {
           {/* Panel Lateral */}
           <div className="lg:col-span-1 space-y-4 md:space-y-6">
             {/* Información del Contenido */}
-            <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-cyan-500/20">
+            <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-cyan-500/20">
               <h3 className="text-base md:text-lg font-bold text-cyan-400 mb-3 md:mb-4 flex items-center space-x-2">
                 <span>📋</span>
                 <span>Información</span>
@@ -625,7 +574,7 @@ function ReproductorPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 md:gap-3 text-center">
-                <div className="bg-gray-700/50 rounded-lg md:rounded-xl p-2 md:p-3">
+                <div className="!bg-gray-700/50 rounded-lg md:rounded-xl p-2 md:p-3">
                   <div className="text-cyan-400 font-bold text-base md:text-lg">
                     {contenidoInfo.episodios}
                   </div>
@@ -633,7 +582,7 @@ function ReproductorPage() {
                     {contenidoInfo.categoria === 'Película' ? 'Películas' : 'Episodios'}
                   </div>
                 </div>
-                <div className="bg-gray-700/50 rounded-lg md:rounded-xl p-2 md:p-3">
+                <div className="!bg-gray-700/50 rounded-lg md:rounded-xl p-2 md:p-3">
                   <div className="text-purple-400 font-bold text-base md:text-lg">
                     {contenidoInfo.year}
                   </div>
@@ -675,7 +624,7 @@ function ReproductorPage() {
             )}
 
             {/* Lista de Episodios/Películas */}
-            <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-purple-500/20">
+            <div className="!bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-purple-500/20">
               <h3 className="text-base md:text-lg font-bold text-purple-400 mb-3 md:mb-4 flex items-center space-x-2">
                 <span>🎥</span>
                 <span>
@@ -695,8 +644,8 @@ function ReproductorPage() {
                       key={video.idEpisodio}
                       onClick={() => handleVideoChange(video)}
                       className={`group cursor-pointer p-2 md:p-3 rounded-lg md:rounded-xl transition-all duration-300 border backdrop-blur-sm ${videoActualLocal?.idEpisodio === video.idEpisodio
-                        ? 'bg-purple-500/20 border-purple-400 shadow-lg shadow-purple-500/25'
-                        : 'bg-gray-700/50 border-transparent hover:border-purple-500/30 hover:bg-gray-600/50'
+                        ? '!bg-purple-500/20 border-purple-400 shadow-lg shadow-purple-500/25'
+                        : '!bg-gray-700/50 border-transparent hover:border-purple-500/30 hover:!bg-gray-600/50'
                         }`}
                     >
                       <div className="flex space-x-2 md:space-x-3">
@@ -706,11 +655,11 @@ function ReproductorPage() {
                             alt={video.title}
                             className="w-12 h-9 md:w-16 md:h-12 object-cover rounded-md md:rounded-lg"
                           />
-                          <div className="absolute bottom-0.5 right-0.5 bg-black/80 text-white text-xs px-0.5 rounded">
+                          <div className="absolute bottom-0.5 right-0.5 !bg-black/80 text-white text-xs px-0.5 rounded">
                             {video.duration}
                           </div>
                           {videoActualLocal?.idEpisodio === video.idEpisodio && (
-                            <div className="absolute inset-0 bg-purple-400/20 rounded-md md:rounded-lg flex items-center justify-center">
+                            <div className="absolute inset-0 !bg-purple-400/20 rounded-md md:rounded-lg flex items-center justify-center">
                               <span className="text-white text-xs md:text-sm">▶</span>
                             </div>
                           )}
@@ -764,13 +713,13 @@ function ReproductorPage() {
             </h2>
 
             {/* Leyenda de estados */}
-            <div className="flex items-center gap-4 mb-4 p-3 bg-gray-800/50 rounded-lg border border-cyan-500/20">
+            <div className="flex items-center gap-4 mb-4 p-3 !bg-gray-800/50 rounded-lg border border-cyan-500/20">
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-4 h-4 bg-cyan-500 rounded"></div>
+                <div className="w-4 h-4 !bg-cyan-500 rounded"></div>
                 <span className="text-gray-300">Contenido disponible</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-4 h-4 bg-red-500 rounded flex items-center justify-center">
+                <div className="w-4 h-4 !bg-red-500 rounded flex items-center justify-center">
                   <span className="text-xs text-white">🔒</span>
                 </div>
                 <span className="text-gray-300">No incluido en tu plan</span>
@@ -782,7 +731,7 @@ function ReproductorPage() {
                 <div
                   key={item.idContenido}
                   onClick={() => item.enPlan ? handleIrAContenido(item) : handleContenidoBloqueado(item)}
-                  className={`group bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border ${item.enPlan
+                  className={`group !bg-gray-800/80 backdrop-blur-sm rounded-lg md:rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border ${item.enPlan
                     ? 'border-transparent hover:border-cyan-400/50 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/10'
                     : 'border-red-500/50 hover:border-red-400/70 hover:shadow-lg hover:shadow-red-500/20'
                     }`}
@@ -794,7 +743,7 @@ function ReproductorPage() {
                       className={`w-full h-24 sm:h-28 md:h-32 object-cover transition-transform duration-700 ${item.enPlan ? 'group-hover:scale-110' : 'filter grayscale blur-[1px]'
                         }`}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute inset-0 !bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
 
                     <div className="absolute top-1 left-1 md:top-2 md:left-2">
                       <div className={`${getBadgeColor(item.categoria || item.nombre)} text-white px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold`}>
@@ -803,14 +752,14 @@ function ReproductorPage() {
                       </div>
                     </div>
 
-                    <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-yellow-500 text-gray-900 px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold flex items-center space-x-1">
+                    <div className="absolute top-1 right-1 md:top-2 md:right-2 !bg-yellow-500 text-gray-900 px-1 py-0.5 md:px-2 md:py-1 rounded text-xs font-bold flex items-center space-x-1">
                       <span>⭐</span>
                       <span className="hidden xs:inline">{item.rating}</span>
                     </div>
 
                     {/* Overlay de bloqueado */}
                     {!item.enPlan && (
-                      <div className="absolute inset-0 bg-gray-900/80 flex flex-col items-center justify-center p-2">
+                      <div className="absolute inset-0 !bg-gray-900/80 flex flex-col items-center justify-center p-2">
                         <div className="text-2xl mb-1">🔒</div>
                         <div className="text-white text-xs font-bold text-center">No disponible en tu plan</div>
                       </div>
