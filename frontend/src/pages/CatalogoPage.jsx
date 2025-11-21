@@ -38,6 +38,189 @@ function CatalogoPage() {
     getContenidoPlan();
   }, []);
 
+  // 🔹 Función para manejar contenido bloqueado
+  const handleContenidoBloqueado = (contenido) => {
+    // Crear overlay con fondo semi oscuro
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(2px);
+    `;
+
+    // Crear diálogo
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: aparecer 0.3s ease-out;
+    `;
+
+    // Agregar animación de aparición
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes aparecer {
+        from {
+          opacity: 0;
+          transform: scale(0.9) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      @keyframes desaparecer {
+        from {
+          opacity: 1;
+          transform: scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Contenido del diálogo
+    dialog.innerHTML = `
+      <div style="margin-bottom: 20px;">
+        <div style="
+          width: 60px;
+          height: 60px;
+          background: #f8f9fa;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 15px;
+          border: 2px solid #e9ecef;
+          font-size: 24px;
+        ">🔒</div>
+        <h3 style="margin: 0 0 15px 0; color: #2c3e50; font-size: 1.3em; font-weight: 600;">
+          Contenido Bloqueado
+        </h3>
+      </div>
+      
+      <p style="margin: 0 0 15px 0; color: #5a6c7d; line-height: 1.5; font-size: 15px;">
+        "<strong style="color: #2c3e50;">${contenido.title}</strong>" no está disponible en tu plan actual.
+      </p>
+      
+      <p style="margin: 0 0 25px 0; color: #5a6c7d; font-size: 14px;">
+        ¿Te gustaría mejorar tu plan para acceder a este contenido?
+      </p>
+      
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button id="btnCancelar" style="
+          padding: 12px 24px;
+          border: 1px solid #dcdfe6;
+          background: white;
+          border-radius: 8px;
+          cursor: pointer;
+          color: #606266;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          flex: 1;
+        ">Cancelar</button>
+        
+        <button id="btnVerPlanes" style="
+          padding: 12px 24px;
+          border: none;
+          background: #007bff;
+          color: white;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 14px;
+          transition: all 0.2s ease;
+          flex: 1;
+        ">Ver Planes</button>
+      </div>
+    `;
+
+    // Agregar efectos hover a los botones
+    const btnCancelar = dialog.querySelector('#btnCancelar');
+    const btnVerPlanes = dialog.querySelector('#btnVerPlanes');
+
+    btnCancelar.onmouseenter = () => {
+      btnCancelar.style.background = '#f5f7fa';
+      btnCancelar.style.borderColor = '#c0c4cc';
+    };
+    btnCancelar.onmouseleave = () => {
+      btnCancelar.style.background = 'white';
+      btnCancelar.style.borderColor = '#dcdfe6';
+    };
+
+    btnVerPlanes.onmouseenter = () => {
+      btnVerPlanes.style.background = '#0056b3';
+      btnVerPlanes.style.transform = 'translateY(-1px)';
+    };
+    btnVerPlanes.onmouseleave = () => {
+      btnVerPlanes.style.background = '#007bff';
+      btnVerPlanes.style.transform = 'translateY(0)';
+    };
+
+    // Agregar al DOM
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Eventos
+    btnCancelar.onclick = () => {
+      overlay.style.animation = 'desaparecer 0.2s ease-in forwards';
+      setTimeout(() => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+      }, 200);
+    };
+
+    btnVerPlanes.onclick = () => {
+      overlay.style.animation = 'desaparecer 0.2s ease-in forwards';
+      setTimeout(() => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+        navigate('/Planes');
+      }, 200);
+    };
+
+    // Cerrar al hacer clic fuera
+    overlay.onclick = (e) => {
+      if (e.target === overlay) {
+        overlay.style.animation = 'desaparecer 0.2s ease-in forwards';
+        setTimeout(() => {
+          if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+          }
+        }, 200);
+      }
+    };
+  };
+
+  const handleVerVideo = (contenido) => {
+    if (contenido.bloqueado) {
+      handleContenidoBloqueado(contenido); // 👈 Mostrar modal si está bloqueado
+    } else {
+      navigate(`/video/${contenido.idContenido}`); // 👈 Navegar si no está bloqueado
+    }
+  };
+
   // 🔹 Filtrar los contenidos DEL BACKEND
   const contenidosFiltrados = contenidoFiltrado
     .filter(item => {
@@ -68,8 +251,6 @@ function CatalogoPage() {
           return 0;
       }
     });
-
-  const handleVerVideo = (contenido) => navigate(`/video/${contenido.idContenido}`);
 
   const getBadgeColor = (categoriaNombre) => {
     const colors = {
@@ -299,10 +480,12 @@ function CatalogoPage() {
                 return (
                   <div
                     key={item.idContenido}
-                    onClick={() => !esBloqueado && handleVerVideo(item)} // 👈 No deja entrar si está bloqueado
-                    className={`group bg-gray-800/80 rounded-xl overflow-hidden cursor-pointer border border-gray-700/50 
-              hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col h-full 
-              ${esBloqueado ? "opacity-40 cursor-not-allowed" : "hover:border-cyan-400/50"}`}
+                    onClick={() => handleVerVideo(item)} // 👈 Ahora usa la función que verifica bloqueo
+                    className={`group bg-gray-800/80 rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-300 flex flex-col h-full 
+                      ${esBloqueado
+                        ? "border-red-500/60 opacity-70 cursor-not-allowed"
+                        : "border-gray-700/50 hover:border-cyan-400/50 hover:shadow-2xl hover:shadow-cyan-500/10"
+                      }`}
                   >
                     <div className="relative flex-shrink-0">
                       <img
@@ -367,6 +550,10 @@ function CatalogoPage() {
 
                       {/* Botón Ver Ahora */}
                       <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Evitar que se active el click del card
+                          handleVerVideo(item);
+                        }}
                         disabled={esBloqueado}
                         className={`w-full py-3 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center space-x-2
                   ${esBloqueado

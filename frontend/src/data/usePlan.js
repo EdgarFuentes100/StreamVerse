@@ -5,6 +5,7 @@ const usePlan = () => {
     const { getFetch, postFetch, putFetch, deleteFetch } = useFetch();
     const [plan, setPlan] = useState([]);
     const [disponible, setDisponible] = useState(false);
+    const [planActual, setPlanActual] = useState(false);
 
     const getPlanes = () => {
         getFetch(`plan/listadoPlan`)
@@ -18,10 +19,21 @@ const usePlan = () => {
     };
 
     const getVerficarPermiso = (idCuenta, idContenido) => {
-    getFetch(`plan/verificarPermisoVideo/${idCuenta}/${idContenido}`)
+        getFetch(`plan/verificarPermisoVideo/${idCuenta}/${idContenido}`)
             .then((data) => {
                 setDisponible(data.datos.existe);
                 console.log("SI EXISTE", data.datos.existe);
+            })
+            .catch((error) => {
+                console.error('Error al obtener:', error);
+            });
+    };
+
+    const getPlanActual = (idCuenta) => {
+        getFetch(`plan/planActual/${idCuenta}`)
+            .then((data) => {
+                setPlanActual(data.datos[0]);
+                console.log("Plan actual", data.datos);
             })
             .catch((error) => {
                 console.error('Error al obtener:', error);
@@ -32,7 +44,7 @@ const usePlan = () => {
         getPlanes();
     }, []);
 
-        // ======== PETICIONES CRUD ========
+    // ======== PETICIONES CRUD ========
     const crearPlan = (body) => {
         return postFetch('plan/crear', body)
             .then((data) => {
@@ -73,7 +85,9 @@ const usePlan = () => {
         disponible,
         crearPlan,
         actualizarPlan,
-        eliminarPlan
+        eliminarPlan,
+        getPlanActual,
+        planActual
     };
 };
 

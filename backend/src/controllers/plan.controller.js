@@ -41,6 +41,19 @@ async function listadoPlanes(req, res, next) {
     }
 }
 
+async function planActual(req, res, next) {
+    try {
+        const datos = await Data.getPlanActual(req.params.idCuenta);
+        res.json({
+            ok: true,
+            message: "datos cargados",
+            datos
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 // CREAR
 async function crearPlan(req, res, next) {
 
@@ -99,4 +112,4 @@ async function eliminarPlan(req, res, next) {
     }
 }
 
-module.exports = { listaContendio, verificarPermisoVideo, listadoPlanes, crearPlan, actualizarPlan, eliminarPlan };
+module.exports = { listaContendio, verificarPermisoVideo, listadoPlanes, crearPlan, actualizarPlan, eliminarPlan, planActual};

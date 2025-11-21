@@ -30,12 +30,12 @@ async function getPermisoVideo(idUsuario, idContenido) {
     `SELECT idRol FROM usuario WHERE idUsuario = ? AND idRol = 1`,
     [idUsuario]
   );
-  
+
   // Si es admin, retornar un objeto indicando permiso
   if (adminRows.length > 0) {
     return [{ idContenido: idContenido, tienePermiso: 1 }];
   }
-  
+
   // Si no es admin, verificar si está en su plan
   const [rows] = await localDB.query(
     `SELECT cp.* 
@@ -44,12 +44,22 @@ async function getPermisoVideo(idUsuario, idContenido) {
      WHERE c.idUsuario = ? AND cp.idContenido = ?`,
     [idUsuario, idContenido]
   );
-  
+
   return rows;
 }
 async function getPlanes() {
   const [rows] = await localDB.query(
     `SELECT * FROM plan`
+  );
+  return rows;
+}
+
+async function getPlanActual(idCuenta) {
+  console.log("si llego ");
+  const [rows] = await localDB.query(
+    `SELECT * FROM plan p, cuenta c 
+      where p.idPlan = c.idPlan 
+      and c.idCuenta = ?`, [idCuenta]
   );
   return rows;
 }
@@ -89,4 +99,4 @@ async function eliminarPlanModelo(id) {
   return result;
 }
 
-module.exports = { getPlanPerfil, getPermisoVideo, getPlanes, crearPlanModelo, actualizarPlanModelo, eliminarPlanModelo };
+module.exports = { getPlanPerfil, getPermisoVideo, getPlanes, crearPlanModelo, actualizarPlanModelo, eliminarPlanModelo, getPlanActual };

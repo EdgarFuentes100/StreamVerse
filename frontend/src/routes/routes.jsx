@@ -19,6 +19,7 @@ import Plan from "../pages/ADMIN/Gestion_Contenido/Plan";
 import Usuario from "../pages/ADMIN/Gestion_Usuario/Usuario";
 import Rol from "../pages/ADMIN/Gestion_Usuario/Rol";
 import PlanesPage from "../pages/PlanesPage";
+import CambiarPlanPage from "../pages/CambiarPlanPage";
 
 function AppRoutes() {
     return (
@@ -28,6 +29,12 @@ function AppRoutes() {
             <Route path="/Login" element={<LoginPage />} />
             <Route path="/Novedades" element={<NovedadesPage />} />
             <Route path="/Planes" element={<PlanesPage />} />
+
+            <Route path="/CambiarPlan" element={
+                <ProtectedRoute rolesPermitidos={[2]}>
+                    <CambiarPlanPage />
+                </ProtectedRoute>
+            } />
 
             <Route path="/Categoria" element={
                 <ProtectedRoute rolesPermitidos={[1]}>
