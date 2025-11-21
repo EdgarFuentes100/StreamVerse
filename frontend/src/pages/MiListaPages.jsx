@@ -7,14 +7,15 @@ function MiListaPage() {
   const navigate = useNavigate();
   const [filteredLista, setFilteredLista] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const { lista, getListaFavorito } = useLista();
-  
+  const { lista, getListaFavorito, eliminarLista } = useLista();
+  const idCuentaPerfil = localStorage.getItem('perfilActivo');
+
   // ✅ Un solo estado para el modal
-  const [modal, setModal] = useState({ 
+  const [modal, setModal] = useState({
     mostrar: false,
     titulo: "",
     mensaje: "",
-    onAceptar: () => {},
+    onAceptar: () => { },
     textoAceptar: "Aceptar",
     tipo: "info"
   });
@@ -35,7 +36,6 @@ function MiListaPage() {
 
   // Cargar lista real desde la base de datos
   useEffect(() => {
-    const idCuentaPerfil = localStorage.getItem('perfilActivo');
     if (idCuentaPerfil) {
       getListaFavorito(idCuentaPerfil);
     }
@@ -60,7 +60,7 @@ function MiListaPage() {
         mostrar: true,
         titulo: "Contenido No Disponible",
         mensaje: `"${item.title}" no está disponible en tu plan actual. ¿Te gustaría ver los planes disponibles?`,
-        onAceptar: () => navigate("/CambiarPlan"), 
+        onAceptar: () => navigate("/CambiarPlan"),
         textoAceptar: "Ver Planes",
         tipo: "warning"
       });
@@ -71,7 +71,7 @@ function MiListaPage() {
 
   const removeFromLista = (item, e) => {
     e.stopPropagation();
-    
+
     // ✅ Usar modal universal para eliminar
     setModal({
       mostrar: true,
@@ -79,8 +79,7 @@ function MiListaPage() {
       mensaje: `¿Estás seguro de que quieres eliminar "${item.title}" de tu lista de favoritos?`,
       onAceptar: () => {
         console.log("Eliminando contenido:", item.idMiLista);
-        // ✅ Aquí va tu lógica para eliminar de la base de datos
-        // Ejemplo: eliminarDeFavoritos(item.idMiLista);
+        eliminarLista(item.idMiLista, idCuentaPerfil);
       },
       textoAceptar: "Sí, eliminar",
       tipo: "danger"
