@@ -196,7 +196,7 @@ function CatalogoPage() {
         if (document.body.contains(overlay)) {
           document.body.removeChild(overlay);
         }
-        navigate('/Planes');
+        navigate('/CambiarPlan');
       }, 200);
     };
 

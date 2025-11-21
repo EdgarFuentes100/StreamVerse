@@ -90,11 +90,13 @@ function AppRoutes() {
                     <CatalogoPage />
                 </ProtectedRoute>
             } />
-            <Route path="/Mangas" element={
+            {/*<Route path="/Mangas" element={
                 <ProtectedRoute>
                     <MangasPage />
                 </ProtectedRoute>
             } />
+             */}
+
             <Route path="/MiLista" element={
                 <ProtectedRoute>
                     <MiListaPage />

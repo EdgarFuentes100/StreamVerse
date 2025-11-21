@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../api/authContext';
 import { usePlan } from '../data/usePlan';
+import { usePayPal } from "../data/usePayPal";
+import { usePayPalSDK } from "../data/usePayPalSDK";
+import PayPalModal from "../components/PayPalModal";
+import { useNavigate } from "react-router-dom";
+import Particles from '../components/Particles';
 
 function CambiarPlanPage() {
     const { usuario } = useAuth();
     const { planActual, getPlanActual, plan } = usePlan();
+    const { procesarPagoExitoso } = usePayPal();
+    const { sdkReady, error } = usePayPalSDK();
+    const navigate = useNavigate();
+
     const [cargando, setCargando] = useState(true);
     const [planSeleccionado, setPlanSeleccionado] = useState(null);
+    const [mostrarPayPal, setMostrarPayPal] = useState(false);
 
     useEffect(() => {
         const cargarPlanes = async () => {
@@ -22,9 +32,67 @@ function CambiarPlanPage() {
     console.log("PLAN ACTUAL:", planActual);
     console.log("TODOS LOS PLANES:", plan);
 
-    if (cargando) {
+    const handleSeleccionarPlan = (planItem) => {
+        if (!sdkReady) {
+            alert("PayPal aún no está listo. Por favor, espera un momento.");
+            return;
+        }
+        setPlanSeleccionado(planItem);
+        setMostrarPayPal(true);
+    };
+
+    const handlePaymentSuccess = async (details) => {
+        try {
+            const resultado = await procesarPagoExitoso(planSeleccionado, details);
+
+            if (resultado.success) {
+                alert(resultado.message);
+                setMostrarPayPal(false);
+                setPlanSeleccionado(null);
+
+                // ✅ REDIRIGIR A CATÁLOGO DESPUÉS DE PAGO EXITOSO
+                navigate("/Catalogo");
+            } else {
+                alert(resultado.message);
+            }
+        } catch (error) {
+            console.error("Error en el procesamiento del pago:", error);
+            alert("Error al procesar el pago. Por favor, contacta con soporte.");
+        }
+    };
+
+    const handlePaymentError = (error) => {
+        console.error('Error en PayPal:', error);
+        alert("Error en el pago. Por favor, intenta nuevamente.");
+    };
+
+    const handlePaymentCancel = () => {
+        alert("Pago cancelado");
+        setMostrarPayPal(false);
+        setPlanSeleccionado(null);
+    };
+
+    // ✅ Mostrar estado de carga de PayPal
+    if (error) {
         return (
             <div className="min-h-screen bg-gray-950 flex items-center justify-center pt-20">
+                <div className="text-center">
+                    <div className="text-red-500 text-xl mb-4">❌ Error al cargar PayPal</div>
+                    <p className="text-gray-300 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                        Recargar Página
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (cargando) {
+        return (
+            <div className="min-h-screen !bg-gray-950 flex items-center justify-center pt-20">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4"></div>
                     <div className="text-white text-xl">Cargando planes...</div>
@@ -33,18 +101,56 @@ function CambiarPlanPage() {
         );
     }
 
+    // ✅ Mostrar carga de PayPal SDK
+    if (!sdkReady) {
+        return (
+            <div className="min-h-screen !bg-gray-950 flex items-center justify-center pt-20">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="text-gray-300 mt-4">Inicializando PayPal...</p>
+                    <p className="text-gray-400 text-sm">Esto puede tomar unos segundos</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-950 pt-20">
+            <Particles
+                count={{ sm: 200, lg: 700 }}      // Cantidad de partículas según tamaño
+                intensity={{ sm: "low", lg: "medium" }}  // Opacidad según tamaño
+                className="absolute inset-0 z-0"
+            />
+
+            {/* PayPal Modal */}
+            <PayPalModal
+                mostrar={mostrarPayPal}
+                planSeleccionado={planSeleccionado}
+                onClose={() => {
+                    setMostrarPayPal(false);
+                    setPlanSeleccionado(null);
+                }}
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+                onCancel={handlePaymentCancel}
+            />
+
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-white mb-4">Cambiar Plan</h1>
                     <p className="text-gray-400 text-lg">Elige el plan que mejor se adapte a tus necesidades</p>
+
+                    {/* ✅ Indicador de PayPal listo */}
+                    <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                        <span className="text-green-400 text-xs">PayPal listo</span>
+                    </div>
                 </div>
 
-                {/* PLAN ACTUAL - MUY SIMPLE */}
+                {/* PLAN ACTUAL */}
                 {planActual && (
-                    <div className="bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl p-6 mb-8 text-white">
+                    <div className="!bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl p-6 mb-8 text-white">
                         <div className="flex justify-between items-center">
                             <div>
                                 <h2 className="text-xl font-bold mb-2">Tu Plan Actual</h2>
@@ -58,7 +164,7 @@ function CambiarPlanPage() {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <span className="bg-white text-cyan-600 px-4 py-2 rounded-full font-bold text-sm">Activo</span>
+                                <span className="!bg-white text-cyan-600 px-4 py-2 rounded-full font-bold text-sm">Activo</span>
                             </div>
                         </div>
                     </div>
@@ -72,11 +178,10 @@ function CambiarPlanPage() {
                         return (
                             <div
                                 key={planItem.idPlan}
-                                className={`bg-gray-800 rounded-xl p-6 border-2 ${esActual
-                                        ? '!border-purple-500 opacity-70'
-                                        : '!border-gray-600 hover:border-cyan-400 cursor-pointer'
+                                className={`!bg-gray-800 rounded-xl p-6 border-2 ${esActual
+                                    ? '!border-purple-500 opacity-70'
+                                    : '!border-gray-600 hover:border-cyan-400 cursor-pointer'
                                     }`}
-                                onClick={() => !esActual && setPlanSeleccionado(planItem)}
                             >
                                 {/* Badge si es actual */}
                                 {esActual && (
@@ -115,11 +220,12 @@ function CambiarPlanPage() {
                                 </ul>
 
                                 <button
+                                    onClick={() => !esActual && handleSeleccionarPlan(planItem)}
                                     className={`w-full py-3 rounded-lg font-bold ${esActual
-                                            ? '!bg-gray-600 text-gray-400 cursor-not-allowed'
-                                            : planSeleccionado?.idPlan === planItem.idPlan
-                                                ? '!bg-cyan-500 text-white'
-                                                : '!bg-gray-700 text-white hover:bg-gray-600'
+                                        ? '!bg-gray-600 text-gray-400 cursor-not-allowed'
+                                        : planSeleccionado?.idPlan === planItem.idPlan
+                                            ? '!bg-cyan-500 text-white'
+                                            : '!bg-gray-700 text-white hover:bg-gray-600'
                                         }`}
                                     disabled={esActual}
                                 >
@@ -133,9 +239,15 @@ function CambiarPlanPage() {
                 {/* Botón para cambiar plan */}
                 {planSeleccionado && planActual && planSeleccionado.idPlan !== planActual.idPlan && (
                     <div className="text-center mt-8">
-                        <button className="!bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all">
+                        <button
+                            onClick={() => handleSeleccionarPlan(planSeleccionado)}
+                            className="!bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all"
+                        >
                             Cambiar a Plan {planSeleccionado.nombre} - ${planSeleccionado.precio}/mes
                         </button>
+                        <p className="text-gray-400 mt-3">
+                            Serás redirigido a PayPal para completar el pago
+                        </p>
                     </div>
                 )}
             </div>
