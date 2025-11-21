@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Select from "react-select";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
 import { useContenido } from "../../../data/useContenido";
@@ -10,17 +11,18 @@ import { useTemporada } from "../../../data/useTemporada";
 import { useVideo } from "../../../data/useVideo";
 
 function Videos() {
-
     const videoHook = useVideo();
     const {
         videos,
-        getVideos, eliminarVideo,
+        getVideos,
+        eliminarVideo,
         selectedCategoria,
         setSelectedCategoria,
         selectedContenido,
         setSelectedContenido,
         selectedTemporada,
-        setSelectedTemporada } = videoHook;
+        setSelectedTemporada
+    } = videoHook;
 
     const { contenidoCategoria, getContenidoCategoria } = useContenido();
     const { categoria } = useCategoria();
@@ -37,7 +39,24 @@ function Videos() {
         errores
     } = useModelEpisodio(videoHook);
 
-    const handleCategoria = (categoriaId) => {
+    // Convertir arrays a formato react-select
+    const opcionesCategoria = categoria.map(cat => ({
+        value: cat.idCategoria,
+        label: cat.nombre
+    }));
+
+    const opcionesContenido = contenidoCategoria.map(contenido => ({
+        value: contenido.idContenido,
+        label: contenido.title
+    }));
+
+    const opcionesTemporada = temporadas.map(temporada => ({
+        value: temporada.idTemporada,
+        label: temporada.nombre || `Temporada ${temporada.numeroTemporada}`
+    }));
+
+    const handleCategoria = (selected) => {
+        const categoriaId = selected ? selected.value : "";
         setSelectedCategoria(categoriaId);
         // Limpiar selects dependientes
         setSelectedContenido("");
@@ -49,20 +68,22 @@ function Videos() {
         }
     };
 
-    const handleContenido = (contenidoId) => { // ✅ Corregí el nombre del parámetro
+    const handleContenido = (selected) => {
+        const contenidoId = selected ? selected.value : "";
         setSelectedContenido(contenidoId);
         setSelectedTemporada("");
 
         // Cargar temporadas del contenido seleccionado
-        if (contenidoId) { // ✅ Corregí el nombre de la variable
+        if (contenidoId) {
             getTemporadas(contenidoId);
         }
     };
 
-    const handleTemporada = (temporadaId) => {
+    const handleTemporada = (selected) => {
+        const temporadaId = selected ? selected.value : "";
         setSelectedTemporada(temporadaId);
 
-        if (temporadaId) { // ✅ Corregí el nombre de la variable
+        if (temporadaId) {
             getVideos(temporadaId);
         }
     };
@@ -70,15 +91,14 @@ function Videos() {
     return (
         <>
             <div className="container-fluid p-3 pt-24">
-
                 <TablaToolbar
                     onBack={() => console.log("Exportar")}
                     onExport={() => console.log("Exportar")}
                     onAdd={() => openSubModal(1)}
-                    addLabel="Agregar Ingrediente"
+                    addLabel="Agregar Episodio"
                 />
 
-                {/* Selects para filtrar */}
+                {/* Selects para filtrar CON REACT-SELECT */}
                 <div className="bg-gray-600 rounded-lg p-4 mb-6 border border-gray-600">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Select de Categoría */}
@@ -86,18 +106,38 @@ function Videos() {
                             <label className="block text-gray-300 text-sm font-medium mb-2">
                                 Seleccionar Categoría
                             </label>
-                            <select
-                                value={selectedCategoria}
-                                onChange={(e) => handleCategoria(e.target.value)}
-                                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">-- Todas las categorías --</option>
-                                {categoria.map(cat => (
-                                    <option key={cat.idCategoria} value={cat.idCategoria}>
-                                        {cat.nombre}
-                                    </option>
-                                ))}
-                            </select>
+                            <Select
+                                options={opcionesCategoria}
+                                value={opcionesCategoria.find(o => o.value === Number(selectedCategoria)) || null}
+                                onChange={handleCategoria}
+                                placeholder="Seleccione una categoría..."
+                                isClearable
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#374151',
+                                        borderColor: '#4B5563',
+                                        color: 'white',
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: 'white',
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#374151',
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused ? '#4B5563' : '#374151',
+                                        color: 'white',
+                                    }),
+                                    placeholder: (base) => ({
+                                        ...base,
+                                        color: '#9CA3AF',
+                                    }),
+                                }}
+                            />
                         </div>
 
                         {/* Select de Contenido */}
@@ -105,18 +145,39 @@ function Videos() {
                             <label className="block text-gray-300 text-sm font-medium mb-2">
                                 Seleccionar Contenido
                             </label>
-                            <select
-                                value={selectedContenido}
-                                onChange={(e) => handleContenido(e.target.value)}
-                                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">-- Todos los contenidos --</option>
-                                {contenidoCategoria.map(contenido => (
-                                    <option key={contenido.idContenido} value={contenido.idContenido}>
-                                        {contenido.title}
-                                    </option>
-                                ))}
-                            </select>
+                            <Select
+                                options={opcionesContenido}
+                                value={opcionesContenido.find(o => o.value === Number(selectedContenido)) || null}
+                                onChange={handleContenido}
+                                placeholder="Seleccione un contenido..."
+                                isClearable
+                                isDisabled={!selectedCategoria}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#374151',
+                                        borderColor: '#4B5563',
+                                        color: 'white',
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: 'white',
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#374151',
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused ? '#4B5563' : '#374151',
+                                        color: 'white',
+                                    }),
+                                    placeholder: (base) => ({
+                                        ...base,
+                                        color: '#9CA3AF',
+                                    }),
+                                }}
+                            />
                         </div>
 
                         {/* Select de Temporada */}
@@ -124,19 +185,39 @@ function Videos() {
                             <label className="block text-gray-300 text-sm font-medium mb-2">
                                 Seleccionar Temporada
                             </label>
-                            <select
-                                value={selectedTemporada}
-                                onChange={(e) => handleTemporada(e.target.value)}
-                                disabled={!selectedContenido}
-                                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                            >
-                                <option value="">-- Todas las temporadas --</option>
-                                {temporadas.map(temporada => (
-                                    <option key={temporada.idTemporada} value={temporada.idTemporada}>
-                                        {temporada.nombre || `Temporada ${temporada.numeroTemporada}`}
-                                    </option>
-                                ))}
-                            </select>
+                            <Select
+                                options={opcionesTemporada}
+                                value={opcionesTemporada.find(o => o.value === Number(selectedTemporada)) || null}
+                                onChange={handleTemporada}
+                                placeholder="Seleccione una temporada..."
+                                isClearable
+                                isDisabled={!selectedContenido}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#374151',
+                                        borderColor: '#4B5563',
+                                        color: 'white',
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: 'white',
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#374151',
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused ? '#4B5563' : '#374151',
+                                        color: 'white',
+                                    }),
+                                    placeholder: (base) => ({
+                                        ...base,
+                                        color: '#9CA3AF',
+                                    }),
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -147,7 +228,7 @@ function Videos() {
                         { key: "idEpisodio", label: "ID" },
                         { key: "title", label: "Título" },
                         { key: "capitulo", label: "Capitulo" },
-                        { key: "duration", label: "Diracion" },
+                        { key: "duration", label: "Duración" },
                         { key: "image", label: "Imagen" },
                         { key: "videoUrl", label: "Video" },
                     ]}
@@ -177,6 +258,18 @@ function Videos() {
                         onChange={handleChange}
                         errores={errores}
                         operacion={operacion}
+                        // Pasamos los selects actuales
+                        selectedCategoria={selectedCategoria}
+                        selectedContenido={selectedContenido}
+                        selectedTemporada={selectedTemporada}
+                        // Pasamos las opciones
+                        categorias={categoria}
+                        contenidos={contenidoCategoria}
+                        temporadas={temporadas}
+                        // Pasamos los handlers por si necesitan cambiar
+                        onCategoriaChange={handleCategoria}
+                        onContenidoChange={handleContenido}
+                        onTemporadaChange={handleTemporada}
                     />
                 </SubModal>
             </div>

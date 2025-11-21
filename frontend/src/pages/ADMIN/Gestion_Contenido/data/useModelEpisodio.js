@@ -53,6 +53,8 @@ const useModelEpisodio = ({crearVideo, actualizarVideo}) => {
             ...prev,
             [name]: value
         }));
+                console.log('🟢 Nuevo estado:', name, value);
+
         setErrores(prev => ({ ...prev, [name]: false }));
     };
 

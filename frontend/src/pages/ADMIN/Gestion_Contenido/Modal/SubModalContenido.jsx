@@ -1,14 +1,23 @@
 import React from 'react';
+import Select from "react-select";
+import { useCategoria } from "../../../../data/useCategoria";
 
-function SubModalContenido({ 
-    contenido = {}, 
-    onChange, 
-    errores = {}, 
-    operacion 
+function SubModalContenido({
+    contenido = {},
+    onChange,
+    errores = {},
+    operacion
 }) {
+    const { categoria } = useCategoria();
+    
+    const opcionesCategoria = (categoria || []).map((item) => ({
+        value: item.idCategoria,
+        label: item.nombre,
+    }));
+    console.log(contenido, "dkc");
+
     return (
         <div className="space-y-4 text-gray-900">
-            {/* Título */}
             <div>
                 <label className="block text-sm font-medium text-gray-900 mb-1">
                     Título *
@@ -82,15 +91,27 @@ function SubModalContenido({
                     <label className="block text-sm font-medium text-gray-900 mb-1">
                         ID Categoría *
                     </label>
-                    <input
-                        type="number"
-                        name="idCategoria"
-                        value={contenido?.idCategoria || 0}
-                        onChange={onChange}
-                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errores.idCategoria ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="ID de la categoría"
+
+                    <Select
+                        options={opcionesCategoria}
+                        value={
+                            opcionesCategoria.find(
+                                (o) => o.value === Number(contenido?.idCategoria)
+                            ) || null
+                        }
+                        onChange={(selected) =>
+                            onChange({
+                                target: { name: "idCategoria", value: selected ? selected.value : null },
+                            })
+                        }
+                        placeholder="Seleccione una categoria..."
+                        isClearable
+                        styles={{
+                            control: (base) => ({
+                                ...base,
+                                borderColor: errores.idCategoria ? "red" : base.borderColor,
+                            }),
+                        }}
                     />
                     {errores.idCategoria && (
                         <p className="text-red-500 text-sm mt-1">Este campo es obligatorio</p>
@@ -160,7 +181,7 @@ function SubModalContenido({
                     <input
                         type="checkbox"
                         name="isNew"
-                        checked={contenido?.isNew || false}
+                        checked={Boolean(contenido?.isNew)}
                         onChange={(e) => onChange({
                             target: { name: 'isNew', value: e.target.checked ? 1 : 0 }
                         })}
@@ -172,7 +193,7 @@ function SubModalContenido({
                     <input
                         type="checkbox"
                         name="isPopular"
-                        checked={contenido?.isPopular || false}
+                        checked={Boolean(contenido?.isPopular)}
                         onChange={(e) => onChange({
                             target: { name: 'isPopular', value: e.target.checked ? 1 : 0 }
                         })}
@@ -184,7 +205,7 @@ function SubModalContenido({
                     <input
                         type="checkbox"
                         name="isTrending"
-                        checked={contenido?.isTrending || false}
+                        checked={Boolean(contenido?.isTrending)}
                         onChange={(e) => onChange({
                             target: { name: 'isTrending', value: e.target.checked ? 1 : 0 }
                         })}
@@ -196,7 +217,7 @@ function SubModalContenido({
                     <input
                         type="checkbox"
                         name="isExclusive"
-                        checked={contenido?.isExclusive || false}
+                        checked={Boolean(contenido?.isExclusive)}
                         onChange={(e) => onChange({
                             target: { name: 'isExclusive', value: e.target.checked ? 1 : 0 }
                         })}

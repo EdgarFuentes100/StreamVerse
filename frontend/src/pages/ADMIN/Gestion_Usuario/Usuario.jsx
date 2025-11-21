@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Select from "react-select"; // ✅ Faltaba importar Select
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
@@ -12,6 +13,11 @@ function Usuario() {
     const { usuarios, selectedRol, handleRol, eliminarUsuario } = usuarioHook;
     const { roles } = useRol();
 
+    const opcionesRoles = roles.map(item => ({
+        value: item.idRol,
+        label: item.rol
+    }));
+
     const {
         showSubModal,
         handleContinue,
@@ -23,34 +29,61 @@ function Usuario() {
         errores
     } = useModelUsuario(usuarioHook);
 
+    // ✅ Handler corregido para el select de roles
+    const handleRolSelect = (selected) => {
+        const rolId = selected ? selected.value : "";
+        handleRol(rolId); // Usar el handleRol del hook
+    };
+
     return (
         <div className="container-fluid p-3 pt-24">
             <TablaToolbar
                 onBack={() => console.log("Volver")}
                 onExport={() => console.log("Exportar")}
-                // onAdd={() => openSubModal(1)}
+                onAdd={() => openSubModal(1)} // ✅ Descomentado
                 addLabel="Agregar Usuario"
             />
+            
             {/* Selects para filtrar */}
             <div className="bg-gray-600 rounded-lg p-4 mb-6 border border-gray-600">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Select de Categoría */}
+                    {/* Select de Rol - CORREGIDO */}
                     <div>
                         <label className="block text-gray-300 text-sm font-medium mb-2">
                             Seleccionar Rol
                         </label>
-                        <select
-                            value={selectedRol}
-                            onChange={(e) => handleRol(e.target.value)}
-                            className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">-- Todas los roles --</option>
-                            {roles.map(rol => (
-                                <option key={rol.idRol} value={rol.idRol}>
-                                    {rol.rol}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            options={opcionesRoles}
+                            value={opcionesRoles.find(o => o.value === Number(selectedRol)) || null} // ✅ Usar selectedRol, no usuarioSeleccionado
+                            onChange={handleRolSelect} // ✅ Handler corregido
+                            placeholder="Seleccione un rol..."
+                            isClearable
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    backgroundColor: '#374151',
+                                    borderColor: '#4B5563',
+                                    color: 'white',
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: 'white',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    backgroundColor: '#374151',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? '#4B5563' : '#374151',
+                                    color: 'white',
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: '#9CA3AF',
+                                }),
+                            }}
+                        />
                     </div>
                 </div>
             </div>
@@ -66,7 +99,7 @@ function Usuario() {
                 ]}
                 acciones={[
                     { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
-                //{ label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarUsuario(item.idUsuario) }
+                    //{ label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarUsuario(item.idUsuario) }
                 ]}
                 idKey="idUsuario"
             />

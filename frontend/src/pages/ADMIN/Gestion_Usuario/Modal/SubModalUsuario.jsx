@@ -1,11 +1,31 @@
 import React from 'react';
+import Select from 'react-select'; // ✅ Faltaba importar Select
+import { useRol } from '../../../../data/useRol';
 
-function SubModalUsuario({ 
-    usuario = {}, 
-    onChange, 
-    errores = {}, 
-    operacion 
+function SubModalUsuario({
+    usuario = {},
+    onChange,
+    errores = {},
+    operacion
 }) {
+    const { roles } = useRol();
+    const opcionesRoles = roles.map(item => ({
+        value: item.idRol,
+        label: item.rol
+    }));
+
+    // ✅ Handler específico para el Select de roles
+    const handleRolChange = (selectedOption) => {
+        // Simular el evento onChange que espera el componente padre
+        const simulatedEvent = {
+            target: {
+                name: 'idRol',
+                value: selectedOption ? selectedOption.value : ''
+            }
+        };
+        onChange(simulatedEvent);
+    };
+
     return (
         <div className="space-y-4 text-gray-900">
             {/* Nombre y Email */}
@@ -85,24 +105,37 @@ function SubModalUsuario({
                 </div>
             </div>
 
-            {/* Rol */}
+            {/* Rol - CORREGIDO */}
             <div>
                 <label className="block text-sm font-medium text-gray-900 mb-1">
                     Rol *
                 </label>
-                <input
-                    type="number"
-                    name="idRol"
-                    value={usuario?.idRol || 0}
-                    onChange={onChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errores.idRol ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="ID del rol"
+                <Select
+                    options={opcionesRoles}
+                    value={opcionesRoles.find(o => o.value === Number(usuario?.idRol)) || null} // ✅ usuario.idRol, no categoriaModal
+                    onChange={handleRolChange} // ✅ Handler corregido
+                    placeholder="Seleccione un rol..."
+                    isClearable
+                    styles={{
+                        control: (base) => ({
+                            ...base,
+                            borderColor: errores.idRol ? "red" : base.borderColor, // ✅ errores.idRol, no idCategoria
+                        }),
+                    }}
                 />
                 {errores.idRol && (
                     <p className="text-red-500 text-sm mt-1">Este campo es obligatorio</p>
                 )}
+            </div>
+
+            {/* Información de la operación */}
+            <div className="bg-blue-50 p-3 rounded-md">
+                <p className="text-blue-800 text-sm">
+                    {operacion === 2 
+                        ? `Editando usuario: ${usuario?.nombre || 'Sin nombre'}` 
+                        : 'Creando nuevo usuario'
+                    }
+                </p>
             </div>
         </div>
     );
