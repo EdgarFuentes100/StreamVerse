@@ -17,8 +17,8 @@ function Contenido() {
         openSubModal,
         contenidoSeleccionado,
         handleChange,
-        errores,
-        handleGenerosChange, // ✅ Nueva función
+        handleGenerosChange, // ✅ Ahora sí existe
+        errores
     } = useModelContenido(contenidoHook);
 
     return (
@@ -28,27 +28,24 @@ function Contenido() {
                     onBack={() => console.log("Exportar")}
                     onExport={() => console.log("Exportar")}
                     onAdd={() => openSubModal(1)}
-                    addLabel="Agregar Ingrediente"
+                    addLabel="Agregar Contenido" // ✅ Cambié "Ingrediente" por "Contenido"
                 />
 
                 <TablaReutilizable
                     data={contenido}
                     columnas={[
-                        { key: "title", label: "title" },
-                        { key: "descripcion", label: "descripcion" },
-                        { key: "year", label: "year" },
-                        { key: "temporadas", label: "temporadas" },
-                        { key: "episodios", label: "episodios" },
+                        { key: "title", label: "Título" },
+                        { key: "descripcion", label: "Descripción" },
+                        { key: "year", label: "Año" },
+                        { key: "temporadas", label: "Temporadas" },
+                        { key: "episodios", label: "Episodios" },
                         { key: "isNew", label: "Nuevo", isBoolean: true },
                         { key: "isPopular", label: "Popular", isBoolean: true },
                         { key: "isExclusive", label: "Exclusivo", isBoolean: true },
-                        { key: "categoria", label: "Categoria" },
-                        { key: "generos", label: "Generos" },
-
+                        { key: "categoria", label: "Categoría" },
+                        { key: "generos", label: "Géneros" },
                     ]}
-                    expandible={[
-
-                    ]}
+                    expandible={[]}
                     acciones={[
                         { label: "Editar", variant: "primary", icon: "pencil", onClick: (item) => openSubModal(2, item) },
                         { label: "Eliminar", variant: "danger", icon: "trash", onClick: (item) => eliminarContenido(item.idContenido) }
@@ -72,9 +69,9 @@ function Contenido() {
                     <SubModalContenido
                         contenido={contenidoSeleccionado}
                         onChange={handleChange}
+                        onGenerosChange={handleGenerosChange} // ✅ Pasar la función
                         errores={errores}
                         operacion={operacion}
-                        onGenerosChange={handleGenerosChange}
                     />
                 </SubModal>
             </div>

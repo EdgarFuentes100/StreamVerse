@@ -1,51 +1,101 @@
-import { useState, useEffect } from 'react';
-export const useContenidoPlana = () => {
-    const [planes, setPlanes] = useState([]);
-    const [contenidos, setContenidos] = useState([]);
-    const [planSeleccionado, setPlanSeleccionado] = useState(null);
-    const [cargando, setCargando] = useState(false);
+import { useState } from "react";
+import { ModelContenido } from "../../../../model/ModelContenido";
 
-    // Cargar datos iniciales
-    useEffect(() => {
-        cargarDatosIniciales();
-    }, []);
+const useModelContenido = ({ crearContenido, actualizarContenido }) => {
+    const [showSubModal, setSubModalOpen] = useState(false);
+    const [contenidoSeleccionado, setContenidoSeleccionado] = useState(null);
+    const [operacion, setOperacion] = useState(1);
+    const [errores, setErrores] = useState({});
+    const [generosSeleccionados, setGenerosSeleccionados] = useState("");
 
-    const cargarDatosIniciales = async () => {
-        setCargando(true);
-        try {
-            // Simular carga de datos desde API
-            setTimeout(() => {
-                setPlanes(planesEjemplo);
-                setContenidos(contenidosEjemplo);
-                setCargando(false);
-            }, 1000);
-        } catch (error) {
-            console.error('Error cargando datos:', error);
-            setCargando(false);
-        }
+    const openSubModal = (op, contenido = ModelContenido()) => {
+        setOperacion(op);
+        setContenidoSeleccionado(op === 2 ? contenido : ModelContenido());
+        setGenerosSeleccionados(contenido?.generos || "");
+        setSubModalOpen(true);
     };
 
-    // Toggle para asignar/desasignar contenido a un plan
-    const toggleContenidoPlan = (idContenido, asignar) => {
-        setContenidos(prev => prev.map(contenido =>
-            contenido.idContenido === idContenido
-                ? { ...contenido, asignado: asignar }
-                : contenido
-        ));
+    const closeSubModal = () => {
+        setSubModalOpen(false);
+        setContenidoSeleccionado(null);
+        setGenerosSeleccionados("");
+        setErrores({});
+    };
 
-        // Aquí en una app real harías la llamada a la API
-        console.log(`📝 ${asignar ? 'Asignando' : 'Quitando'} contenido ${idContenido} del plan ${planSeleccionado}`);
+    const handleContinue = () => {
+        const nuevosErrores = {};
+
+        // Validaciones
+        if (!contenidoSeleccionado?.title || contenidoSeleccionado.title.trim() === "") {
+            nuevosErrores.title = true;
+        }
+        if (!contenidoSeleccionado?.idCategoria || contenidoSeleccionado.idCategoria === 0) {
+            nuevosErrores.idCategoria = true;
+        }
+        if (!generosSeleccionados || generosSeleccionados.trim() === "") {
+            nuevosErrores.generos = "Seleccione al menos un género";
+        }
+
+        setErrores(nuevosErrores);
+
+        if (Object.keys(nuevosErrores).length > 0) {
+            console.warn("Por favor complete los campos obligatorios.");
+            return;
+        }
+
+        // COMBINAR EL CONTENIDO CON LOS GÉNEROS SELECCIONADOS
+        const contenidoCompleto = {
+            ...contenidoSeleccionado,
+            generos: generosSeleccionados
+        };
+
+        console.warn('Guardando contenido:', contenidoCompleto);
+        
+        if (operacion === 1) {
+            crearContenido(contenidoCompleto);
+        } else {
+            actualizarContenido(contenidoSeleccionado.idContenido, contenidoCompleto);
+        }
+        
+        closeSubModal();
+    };
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+
+        if (type === 'checkbox') {
+            setContenidoSeleccionado(prev => ({
+                ...prev,
+                [name]: checked ? 1 : 0
+            }));
+        } else {
+            setContenidoSeleccionado(prev => ({
+                ...prev,
+                [name]: type === 'number' ? Number(value) : value
+            }));
+        }
+
+        setErrores(prev => ({ ...prev, [name]: false }));
+    };
+
+    // ✅ FUNCIÓN PARA ACTUALIZAR GÉNEROS - AGREGADA
+    const handleGenerosChange = (generosString) => {
+        setGenerosSeleccionados(generosString);
+        setErrores(prev => ({ ...prev, generos: false }));
     };
 
     return {
-        planes,
-        contenidos,
-        planSeleccionado,
-        setPlanSeleccionado,
-        cargando,
-        toggleContenidoPlan
+        showSubModal,
+        openSubModal,
+        closeSubModal,
+        handleChange,
+        handleGenerosChange, // ✅ EXPORTADA
+        handleContinue,
+        errores,
+        operacion,
+        contenidoSeleccionado,
+        generosSeleccionados
     };
 };
 
-// Asegúrate de que exportas por defecto también si es necesario
-export default useContenidoPlana;
+export { useModelContenido };
