@@ -20,6 +20,12 @@ import Usuario from "../pages/ADMIN/Gestion_Usuario/Usuario";
 import Rol from "../pages/ADMIN/Gestion_Usuario/Rol";
 import PlanesPage from "../pages/PlanesPage";
 import CambiarPlanPage from "../pages/CambiarPlanPage";
+import ResumenGeneral from "../pages/ADMIN/Gestion_Reportes/ResumenGeneral";
+import ReportePlanes from "../pages/ADMIN/Gestion_Reportes/ReportePlanes";
+import ReporteUsuarios from "../pages/ADMIN/Gestion_Reportes/ReporteUsuario";
+import ReporteIngresos from "../pages/ADMIN/Gestion_Reportes/ReporteIngresos";
+import ReporteContenido from "../pages/ADMIN/Gestion_Reportes/ReporteContenido";
+import GestionContenidoPlan from "../pages/ADMIN/Gestion_Contenido/GestionContenidoPlan";
 
 function AppRoutes() {
     return (
@@ -29,6 +35,14 @@ function AppRoutes() {
             <Route path="/Login" element={<LoginPage />} />
             <Route path="/Novedades" element={<NovedadesPage />} />
             <Route path="/Planes" element={<PlanesPage />} />
+
+            <Route path="/repGeneral" element={<ResumenGeneral />} />
+            <Route path="/repPlanes" element={<ReportePlanes />} />
+            <Route path="/repUsuario" element={<ReporteUsuarios />} />
+            <Route path="/repIngresos" element={<ReporteIngresos />} />
+            <Route path="/repContenido" element={<ReporteContenido />} />
+
+            <Route path="/contenidoPlan" element={<GestionContenidoPlan />} />
 
             <Route path="/CambiarPlan" element={
                 <ProtectedRoute rolesPermitidos={[2]}>

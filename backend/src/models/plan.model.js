@@ -55,7 +55,6 @@ async function getPlanes() {
 }
 
 async function getPlanActual(idCuenta) {
-  console.log("si llego ");
   const [rows] = await localDB.query(
     `SELECT * FROM plan p, cuenta c 
       where p.idPlan = c.idPlan 
