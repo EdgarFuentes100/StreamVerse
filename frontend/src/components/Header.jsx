@@ -21,14 +21,17 @@ function Header() {
     setActiveAdminMenu(null);
   };
 
-  // 🔹 Salir solo del perfil activo
   const handleCerrarPerfil = () => {
     setPerfilActivo(null);
     localStorage.removeItem("perfilActivo");
     localStorage.removeItem("tokenPerfil");
-    navigate("/Perfil");
-    setIsMenuOpen(false);
-    setActiveAdminMenu(null);
+
+    // Navegar y luego recargar
+    navigate("/Perfil", { replace: true });
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   // 🔹 Navegar entre rutas
