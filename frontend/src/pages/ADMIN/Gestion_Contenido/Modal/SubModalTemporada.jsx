@@ -1,4 +1,6 @@
 import React from 'react';
+import { useContenido } from '../../../../data/useContenido';
+import Select from 'react-select';
 
 function SubModalTemporada({ 
     temporada = {}, 
@@ -6,6 +8,22 @@ function SubModalTemporada({
     errores = {}, 
     operacion 
 }) {
+    const { contenido, loading, error } = useContenido();
+    
+    // Opciones para el select de contenido usando la estructura correcta
+    const opcionesContenido = contenido?.map(cont => ({
+        value: cont.idContenido, // Usando idContenido de tu estructura
+        label: cont.title // Usando title de tu estructura
+    })) || [];
+
+    if (loading) {
+        return <div className="text-center py-4">Cargando contenidos...</div>;
+    }
+
+    if (error) {
+        return <div className="text-red-500 text-center py-4">Error cargando contenidos</div>;
+    }
+
     return (
         <div className="space-y-4 text-gray-900">
             {/* Nombre de la Temporada */}
@@ -28,47 +46,51 @@ function SubModalTemporada({
                 )}
             </div>
 
-            {/* ID Contenido */}
+            {/* Select de Contenido */}
             <div>
                 <label className="block text-sm font-medium text-gray-900 mb-1">
-                    ID del Contenido *
+                    Contenido Principal *
                 </label>
-                <input
-                    type="number"
-                    name="idContenido"
-                    value={temporada?.idContenido || 0}
-                    onChange={onChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errores.idContenido ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="ID del contenido al que pertenece"
+                <Select
+                    options={opcionesContenido}
+                    value={opcionesContenido.find(o => o.value === (temporada?.idContenido || 0)) || null}
+                    onChange={(selected) => {
+                        const event = {
+                            target: { 
+                                name: "idContenido", 
+                                value: selected ? selected.value : 0 
+                            }
+                        };
+                        onChange(event);
+                    }}
+                    placeholder="Seleccione el contenido..."
+                    isClearable
+                    isSearchable
+                    noOptionsMessage={() => "No hay contenidos disponibles"}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    styles={{
+                        control: (base, state) => ({
+                            ...base,
+                            borderColor: errores.idContenido ? '#ef4444' : '#d1d5db',
+                            '&:hover': {
+                                borderColor: errores.idContenido ? '#ef4444' : '#9ca3af'
+                            },
+                            boxShadow: state.isFocused ? (errores.idContenido ? '0 0 0 1px #ef4444' : '0 0 0 1px #3b82f6') : 'none',
+                        })
+                    }}
                 />
                 {errores.idContenido && (
                     <p className="text-red-500 text-sm mt-1">Este campo es obligatorio</p>
                 )}
                 <p className="text-gray-600 text-sm mt-1">
-                    ID de la serie o contenido principal
+                    Seleccione la serie o contenido principal al que pertenece esta temporada
+                </p>
+                <p className="text-gray-500 text-xs mt-1">
+                    {contenido?.length || 0} contenidos disponibles
                 </p>
             </div>
 
-            {/* Información de la operación */}
-            <div className="bg-blue-50 p-3 rounded-md">
-                <p className="text-blue-800 text-sm">
-                    {operacion === 2 ? 'Editando temporada' : 'Creando nueva temporada'}
-                </p>
-            </div>
-
-            {/* Ejemplos de nombres de temporadas */}
-            <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-gray-600 text-sm font-medium mb-2">Ejemplos de nombres:</p>
-                <div className="flex flex-wrap gap-2">
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Temporada 1</span>
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Segunda Temporada</span>
-                    <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Temporada Final</span>
-                    <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Temporada Especial</span>
-                    <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">OVA</span>
-                </div>
-            </div>
         </div>
     );
 }
