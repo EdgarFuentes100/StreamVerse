@@ -437,6 +437,10 @@ INSERT INTO `usuario` VALUES (2,'117825334618019172559','Edgar Fuentes','edgarfu
 UNLOCK TABLES;
 
 --
+-- Dumping events for database 'nextview'
+--
+
+--
 -- Dumping routines for database 'nextview'
 --
 /*!50003 DROP PROCEDURE IF EXISTS `sp_ConfigurarContenidoAutomatico` */;
@@ -510,4 +514,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-22 12:33:08
+-- Dump completed on 2025-11-22 12:36:12
