@@ -6,6 +6,7 @@ import { useGenero } from '../../../../data/useGenero';
 function SubModalContenido({
     contenido = {},
     onChange,
+    onGenerosChange,
     errores = {},
     operacion
 }) {
@@ -19,12 +20,10 @@ function SubModalContenido({
         label: item.nombre,
     }));
 
-    // SOLUCIÓN: Usar el ID del contenido para detectar cambios
     useEffect(() => {
         if (genero.length > 0) {
             const contenidoId = contenido?.idContenido || 'nuevo';
             
-            // Solo inicializar si cambió el contenido
             if (contenidoId !== contenidoIdActual) {
                 console.log("🎬 OPERACIÓN:", operacion === 1 ? "AGREGAR" : "EDITAR");
                 console.log("📝 Contenido ID:", contenidoId);
@@ -33,14 +32,12 @@ function SubModalContenido({
                 let generosIniciales = [];
 
                 if (operacion === 1) {
-                    // MODO AGREGAR: Todos los géneros comienzan DESMARCADOS
                     generosIniciales = genero.map(gen => ({
                         ...gen,
                         marcado: 0
                     }));
                     console.log("➕ MODO AGREGAR - Todos los géneros desmarcados");
                 } else {
-                    // MODO EDITAR: Marcar según contenido.generos
                     const generosDelContenido = contenido?.generos || '';
                     const generosArray = generosDelContenido ? 
                         generosDelContenido.split(',').map(g => g.trim()) : [];
@@ -61,7 +58,7 @@ function SubModalContenido({
                 setGenerosConEstado(generosIniciales);
                 setContenidoIdActual(contenidoId);
 
-                // ACTUALIZAR EL CAMPO generos DEL FORMULARIO
+                // ACTUALIZAR GÉNEROS EN EL PADRE
                 const nombresGenerosIniciales = generosIniciales
                     .filter(gen => gen.marcado === 1)
                     .map(gen => gen.nombre);
@@ -69,20 +66,13 @@ function SubModalContenido({
                 const generosStringInicial = nombresGenerosIniciales.join(', ');
                 console.log("🔄 CAMPO generos INICIAL:", generosStringInicial);
                 
-                // Usar setTimeout para evitar el error de renderizado
-                setTimeout(() => {
-                    onChange({
-                        target: {
-                            name: 'generos',
-                            value: generosStringInicial
-                        }
-                    });
-                }, 0);
+                if (onGenerosChange) {
+                    onGenerosChange(generosStringInicial);
+                }
             }
         }
-    }, [genero, operacion, contenido, contenidoIdActual, onChange]);
+    }, [genero, operacion, contenido, contenidoIdActual, onGenerosChange]);
 
-    // SOLUCIÓN: Función toggleGenero mejorada
     const toggleGenero = (idGenero) => {
         console.log("🖱️ CLICK en género ID:", idGenero);
 
@@ -98,7 +88,7 @@ function SubModalContenido({
             
             console.log("📋 NUEVO ESTADO:", nuevosGeneros);
             
-            // ACTUALIZAR EL CAMPO generos
+            // ACTUALIZAR GÉNEROS EN EL PADRE
             const nombresGeneros = nuevosGeneros
                 .filter(gen => gen.marcado === 1)
                 .map(gen => gen.nombre);
@@ -106,31 +96,13 @@ function SubModalContenido({
             const generosString = nombresGeneros.join(', ');
             console.log("🎯 ACTUALIZANDO CAMPO generos:", generosString);
             
-            // Usar setTimeout para evitar el error de renderizado
-            setTimeout(() => {
-                onChange({
-                    target: {
-                        name: 'generos',
-                        value: generosString
-                    }
-                });
-            }, 0);
+            if (onGenerosChange) {
+                onGenerosChange(generosString);
+            }
             
             return nuevosGeneros;
         });
     };
-
-    // Efecto separado para actualizaciones del campo generos
-    useEffect(() => {
-        if (generosConEstado.length > 0) {
-            const nombresGeneros = generosConEstado
-                .filter(gen => gen.marcado === 1)
-                .map(gen => gen.nombre);
-                
-            const generosString = nombresGeneros.join(', ');
-            console.log("🔄 EFECTO - Campo generos actualizado:", generosString);
-        }
-    }, [generosConEstado]);
 
     // Verificar si los géneros están cargados
     if (genero.length === 0) {
@@ -238,7 +210,7 @@ function SubModalContenido({
             {/* Lista de Géneros */}
             <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Géneros {operacion === 1 ? "(Nuevo - Seleccione)" : "(Editando)"}
+                    Géneros * {operacion === 1 ? "(Nuevo - Seleccione)" : "(Editando)"}
                 </label>
                 <div className="border border-gray-300 rounded-md p-3 !bg-white">
                     <div className="flex flex-wrap gap-2">
@@ -257,6 +229,11 @@ function SubModalContenido({
                             </button>
                         ))}
                     </div>
+
+                    {/* MOSTRAR ERROR DE GÉNEROS */}
+                    {errores.generos && (
+                        <p className="text-red-500 text-sm mt-2">{errores.generos}</p>
+                    )}
 
                     {generosConEstado.filter(gen => gen.marcado === 1).length > 0 && (
                         <div className="mt-3 p-2 !bg-blue-50 rounded-md">

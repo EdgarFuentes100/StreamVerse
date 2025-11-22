@@ -6,16 +6,19 @@ const useModelContenido = ({ crearContenido, actualizarContenido }) => {
     const [contenidoSeleccionado, setContenidoSeleccionado] = useState(null);
     const [operacion, setOperacion] = useState(1);
     const [errores, setErrores] = useState({});
+    const [generosSeleccionados, setGenerosSeleccionados] = useState(""); // ✅ Nuevo estado para géneros
 
     const openSubModal = (op, contenido = ModelContenido()) => {
         setOperacion(op);
         setContenidoSeleccionado(op === 2 ? contenido : ModelContenido());
+        setGenerosSeleccionados(contenido?.generos || ""); // ✅ Inicializar con géneros del contenido
         setSubModalOpen(true);
     };
 
     const closeSubModal = () => {
         setSubModalOpen(false);
         setContenidoSeleccionado(null);
+        setGenerosSeleccionados(""); // ✅ Limpiar géneros
         setErrores({});
     };
 
@@ -29,6 +32,9 @@ const useModelContenido = ({ crearContenido, actualizarContenido }) => {
         if (!contenidoSeleccionado?.idCategoria || contenidoSeleccionado.idCategoria === 0) {
             nuevosErrores.idCategoria = true;
         }
+        if (!generosSeleccionados || generosSeleccionados.trim() === "") {
+            nuevosErrores.generos = "Seleccione al menos un género"; // ✅ Validar géneros
+        }
 
         setErrores(nuevosErrores);
 
@@ -37,9 +43,20 @@ const useModelContenido = ({ crearContenido, actualizarContenido }) => {
             return;
         }
 
-        console.warn('Guardando contenido:', contenidoSeleccionado);
-        if (operacion === 1) crearContenido(contenidoSeleccionado);
-        else actualizarContenido(contenidoSeleccionado.idContenido, contenidoSeleccionado);
+        // ✅ COMBINAR EL CONTENIDO CON LOS GÉNEROS SELECCIONADOS
+        const contenidoCompleto = {
+            ...contenidoSeleccionado,
+            generos: generosSeleccionados
+        };
+
+        console.warn('Guardando contenido:', contenidoCompleto);
+        
+        if (operacion === 1) {
+            crearContenido(contenidoCompleto);
+        } else {
+            actualizarContenido(contenidoSeleccionado.idContenido, contenidoCompleto);
+        }
+        
         closeSubModal();
     };
 
@@ -61,15 +78,23 @@ const useModelContenido = ({ crearContenido, actualizarContenido }) => {
         setErrores(prev => ({ ...prev, [name]: false }));
     };
 
+    // ✅ NUEVA FUNCIÓN PARA ACTUALIZAR GÉNEROS DESDE EL SUBMODAL
+    const handleGenerosChange = (generosString) => {
+        setGenerosSeleccionados(generosString);
+        setErrores(prev => ({ ...prev, generos: false }));
+    };
+
     return {
         showSubModal,
         openSubModal,
         closeSubModal,
         handleChange,
+        handleGenerosChange, // ✅ Exportar nueva función
         handleContinue,
         errores,
         operacion,
         contenidoSeleccionado,
+        generosSeleccionados // ✅ Exportar géneros
     };
 };
 

@@ -127,43 +127,169 @@ async function getContenidoRecomendacion(idCuenta, idContenidoActual, esAdmin = 
 // Crear una categoría
 async function crearContenidoModelo(body) {
     const { title, image, rating, year, descripcion, duracion, temporadas, episodios,
-        isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria } = body;
+        isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria, generos } = body;
 
-    const [result] = await localDB.query(
-        `INSERT INTO contenido 
-        (title, image, rating, year, descripcion, duracion, temporadas, episodios, isNew, isPopular, 
-        isTrending, isExclusive, isFavorito, idCategoria)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-        [title, image, rating, year, descripcion, duracion, temporadas,
-            episodios, isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria]
-    );
+    let connection;
+    try {
+        // Iniciar transacción
+        connection = await localDB.getConnection();
+        await connection.beginTransaction();
 
-    return result;
+        // 1. Insertar el contenido principal
+        const [result] = await connection.query(
+            `INSERT INTO contenido 
+            (title, image, rating, year, descripcion, duracion, temporadas, episodios, isNew, isPopular, 
+            isTrending, isExclusive, isFavorito, idCategoria)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            [title, image, rating, year, descripcion, duracion, temporadas,
+                episodios, isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria]
+        );
+
+        const idContenido = result.insertId;
+
+        // 2. Insertar los géneros en contenido_genero
+        if (generos && generos.trim() !== '') {
+            const generosArray = generos.split(',').map(g => g.trim());
+
+            for (const nombreGenero of generosArray) {
+                const [generoRows] = await connection.query(
+                    'SELECT idGenero FROM genero WHERE nombre = ?',
+                    [nombreGenero]
+                );
+
+                if (generoRows.length > 0) {
+                    const idGenero = generoRows[0].idGenero;
+
+                    await connection.query(
+                        'INSERT INTO contenido_genero (idContenido, idGenero) VALUES (?, ?)',
+                        [idContenido, idGenero]
+                    );
+                }
+            }
+        }
+
+        // Confirmar transacción
+        await connection.commit();
+
+        return result; // ✅ Retorna el result original
+
+    } catch (error) {
+        // Revertir transacción en caso de error
+        if (connection) {
+            await connection.rollback();
+        }
+        console.error('Error al crear contenido:', error);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
 }
 
 // Actualizar una categoría
 async function actualizarContenidoModelo(id, body) {
     const { title, image, rating, year, descripcion, duracion, temporadas, episodios,
-        isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria } = body;
+        isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria, generos } = body;
 
-    const [result] = await localDB.query(
-        `UPDATE contenido SET title = ?, image = ?, rating = ?, year = ?, descripcion = ?, duracion = ?, temporadas = ?,
-         episodios = ?, isNew = ?, isPopular = ?, isTrending = ?, isExclusive = ?, isFavorito = ?,
-          idCategoria = ? WHERE idContenido = ?`,
-        [title, image, rating, year, descripcion, duracion, temporadas,
-            episodios, isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria, id]);
+    let connection;
+    try {
+        // Iniciar transacción
+        connection = await localDB.getConnection();
+        await connection.beginTransaction();
 
-    return result;
+        // 1. Actualizar el contenido principal
+        const [result] = await connection.query(
+            `UPDATE contenido SET title = ?, image = ?, rating = ?, year = ?, descripcion = ?, duracion = ?, temporadas = ?,
+             episodios = ?, isNew = ?, isPopular = ?, isTrending = ?, isExclusive = ?, isFavorito = ?,
+              idCategoria = ? WHERE idContenido = ?`,
+            [title, image, rating, year, descripcion, duracion, temporadas,
+                episodios, isNew, isPopular, isTrending, isExclusive, isFavorito, idCategoria, id]
+        );
+
+        // 2. Eliminar géneros existentes
+        await connection.query(
+            'DELETE FROM contenido_genero WHERE idContenido = ?',
+            [id]
+        );
+
+        // 3. Insertar los nuevos géneros
+        if (generos && generos.trim() !== '') {
+            const generosArray = generos.split(',').map(g => g.trim());
+
+            for (const nombreGenero of generosArray) {
+                const [generoRows] = await connection.query(
+                    'SELECT idGenero FROM genero WHERE nombre = ?',
+                    [nombreGenero]
+                );
+
+                if (generoRows.length > 0) {
+                    const idGenero = generoRows[0].idGenero;
+
+                    await connection.query(
+                        'INSERT INTO contenido_genero (idContenido, idGenero) VALUES (?, ?)',
+                        [id, idGenero]
+                    );
+                }
+            }
+        }
+
+        // Confirmar transacción
+        await connection.commit();
+
+        return result; // ✅ Retorna el result original
+
+    } catch (error) {
+        // Revertir transacción en caso de error
+        if (connection) {
+            await connection.rollback();
+        }
+        console.error('Error al actualizar contenido:', error);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
 }
 
 // Eliminar una categoría
 async function eliminarContenidoModelo(id) {
-    const [result] = await localDB.query(
-        `DELETE FROM contenido WHERE idContenido = ?`,
-        [id]
-    );
+    let connection;
+    try {
+        // Iniciar transacción
+        connection = await localDB.getConnection();
+        await connection.beginTransaction();
 
-    return result;
+        // 1. Eliminar los géneros primero (por la foreign key)
+        await connection.query(
+            'DELETE FROM contenido_genero WHERE idContenido = ?',
+            [id]
+        );
+
+        // 2. Eliminar el contenido
+        const [result] = await connection.query(
+            'DELETE FROM contenido WHERE idContenido = ?',
+            [id]
+        );
+
+        // Confirmar transacción
+        await connection.commit();
+
+        return result; // ✅ Retorna el result original
+
+    } catch (error) {
+        // Revertir transacción en caso de error
+        if (connection) {
+            await connection.rollback();
+        }
+        console.error('Error al eliminar contenido:', error);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
 }
 
 module.exports = {

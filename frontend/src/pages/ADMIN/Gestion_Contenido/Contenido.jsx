@@ -17,7 +17,8 @@ function Contenido() {
         openSubModal,
         contenidoSeleccionado,
         handleChange,
-        errores
+        errores,
+        handleGenerosChange, // ✅ Nueva función
     } = useModelContenido(contenidoHook);
 
     return (
@@ -73,6 +74,7 @@ function Contenido() {
                         onChange={handleChange}
                         errores={errores}
                         operacion={operacion}
+                        onGenerosChange={handleGenerosChange}
                     />
                 </SubModal>
             </div>
