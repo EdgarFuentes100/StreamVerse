@@ -2,18 +2,28 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../api/authContext";
 import { adminMenus } from "../data/adminMenuOptions";
+import ModalUniversal from "../components/ModalUniversal";
 
 function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeAdminMenu, setActiveAdminMenu] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { usuario, logout, perfilActivo, setPerfilActivo } = useAuth();
   const adminMenuRef = useRef(null);
 
-  // 🔹 Cerrar sesión completa
+  // ✅ Función para confirmar cierre de sesión
+  const handleConfirmLogout = () => {
+    logout();
+    setShowLogoutModal(false);
+    setIsMenuOpen(false);
+    setActiveAdminMenu(null);
+  };
+
+  // 🔹 Cerrar sesión completa (ahora abre el modal)
   const handleLoginClick = () => {
     if (usuario) {
-      logout();
+      setShowLogoutModal(true); // ✅ Mostrar modal de confirmación
     } else {
       navigate("/Login");
     }
@@ -42,7 +52,6 @@ function Header() {
       "Mi Lista": "/MiLista",
       "Novedades": "/Novedades",
       "Plan": "/CambiarPlan"
-
     };
     navigate(rutas[item]);
     setIsMenuOpen(false);
@@ -296,6 +305,18 @@ function Header() {
           </div>
         </>
       )}
+
+      {/* ✅ Modal de confirmación para cerrar sesión */}
+      <ModalUniversal
+        mostrar={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onAceptar={handleConfirmLogout}
+        titulo="Cerrar Sesión"
+        mensaje="¿Estás seguro de que deseas cerrar sesión?"
+        textoAceptar="Sí, cerrar sesión"
+        textoCancelar="Cancelar"
+        tipo="warning"
+      />
     </>
   );
 }
