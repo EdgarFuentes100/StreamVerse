@@ -37,7 +37,9 @@ function Header() {
       "Inicio": "/",
       "Series, Peliculas": "/Catalogo",
       "Mi Lista": "/MiLista",
-      "Novedades": "/Novedades"
+      "Novedades": "/Novedades",
+      "Plan": "/CambiarPlan"
+
     };
     navigate(rutas[item]);
     setIsMenuOpen(false);
@@ -112,7 +114,7 @@ function Header() {
 
         {/* Menú desktop */}
         <nav className="hidden lg:flex space-x-8">
-          {["Inicio", "Series, Peliculas", "Mi Lista", "Novedades"]
+          {["Inicio", "Series, Peliculas", "Mi Lista", "Plan", "Novedades"]
             .filter(item => !(item === "Mi Lista" && !perfilActivo))
             .map((item) => (
               <a
@@ -215,7 +217,7 @@ function Header() {
           <div className="lg:hidden fixed top-16 left-0 right-0 !bg-gray-900/98 backdrop-blur-lg !border-b !border-cyan-500/20 !shadow-xl z-50 max-h-[80vh] overflow-y-auto">
             <nav className="flex flex-col">
               {/* Menú principal */}
-              {["Inicio", "Series, Peliculas", "Mi Lista", "Novedades"]
+              {["Inicio", "Series, Peliculas", "Mi Lista", "Plan", "Novedades"]
                 .filter(item => !(item === "Mi Lista" && !perfilActivo))
                 .map((item) => (
                   <button

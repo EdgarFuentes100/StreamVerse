@@ -36,15 +36,37 @@ function AppRoutes() {
             <Route path="/Novedades" element={<NovedadesPage />} />
             <Route path="/Planes" element={<PlanesPage />} />
 
-            <Route path="/repGeneral" element={<ResumenGeneral />} />
-            <Route path="/repPlanes" element={<ReportePlanes />} />
-            <Route path="/repUsuario" element={<ReporteUsuarios />} />
-            <Route path="/repIngresos" element={<ReporteIngresos />} />
-            <Route path="/repContenido" element={<ReporteContenido />} />
-
             <Route path="/CambiarPlan" element={
                 <ProtectedRoute rolesPermitidos={[2]}>
                     <CambiarPlanPage />
+                </ProtectedRoute>
+            } />
+
+            <Route path="/repGeneral" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <ResumenGeneral />
+                </ProtectedRoute>
+            } />
+            <Route path="/repPlanes" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <ReportePlanes />
+                </ProtectedRoute>
+            } />
+
+            <Route path="/repUsuario" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <ReporteUsuarios />
+                </ProtectedRoute>
+            } />
+            <Route path="/repIngresos" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <ReporteIngresos />
+                </ProtectedRoute>
+            } />
+
+            <Route path="/repContenido" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <ReporteContenido />
                 </ProtectedRoute>
             } />
 
