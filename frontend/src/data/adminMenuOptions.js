@@ -50,6 +50,12 @@ export const contenidoOptions = [
     label: "Planes",
     ruta: "/Plan",
     permisos: ["admin", "moderador", "superadmin"]
+  },
+  {
+    icon: "🎞️ 💳",
+    label: "Gestion Contenido Plan",
+    ruta: "/contenidoPlan",
+    permisos: ["admin", "moderador", "superadmin"]
   }
 ];
 
@@ -57,31 +63,31 @@ export const reportesOptions = [
   {
     icon: "📊",
     label: "Resumen General",
-    ruta: "/reportes/resumen",
+    ruta: "/repGeneral",
     permisos: ["admin", "superadmin"]
   },
   {
     icon: "💳",
     label: "Reporte de Planes",
-    ruta: "/reportes/planes",
+    ruta: "/repPlanes",
     permisos: ["admin", "superadmin"]
   },
   {
     icon: "👥",
     label: "Reporte de Usuarios",
-    ruta: "/reportes/usuarios",
+    ruta: "/repUsuario",
     permisos: ["admin", "superadmin"]
   },
   {
     icon: "💰",
     label: "Reporte de Ingresos",
-    ruta: "/reportes/ingresos",
+    ruta: "/repIngresos",
     permisos: ["superadmin"]
   },
   {
     icon: "🎬",
     label: "Reporte de Contenido",
-    ruta: "/reportes/contenido",
+    ruta: "/repContenido",
     permisos: ["admin", "superadmin"]
   }
 ];
