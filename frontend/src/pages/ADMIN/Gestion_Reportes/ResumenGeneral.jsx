@@ -58,25 +58,6 @@ const ResumenGeneral = () => {
                     idKey="mes"
                 />
             </div>
-
-            {/* Alertas Recientes */}
-            <div className="bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700">
-                <h2 className="text-lg font-semibold text-white mb-4">Alertas Recientes</h2>
-                <div className="space-y-3">
-                    {alertas && alertas.map(alerta => (
-                        <div key={alerta.id} className={`p-3 rounded-lg border-l-4 ${
-                            alerta.tipo === 'advertencia' ? 'border-yellow-500 bg-yellow-900 bg-opacity-20' :
-                            alerta.tipo === 'info' ? 'border-blue-500 bg-blue-900 bg-opacity-20' :
-                            'border-green-500 bg-green-900 bg-opacity-20'
-                        }`}>
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm text-gray-200">{alerta.mensaje}</p>
-                                <span className="text-xs text-gray-400">{alerta.fecha}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
         </div>
     );
 };

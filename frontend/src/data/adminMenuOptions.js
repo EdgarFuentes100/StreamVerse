@@ -51,12 +51,12 @@ export const contenidoOptions = [
     ruta: "/Plan",
     permisos: ["admin", "moderador", "superadmin"]
   },
-  {
-    icon: "🎞️ 💳",
+ {
+    icon: "📋",
     label: "Gestion Contenido Plan",
     ruta: "/contenidoPlan",
     permisos: ["admin", "moderador", "superadmin"]
-  }
+}
 ];
 
 export const reportesOptions = [

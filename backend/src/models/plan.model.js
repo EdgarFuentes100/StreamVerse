@@ -68,7 +68,7 @@ async function crearPlanModelo(body) {
   const { nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios } = body;
 
   const [result] = await localDB.query(
-    `INSERT INTO plan (nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo) VALUES (?,?,?,?,?,?,?)`,
+    `INSERT INTO plan (nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios) VALUES (?,?,?,?,?,?,?)`,
     [nombre, precio, maxPerfil, calidad, contenidoExclusivo, contenidoNuevo, sinAnuncios]
   );
 

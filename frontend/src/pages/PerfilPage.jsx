@@ -142,35 +142,34 @@ function PerfilPage() {
         </div>
 
         <div className="flex justify-center gap-10 flex-wrap mb-16">
-          {perfil.map((profile) => (
+          {perfil.slice(0, maxPerfiles).map((profile) => (<div
+            key={profile.idCuentaPerfil}
+            className="flex flex-col items-center transition-all duration-500"
+            onMouseEnter={() => setHoveredProfile(profile.idCuentaPerfil)}
+            onMouseLeave={() => setHoveredProfile(null)}
+          >
             <div
-              key={profile.idCuentaPerfil}
-              className="flex flex-col items-center transition-all duration-500"
-              onMouseEnter={() => setHoveredProfile(profile.idCuentaPerfil)}
-              onMouseLeave={() => setHoveredProfile(null)}
+              className="flex flex-col items-center cursor-pointer group relative"
+              onClick={() => handleProfileClick(profile)}
             >
               <div
-                className="flex flex-col items-center cursor-pointer group relative"
-                onClick={() => handleProfileClick(profile)}
+                className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 !border-2 !border-white/20 transition-all duration-500 shadow-2xl ${hoveredProfile === profile.idCuentaPerfil
+                  ? "scale-110 !border-white"
+                  : ""
+                  } group-hover:scale-110 group-hover:!border-white`}
               >
-                <div
-                  className={`w-36 h-36 ${getColorFromId(profile.idCuentaPerfil)} rounded-2xl flex items-center justify-center text-5xl mb-4 !border-2 !border-white/20 transition-all duration-500 shadow-2xl ${hoveredProfile === profile.idCuentaPerfil
-                    ? "scale-110 !border-white"
-                    : ""
-                    } group-hover:scale-110 group-hover:!border-white`}
-                >
-                  {profile.avatar || "👤"}
-                </div>
-                <span
-                  className={`text-lg font-medium !text-gray-300 transition-all duration-500 ${hoveredProfile === profile.idCuentaPerfil
-                    ? "!text-white scale-105"
-                    : ""
-                    } group-hover:!text-white group-hover:scale-105`}
-                >
-                  {profile.nombre}
-                </span>
+                {profile.avatar || "👤"}
               </div>
+              <span
+                className={`text-lg font-medium !text-gray-300 transition-all duration-500 ${hoveredProfile === profile.idCuentaPerfil
+                  ? "!text-white scale-105"
+                  : ""
+                  } group-hover:!text-white group-hover:scale-105`}
+              >
+                {profile.nombre}
+              </span>
             </div>
+          </div>
           ))}
 
           {perfil.length < maxPerfiles ? (

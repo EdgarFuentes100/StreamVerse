@@ -42,14 +42,17 @@ function AppRoutes() {
             <Route path="/repIngresos" element={<ReporteIngresos />} />
             <Route path="/repContenido" element={<ReporteContenido />} />
 
-            <Route path="/contenidoPlan" element={<GestionContenidoPlan />} />
-
             <Route path="/CambiarPlan" element={
                 <ProtectedRoute rolesPermitidos={[2]}>
                     <CambiarPlanPage />
                 </ProtectedRoute>
             } />
 
+            <Route path="/contenidoPlan" element={
+                <ProtectedRoute rolesPermitidos={[1]}>
+                    <GestionContenidoPlan />
+                </ProtectedRoute>
+            } />
             <Route path="/Categoria" element={
                 <ProtectedRoute rolesPermitidos={[1]}>
                     <Categoria />
