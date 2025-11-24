@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../api/authContext";
 import { adminMenus } from "../data/adminMenuOptions";
 import ModalUniversal from "../components/ModalUniversal";
+import TerminosCondiciones from "../pages/ADMIN/Gestion_Contenido/Modal/TerminosCondiciones";
+import SubModal from "./SubModal";
 
 function Header() {
   const navigate = useNavigate();
@@ -11,6 +13,23 @@ function Header() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { usuario, logout, perfilActivo, setPerfilActivo } = useAuth();
   const adminMenuRef = useRef(null);
+  const [showSubModal, setSubModalOpen] = useState(false);
+
+  // ✅ Función para abrir modal de términos
+  const openSubModal = () => {
+    setSubModalOpen(true);
+  };
+
+  // ✅ Función para cerrar modal de términos
+  const closeSubModal = () => {
+    setSubModalOpen(false);
+  };
+
+  // ✅ Función para aceptar términos
+  const handleAcceptTerminos = () => {
+    console.log("Términos y condiciones aceptados");
+    closeSubModal();
+  };
 
   // ✅ Función para confirmar cierre de sesión
   const handleConfirmLogout = () => {
@@ -23,7 +42,7 @@ function Header() {
   // 🔹 Cerrar sesión completa (ahora abre el modal)
   const handleLoginClick = () => {
     if (usuario) {
-      setShowLogoutModal(true); // ✅ Mostrar modal de confirmación
+      setShowLogoutModal(true);
     } else {
       navigate("/Login");
     }
@@ -35,10 +54,7 @@ function Header() {
     setPerfilActivo(null);
     localStorage.removeItem("perfilActivo");
     localStorage.removeItem("tokenPerfil");
-
-    // Navegar y luego recargar
     navigate("/Perfil", { replace: true });
-
     setTimeout(() => {
       window.location.reload();
     }, 100);
@@ -78,7 +94,6 @@ function Header() {
 
   // 🔹 Función SIMPLIFICADA para manejar el toggle de menús móviles
   const handleAdminMenuMobileClick = (menuKey, event) => {
-    // Solo toggle si es el mismo menú, si es diferente lo cambiamos
     if (activeAdminMenu === menuKey) {
       setActiveAdminMenu(null);
     } else {
@@ -145,6 +160,16 @@ function Header() {
 
         {/* Botones desktop */}
         <div className="hidden lg:flex items-center space-x-4">
+          {/* 🔥 BOTÓN TÉRMINOS Y CONDICIONES */}
+          <button
+            onClick={openSubModal}
+            className="flex items-center space-x-2 !bg-purple-500 !text-white transition-all duration-300 px-4 py-2.5 rounded-xl font-semibold hover:!bg-purple-600 hover:!shadow-lg hover:!shadow-purple-500/25 hover:scale-105"
+            title="Términos y Condiciones"
+          >
+            <span className="text-sm font-medium">Términos</span>
+            <span>📄</span>
+          </button>
+
           {/* 🔥 MENÚS DE ADMINISTRACIÓN - SOLO PARA ROL 1 */}
           {usuario && usuario.idRol === 1 && (
             <div className="flex items-center space-x-2" ref={adminMenuRef}>
@@ -241,48 +266,60 @@ function Header() {
                   </button>
                 ))}
 
+              {/* Términos y Condiciones en móvil */}
+              <button
+                onClick={openSubModal}
+                className="flex items-center space-x-2 !bg-purple-500 !text-white transition-all duration-300 px-4 py-2.5 rounded-xl font-semibold hover:!bg-purple-600 hover:!shadow-lg hover:!shadow-purple-500/25 hover:scale-105"
+                title="Términos y Condiciones"
+              >
+                <span className="text-sm font-medium">Términos</span>
+                <span>📄</span>
+              </button>
+
               {/* Separador Administración */}
-              <div className="px-4 py-2 !bg-gray-800/50 !border-y !border-gray-700/50">
-                <span className="!text-cyan-400 font-semibold text-sm">Administración</span>
-              </div>
+              {usuario && usuario.idRol === 1 && (
+                <>
+                  <div className="px-4 py-2 !bg-gray-800/50 !border-y !border-gray-700/50">
+                    <span className="!text-cyan-400 font-semibold text-sm">Administración</span>
+                  </div>
 
-              {/* 🔥 MENÚS DE ADMINISTRACIÓN MÓVIL - LÓGICA SIMPLIFICADA */}
-              {adminMenus.map((menu) => (
-                <div key={menu.key} className="!border-b !border-gray-700/30">
-                  {/* Botón principal del menú */}
-                  <button
-                    onClick={() => handleAdminMenuMobileClick(menu.key)}
-                    className={`w-full flex items-center justify-between px-4 py-3 !text-gray-300 hover:!bg-gray-800/50 transition-all duration-200 ${getMenuHeaderBg(menu.key)}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">{menu.icon}</span>
-                      <span className="font-medium text-sm">{menu.label}</span>
-                    </div>
-                    <span className={`transform transition-transform ${activeAdminMenu === menu.key ? 'rotate-180' : ''}`}>
-                      ▼
-                    </span>
-                  </button>
+                  {/* 🔥 MENÚS DE ADMINISTRACIÓN MÓVIL */}
+                  {adminMenus.map((menu) => (
+                    <div key={menu.key} className="!border-b !border-gray-700/30">
+                      <button
+                        onClick={() => handleAdminMenuMobileClick(menu.key)}
+                        className={`w-full flex items-center justify-between px-4 py-3 !text-gray-300 hover:!bg-gray-800/50 transition-all duration-200 ${getMenuHeaderBg(menu.key)}`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg">{menu.icon}</span>
+                          <span className="font-medium text-sm">{menu.label}</span>
+                        </div>
+                        <span className={`transform transition-transform ${activeAdminMenu === menu.key ? 'rotate-180' : ''}`}>
+                          ▼
+                        </span>
+                      </button>
 
-                  {/* Submenú desplegable móvil */}
-                  {activeAdminMenu === menu.key && (
-                    <div className={`!bg-white !border-l-4 ${getMenuBorderColor(menu.key)}`}>
-                      <div className="px-4 py-2 !text-gray-800 font-semibold text-xs border-b !border-gray-300">
-                        Opciones de {menu.label}
-                      </div>
-                      {menu.options.map((option, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleAdminMenuClick(option.ruta)}
-                          className="w-full flex items-center space-x-3 px-8 py-3 !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900 transition-all duration-200 !border-b !border-gray-200 text-sm"
-                        >
-                          <span className="text-lg w-6 text-center">{option.icon}</span>
-                          <span className="text-left flex-1">{option.label}</span>
-                        </button>
-                      ))}
+                      {activeAdminMenu === menu.key && (
+                        <div className={`!bg-white !border-l-4 ${getMenuBorderColor(menu.key)}`}>
+                          <div className="px-4 py-2 !text-gray-800 font-semibold text-xs border-b !border-gray-300">
+                            Opciones de {menu.label}
+                          </div>
+                          {menu.options.map((option, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleAdminMenuClick(option.ruta)}
+                              className="w-full flex items-center space-x-3 px-8 py-3 !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900 transition-all duration-200 !border-b !border-gray-200 text-sm"
+                            >
+                              <span className="text-lg w-6 text-center">{option.icon}</span>
+                              <span className="text-left flex-1">{option.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                  ))}
+                </>
+              )}
 
               {/* Botones móviles */}
               <div className="px-4 sm:px-6 py-3 sm:py-4 !border-t !border-gray-700/50 !bg-gray-800/30 flex flex-col gap-2">
@@ -317,6 +354,22 @@ function Header() {
         textoCancelar="Cancelar"
         tipo="warning"
       />
+
+      {/* ✅ Modal de Términos y Condiciones */}
+      <SubModal
+        show={showSubModal}
+        handleClose={closeSubModal}
+        handleContinue={handleAcceptTerminos}
+        titulo={"Aviso legal - Términos y Condiciones - Nex View"}
+        width={900}
+        continueText={"Aceptar términos y condiciones"}
+        cancelText="Cancelar"
+        continueVariant="success"
+        backdrop={true}
+        scrollable={true}
+      >
+        <TerminosCondiciones />
+      </SubModal>
     </>
   );
 }
