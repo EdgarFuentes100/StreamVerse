@@ -45,16 +45,7 @@ function Home() {
               <span className="text-pink-400">animes</span> en un solo lugar.
               Streaming ilimitado en la mejor calidad.
             </p>
-
-            {/* Botones */}
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-              <button className="group bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-xl text-sm sm:text-lg font-bold hover:shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 hover:scale-105">
-                <span className="flex items-center justify-center">
-                  COMIENZA TU PRUEBA GRATIS
-                  <span className="ml-1 sm:ml-2 group-hover:translate-x-1 transition-transform">🎬</span>
-                </span>
-              </button>
-            </div>
+           
 
             {/* Estadísticas */}
             <div className="mt-6 sm:mt-10 grid grid-cols-3 gap-3 sm:gap-6 text-center">
@@ -175,7 +166,7 @@ function Home() {
 
               {/* Botón central flotante */}
               <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-                <button className="group bg-gradient-to-r from-cyan-500/90 to-purple-500/90 text-white px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-2xl font-bold backdrop-blur-lg border border-cyan-400/30 shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 hover:scale-110 hover:from-cyan-500 hover:to-purple-500">
+                <button className="group bg-gradient-to-r from-cyan-500/90 to-purple-500/90 text-white px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-2xl font-bold backdrop-blur-lg border border-cyan-400/30 shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 hover:scale-110 hover:from-cyan-500 hover:to-purple-500" onClick={handleCatalogo}>
                   <span className="flex items-center space-x-2">
                     <span>Explorar</span>
                     <span className="group-hover:translate-y-1 transition-transform duration-300">👇</span>
@@ -301,7 +292,7 @@ function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300"></div>
 
                     {/* Botón con icono en móviles y ancho reducido */}
-                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 transform lg:translate-y-full lg:group-hover:translate-y-0 transition-transform duration-300">
+                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 transform lg:translate-y-full lg:group-hover:translate-y-0 transition-transform duration-300" onClick={handleCatalogo}>
                       <button className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-1.5 sm:p-3 rounded-full sm:rounded-lg hover:shadow-lg hover:shadow-cyan-500/25 transition-all active:scale-95 flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto">
                         <span className="sm:hidden text-xs">▶</span>
                         <span className="hidden sm:inline text-sm font-bold">Ver ahora</span>
@@ -408,12 +399,12 @@ function Home() {
                   </div>
 
                   {/* Botón principal desktop */}
-                  <button className="hidden lg:block w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95">
+                  <button className="hidden lg:block w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95" onClick={handleCatalogo}>
                     Ver Película
                   </button>
 
                   {/* Botón compacto para tablet/móvil */}
-                  <button className="lg:hidden w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95 text-sm">
+                  <button className="lg:hidden w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95 text-sm" onClick={handleCatalogo}>
                     Ver ahora
                   </button>
                 </div>

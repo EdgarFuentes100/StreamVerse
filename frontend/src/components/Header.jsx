@@ -160,12 +160,12 @@ function Header() {
                 className="relative group"
               >
                 <span className={`!text-gray-300 group-hover:!text-cyan-400 transition-all duration-300 font-medium ${
-                  item === "Términos y Condiciones" ? "!text-purple-300 group-hover:!text-purple-400" : ""
+                  item === "Términos y Condiciones" ? "!text-white group-hover:!text-purple-400" : ""
                 }`}>
                   {item}
                 </span>
                 <span className={`absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300 ${
-                  item === "Términos y Condiciones" ? "!bg-purple-400" : "!bg-cyan-400"
+                  item === "Términos y Condiciones" ? "!text-white" : "!bg-cyan-400"
                 }`}></span>
               </a>
             ))}
@@ -264,7 +264,7 @@ function Header() {
                     key={item}
                     onClick={() => handleMenuClick(item)}
                     className={`px-4 py-3 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/30 text-left text-sm ${
-                      item === "Términos y Condiciones" ? "!text-purple-300 hover:!text-purple-400" : ""
+                      item === "Términos y Condiciones" ? "!text-white hover:!text-purple-400" : ""
                     }`}
                   >
                     {item}
