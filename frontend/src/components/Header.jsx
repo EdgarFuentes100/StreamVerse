@@ -69,7 +69,13 @@ function Header() {
       "Novedades": "/Novedades",
       "Plan": "/CambiarPlan"
     };
-    navigate(rutas[item]);
+    
+    // Si es "Términos y Condiciones", abrir modal en lugar de navegar
+    if (item === "Términos y Condiciones") {
+      openSubModal();
+    } else {
+      navigate(rutas[item]);
+    }
     setIsMenuOpen(false);
   };
 
@@ -123,6 +129,9 @@ function Header() {
     return colors[menuKey] || "!bg-cyan-500/10";
   };
 
+  // 🔹 Elementos del menú principal
+  const menuItems = ["Inicio", "Series, Peliculas", "Mi Lista", "Plan", "Novedades", "Términos y Condiciones"];
+
   return (
     <>
       <header className="!bg-gray-900/80 backdrop-blur-lg border-b !border-cyan-500/20 w-full py-4 px-8 flex justify-between items-center fixed top-0 z-50">
@@ -141,7 +150,7 @@ function Header() {
 
         {/* Menú desktop */}
         <nav className="hidden lg:flex space-x-8">
-          {["Inicio", "Series, Peliculas", "Mi Lista", "Plan", "Novedades"]
+          {menuItems
             .filter(item => !(item === "Mi Lista" && !perfilActivo))
             .map((item) => (
               <a
@@ -150,26 +159,20 @@ function Header() {
                 onClick={(e) => { e.preventDefault(); handleMenuClick(item); }}
                 className="relative group"
               >
-                <span className="!text-gray-300 group-hover:!text-cyan-400 transition-all duration-300 font-medium">
+                <span className={`!text-gray-300 group-hover:!text-cyan-400 transition-all duration-300 font-medium ${
+                  item === "Términos y Condiciones" ? "!text-purple-300 group-hover:!text-purple-400" : ""
+                }`}>
                   {item}
                 </span>
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 !bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
+                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300 ${
+                  item === "Términos y Condiciones" ? "!bg-purple-400" : "!bg-cyan-400"
+                }`}></span>
               </a>
             ))}
         </nav>
 
         {/* Botones desktop */}
         <div className="hidden lg:flex items-center space-x-4">
-          {/* 🔥 BOTÓN TÉRMINOS Y CONDICIONES */}
-          <button
-            onClick={openSubModal}
-            className="flex items-center space-x-2 !bg-purple-500 !text-white transition-all duration-300 px-4 py-2.5 rounded-xl font-semibold hover:!bg-purple-600 hover:!shadow-lg hover:!shadow-purple-500/25 hover:scale-105"
-            title="Términos y Condiciones"
-          >
-            <span className="text-sm font-medium">Términos</span>
-            <span>📄</span>
-          </button>
-
           {/* 🔥 MENÚS DE ADMINISTRACIÓN - SOLO PARA ROL 1 */}
           {usuario && usuario.idRol === 1 && (
             <div className="flex items-center space-x-2" ref={adminMenuRef}>
@@ -254,27 +257,19 @@ function Header() {
           <div className="lg:hidden fixed top-16 left-0 right-0 !bg-gray-900/98 backdrop-blur-lg !border-b !border-cyan-500/20 !shadow-xl z-50 max-h-[80vh] overflow-y-auto">
             <nav className="flex flex-col">
               {/* Menú principal */}
-              {["Inicio", "Series, Peliculas", "Mi Lista", "Plan", "Novedades"]
+              {menuItems
                 .filter(item => !(item === "Mi Lista" && !perfilActivo))
                 .map((item) => (
                   <button
                     key={item}
                     onClick={() => handleMenuClick(item)}
-                    className="px-4 py-3 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/30 text-left text-sm"
+                    className={`px-4 py-3 !text-gray-300 hover:!text-cyan-400 hover:!bg-gray-800/50 !bg-gray-800/20 transition-all duration-300 font-medium border-b !border-gray-700/30 text-left text-sm ${
+                      item === "Términos y Condiciones" ? "!text-purple-300 hover:!text-purple-400" : ""
+                    }`}
                   >
                     {item}
                   </button>
                 ))}
-
-              {/* Términos y Condiciones en móvil */}
-              <button
-                onClick={openSubModal}
-                className="flex items-center space-x-2 !bg-purple-500 !text-white transition-all duration-300 px-4 py-2.5 rounded-xl font-semibold hover:!bg-purple-600 hover:!shadow-lg hover:!shadow-purple-500/25 hover:scale-105"
-                title="Términos y Condiciones"
-              >
-                <span className="text-sm font-medium">Términos</span>
-                <span>📄</span>
-              </button>
 
               {/* Separador Administración */}
               {usuario && usuario.idRol === 1 && (
