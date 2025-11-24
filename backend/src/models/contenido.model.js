@@ -57,7 +57,7 @@ async function getGrupo() {
         ) AS sub
         WHERE rn = 1
         ORDER BY idCategoria
-        LIMIT 4;`);
+        LIMIT 5;`);
     return rows;
 }
 
