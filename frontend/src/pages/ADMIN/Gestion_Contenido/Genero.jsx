@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
@@ -9,7 +10,11 @@ function Genero() {
 
     const generoHook = useGenero();
     const { genero, eliminarGenero } = generoHook;
+    const navigate = useNavigate();
 
+    const handleVolver = () => {
+        navigate(-1); // Vuelve a la página anterior
+    };
     const {
         showSubModal,
         handleContinue,
@@ -25,10 +30,9 @@ function Genero() {
         <>
             <div className="container-fluid p-3 pt-24">
                 <TablaToolbar
-                    onBack={() => console.log("Exportar")}
-                    onExport={() => console.log("Exportar")}
+                    onBack={handleVolver}
                     onAdd={() => openSubModal(1)}
-                    addLabel="Agregar Ingrediente"
+                    addLabel="Agregar Genero"
                 />
 
                 <TablaReutilizable

@@ -7,12 +7,17 @@ import { useUsuario } from "../../../data/useUsuario";
 import { useModelUsuario } from "./data/useModelUsuario";
 import SubModalUsuario from "./Modal/SubModalUsuario";
 import { useRol } from "../../../data/useRol";
+import { useNavigate } from "react-router-dom";
 
 function Usuario() {
     const usuarioHook = useUsuario();
-    const { usuarios, selectedRol, handleRol, eliminarUsuario } = usuarioHook;
+    const { usuarios, selectedRol, handleRol } = usuarioHook;
     const { roles } = useRol();
+    const navigate = useNavigate();
 
+    const handleVolver = () => {
+        navigate(-1); // Vuelve a la página anterior
+    };
     const opcionesRoles = roles.map(item => ({
         value: item.idRol,
         label: item.rol
@@ -38,12 +43,11 @@ function Usuario() {
     return (
         <div className="container-fluid p-3 pt-24">
             <TablaToolbar
-                onBack={() => console.log("Volver")}
-                onExport={() => console.log("Exportar")}
+                onBack={handleVolver}
                 onAdd={() => openSubModal(1)} // ✅ Descomentado
                 addLabel="Agregar Usuario"
             />
-            
+
             {/* Selects para filtrar */}
             <div className="bg-gray-600 rounded-lg p-4 mb-6 border border-gray-600">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

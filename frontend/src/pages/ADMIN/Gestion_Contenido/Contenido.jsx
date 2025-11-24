@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
@@ -8,6 +9,7 @@ import SubModalContenido from "./Modal/SubModalContenido";
 function Contenido() {
     const contenidoHook = useContenido();
     const { contenido, eliminarContenido } = contenidoHook;
+    const navigate = useNavigate();
 
     const {
         showSubModal,
@@ -21,12 +23,15 @@ function Contenido() {
         errores
     } = useModelContenido(contenidoHook);
 
+    const handleVolver = () => {
+        navigate(-1); // Vuelve a la página anterior
+    };
+
     return (
         <>
             <div className="container-fluid p-3 pt-24">
                 <TablaToolbar
-                    onBack={() => console.log("Exportar")}
-                    onExport={() => console.log("Exportar")}
+                    onBack={handleVolver}
                     onAdd={() => openSubModal(1)}
                     addLabel="Agregar Contenido" // ✅ Cambié "Ingrediente" por "Contenido"
                 />

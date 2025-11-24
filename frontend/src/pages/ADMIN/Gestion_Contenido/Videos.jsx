@@ -9,9 +9,15 @@ import SubModal from "../../../components/SubModal";
 import SubModalEpisodio from "./Modal/SubModalEpisodio";
 import { useTemporada } from "../../../data/useTemporada";
 import { useVideo } from "../../../data/useVideo";
+import { useNavigate } from "react-router-dom";
 
 function Videos() {
     const videoHook = useVideo();
+    const navigate = useNavigate();
+
+    const handleVolver = () => {
+        navigate(-1); // Vuelve a la página anterior
+    };
     const {
         videos,
         getVideos,
@@ -92,8 +98,7 @@ function Videos() {
         <>
             <div className="container-fluid p-3 pt-24">
                 <TablaToolbar
-                    onBack={() => console.log("Exportar")}
-                    onExport={() => console.log("Exportar")}
+                    onBack={handleVolver}
                     onAdd={() => openSubModal(1)}
                     addLabel="Agregar Episodio"
                 />

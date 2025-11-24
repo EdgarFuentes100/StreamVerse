@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
@@ -8,7 +9,11 @@ import SubModalRol from "./Modal/SubModalRol";
 function Rol() {
     const rolHook = useRol();
     const { roles, eliminarRol } = rolHook;
+    const navigate = useNavigate();
 
+    const handleVolver = () => {
+        navigate(-1); // Vuelve a la página anterior
+    };
     const {
         showSubModal,
         handleContinue,
@@ -23,8 +28,7 @@ function Rol() {
     return (
         <div className="container-fluid p-3 pt-24">
             <TablaToolbar
-                onBack={() => console.log("Volver")}
-                onExport={() => console.log("Exportar")}
+                    onBack={handleVolver}
                 onAdd={() => openSubModal(1)}
                 addLabel="Agregar Rol"
             />

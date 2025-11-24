@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import SubModal from "../../../components/SubModal";
 import TablaReutilizable from "../../../components/TablaReutilizable";
 import TablaToolbar from "../../../components/TablaToolbar";
@@ -9,13 +10,16 @@ function Categoria() {
     const categoriaHook = useCategoria();
     const { categoria, eliminarCategoria } = categoriaHook;
     const { showSubModal, handleContinue, closeSubModal, operacion, openSubModal, categoriaSeleccionada, handleChange, errores } = useModelCategoria(categoriaHook);
+    const navigate = useNavigate();
 
+    const handleVolver = () => {
+        navigate(-1); // Vuelve a la página anterior
+    };
     return (
         <div className="container-fluid p-3 pt-24">
             {/* 🧭 Toolbar */}
             <TablaToolbar
-                onBack={() => console.log("Volver")}
-                onExport={() => console.log("Exportar")}
+                onBack={handleVolver}
                 onAdd={() => openSubModal(1)}
                 addLabel="Agregar Categoría"
             />
