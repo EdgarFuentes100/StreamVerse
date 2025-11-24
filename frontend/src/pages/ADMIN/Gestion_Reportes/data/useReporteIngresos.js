@@ -1,93 +1,61 @@
 import { useState, useEffect } from 'react';
+import { useFetch } from '../../../../api/useFetch';
 
 export const useReporteIngresos = () => {
-    const [ingresos, setIngresos] = useState([]);
-    const [resumen, setResumen] = useState({});
-    const [tendencia, setTendencia] = useState([]);
+    const { getFetch } = useFetch();
+    const [ingresosMensual, setIngresosMensual] = useState([]);
+    const [ingresoTotal, setIngresoTotal] = useState([]);
     const [cargando, setCargando] = useState(false);
 
-    const obtenerReporteIngresos = async () => {
-        setCargando(true);
-        try {
-            const data = {
-                ingresos: [
-                    {
-                        id: 1,
-                        mes: "Enero 2024",
-                        suscripciones: 42150,
-                        publicidad: 2500,
-                        contenidoExtra: 1020,
-                        otros: 500,
-                        total: 45670,
-                        crecimiento: "+8%"
-                    },
-                    {
-                        id: 2,
-                        mes: "Diciembre 2023",
-                        suscripciones: 40150,
-                        publicidad: 2200,
-                        contenidoExtra: 850,
-                        otros: 450,
-                        total: 43650,
-                        crecimiento: "+5%"
-                    },
-                    {
-                        id: 3,
-                        mes: "Noviembre 2023",
-                        suscripciones: 38200,
-                        publicidad: 2000,
-                        contenidoExtra: 750,
-                        otros: 400,
-                        total: 41350,
-                        crecimiento: "+7%"
-                    },
-                    {
-                        id: 4,
-                        mes: "Octubre 2023",
-                        suscripciones: 35700,
-                        publicidad: 1800,
-                        contenidoExtra: 600,
-                        otros: 350,
-                        total: 38450,
-                        crecimiento: "+6%"
-                    }
-                ],
-                resumen: {
-                    arr: 548040,
-                    ltv: 245.60,
-                    cac: 45.30,
-                    churnRate: 4.2,
-                    mrr: 45670
-                },
-                tendencia: [
-                    { mes: "Jul", ingresos: 38500 },
-                    { mes: "Ago", ingresos: 40200 },
-                    { mes: "Sep", ingresos: 41800 },
-                    { mes: "Oct", ingresos: 43200 },
-                    { mes: "Nov", ingresos: 44500 },
-                    { mes: "Dic", ingresos: 45100 },
-                    { mes: "Ene", ingresos: 45670 }
-                ]
-            };
-            setIngresos(data.ingresos);
-            setResumen(data.resumen);
-            setTendencia(data.tendencia);
-        } catch (error) {
-            console.error('Error obteniendo reporte de ingresos:', error);
-        } finally {
-            setCargando(false);
-        }
+    const obtenerIngresosMensual = () => {
+        getFetch('reporte/ingreso-mensual')
+            .then((data) => {
+                // Transformar solo el campo de fecha para mostrar mes en texto
+                const ingresosFormateados = data.datos?.map(item => ({
+                    ...item,
+                    mes_formateado: formatearMes(item.año_mes)
+                })) || [];
+                setIngresosMensual(ingresosFormateados);
+            })
+            .catch((error) => {
+                console.error('Error al obtener ingresos mensuales:', error);
+            });
+    };
+
+    const obtenerIngresoTotal = () => {
+        getFetch('reporte/ingreso-total')
+            .then((data) => {
+                setIngresoTotal(data.datos || []);
+            })
+            .catch((error) => {
+                console.error('Error al obtener ingreso total:', error);
+            });
+    };
+
+    // Función para formatear el mes
+    const formatearMes = (añoMes) => {
+        const [año, mes] = añoMes.split('-');
+        const meses = {
+            '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+            '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+            '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+        };
+        return `${meses[mes]} ${año}`;
     };
 
     useEffect(() => {
-        obtenerReporteIngresos();
+        setCargando(true);
+        Promise.all([
+            obtenerIngresosMensual(),
+            obtenerIngresoTotal()
+        ]).finally(() => {
+            setCargando(false);
+        });
     }, []);
 
     return {
-        ingresos,
-        resumen,
-        tendencia,
-        cargando,
-        obtenerReporteIngresos
+        ingresosMensual,
+        ingresoTotal,
+        cargando
     };
 };

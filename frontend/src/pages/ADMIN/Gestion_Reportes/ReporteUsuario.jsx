@@ -3,7 +3,7 @@ import { useReporteUsuarios } from './data/useReporteUsuario';
 import TablaReutilizable from '../../../components/TablaReutilizable';
 
 const ReporteUsuarios = () => {
-    const { usuarios, metricas, cargando } = useReporteUsuarios();
+    const { usuarios, cargando } = useReporteUsuarios();
 
     if (cargando) {
         return <div className="flex justify-center items-center h-64 text-white">Cargando...</div>;
@@ -13,44 +13,16 @@ const ReporteUsuarios = () => {
         <div className="container-fluid p-3 pt-24">
             <h1 className="text-2xl font-bold text-white mb-6">Reporte de Usuarios</h1>
 
-            {/* Métricas Principales */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                <div className="bg-gray-800 rounded-lg shadow-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300">Total Usuarios</p>
-                    <p className="text-xl font-bold text-white">{metricas.totalUsuarios?.toLocaleString()}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg shadow-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300">Nuevos Este Mes</p>
-                    <p className="text-xl font-bold text-green-400">{metricas.nuevosEsteMes?.toLocaleString()}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg shadow-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300">Cambios de Plan</p>
-                    <p className="text-xl font-bold text-blue-400">{metricas.cambiosPlan}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg shadow-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300">Tasa Retención</p>
-                    <p className="text-xl font-bold text-purple-400">{metricas.tasaRetencion}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg shadow-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300">Usuarios Activos</p>
-                    <p className="text-xl font-bold text-green-400">{metricas.usuariosActivos?.toLocaleString()}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg shadow-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300">Tiempo Promedio</p>
-                    <p className="text-xl font-bold text-orange-400">{metricas.tiempoPromedio}</p>
-                </div>
-            </div>
-
-            {/* Tabla de Usuarios */}
+            {/* Solo la tabla - DIRECTA de la API */}
             <div className="bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700">
-                <h2 className="text-lg font-semibold text-white mb-4">Detalle de Usuarios</h2>
+                <h2 className="text-lg font-semibold text-white mb-4">Usuarios con Plan Actual</h2>
                 <TablaReutilizable
                     data={usuarios}
                     columnas={[
-                        { key: "nombre", label: "Nombre" },
+                        { key: "usuario", label: "Usuario" },
                         { key: "email", label: "Email" },
                         { 
-                            key: "plan", 
+                            key: "plan_actual", 
                             label: "Plan Actual",
                             formatter: (val) => (
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -62,31 +34,22 @@ const ReporteUsuarios = () => {
                                 </span>
                             )
                         },
-                        { key: "planAnterior", label: "Plan Anterior" },
-                        { key: "fechaCambio", label: "Fecha Cambio" },
+                        { key: "precio", label: "Precio", formatter: (val) => `$${val}` },
+                        { key: "fecha_contratacion", label: "Fecha Contratación" },
+                        { key: "fecha_vencimiento", label: "Fecha Vencimiento" },
                         { 
-                            key: "estado", 
-                            label: "Estado",
+                            key: "estado_cuenta", 
+                            label: "Estado Cuenta",
                             formatter: (val) => (
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    val === 'activo' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'
+                                    val === 'activa' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'
                                 }`}>
-                                    {val === 'activo' ? 'Activo' : 'Inactivo'}
+                                    {val === 'activa' ? 'Activa' : 'Inactiva'}
                                 </span>
                             )
-                        },
-                        { key: "ultimaConexion", label: "Última Conexión" },
-                        { key: "tiempoSesion", label: "Tiempo Sesión" }
-                    ]}
-                    acciones={[
-                        { 
-                            label: "Ver Detalle", 
-                            variant: "primary", 
-                            icon: "eye", 
-                            onClick: (item) => console.log('Ver usuario:', item) 
                         }
                     ]}
-                    idKey="id"
+                    idKey="idUsuario"
                 />
             </div>
         </div>

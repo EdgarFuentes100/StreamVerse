@@ -36,6 +36,7 @@ app.use('/api/v1/rol', require('./src/routes/rol.routes'));
 app.use('/api/v1/usuario', require('./src/routes/usuario.routes'));
 app.use('/api/v1/mi_lista', require('./src/routes/lista.routes'));
 app.use('/api/v1/contenidoPlan', require('./src/routes/contenidoPlan.routes'));
+app.use('/api/v1/reporte', require('./src/routes/reportes.routes'));
 
 // Rutas Auth
 app.use('/api/v1/auth', require('./src/routes/auth.routes'));

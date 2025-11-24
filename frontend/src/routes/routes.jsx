@@ -4,7 +4,6 @@ import Home from "../pages/Home";
 import LoginPage from "../pages/LoginPage";
 import CatalogoPage from "../pages/CatalogoPage";
 import ReproductorPage from "../pages/ReproductorPage";
-import MangasPage from "../pages/MangasPages";
 import MiListaPage from "../pages/MiListaPages";
 import NovedadesPage from "../pages/NovedadesPages";
 import MangaDetallePage from "../pages/MangaDetallePage";
@@ -24,7 +23,6 @@ import ResumenGeneral from "../pages/ADMIN/Gestion_Reportes/ResumenGeneral";
 import ReportePlanes from "../pages/ADMIN/Gestion_Reportes/ReportePlanes";
 import ReporteUsuarios from "../pages/ADMIN/Gestion_Reportes/ReporteUsuario";
 import ReporteIngresos from "../pages/ADMIN/Gestion_Reportes/ReporteIngresos";
-import ReporteContenido from "../pages/ADMIN/Gestion_Reportes/ReporteContenido";
 import GestionContenidoPlan from "../pages/ADMIN/Gestion_Contenido/GestionContenidoPlan";
 
 function AppRoutes() {
@@ -61,12 +59,6 @@ function AppRoutes() {
             <Route path="/repIngresos" element={
                 <ProtectedRoute rolesPermitidos={[1]}>
                     <ReporteIngresos />
-                </ProtectedRoute>
-            } />
-
-            <Route path="/repContenido" element={
-                <ProtectedRoute rolesPermitidos={[1]}>
-                    <ReporteContenido />
                 </ProtectedRoute>
             } />
 

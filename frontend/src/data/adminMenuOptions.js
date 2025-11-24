@@ -83,12 +83,6 @@ export const reportesOptions = [
     label: "Reporte de Ingresos",
     ruta: "/repIngresos",
     permisos: ["superadmin"]
-  },
-  {
-    icon: "🎬",
-    label: "Reporte de Contenido",
-    ruta: "/repContenido",
-    permisos: ["admin", "superadmin"]
   }
 ];
 
