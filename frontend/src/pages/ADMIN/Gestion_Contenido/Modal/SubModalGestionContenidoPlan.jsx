@@ -237,7 +237,9 @@ function SubModalGestionContenidoPlan({
                             { key: "rating", label: "Rating" },
                             { key: "year", label: "Año" },
                             { key: "duracion", label: "Duración" },
-                            { key: "asignado", label: "Asignado", isBoolean: true }
+                            { key: "asignado", label: "Asignado", isBoolean: true },
+                            { key: "isNew", label: "Nuevo", isBoolean: true },
+                            { key: "isExclusive", label: "Exclusivo", isBoolean: true }
                         ]}
                         expandible={[
                             { key: "image", label: "Imagen" },

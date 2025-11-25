@@ -80,25 +80,56 @@ async function quitarContenidoPlan(idContenido, idPlan) {
 
 async function configurarContenidoAutomatico(idPlan) {
     try {
-        const [result] = await localDB.query(
-            `CALL sp_ConfigurarContenidoAutomatico(?)`,
+
+        // 1. Obtener configuración del plan
+        const [config] = await localDB.query(
+            `SELECT contenidoNuevo, contenidoExclusivo FROM plan WHERE idPlan = ?`,
             [idPlan]
         );
 
-        const contenidosInsertados = result[0][0].contenidosInsertados;
+        if (config.length === 0) {
+            return { success: false, error: "Plan no encontrado" };
+        }
+
+        const { contenidoNuevo, contenidoExclusivo } = config[0];
+
+        // 2. Quitar contenido existente
+        await localDB.query(
+            `DELETE FROM contenido_plan WHERE idPlan = ?`,
+            [idPlan]
+        );
+
+        // 3. Construir la consulta dinamicamente
+        let sqlInsert = `
+            INSERT INTO contenido_plan (idContenido, idCategoria, idPlan)
+            SELECT idContenido, idCategoria, ?
+            FROM contenido
+        `;
+        let params = [idPlan];
+
+        if (contenidoNuevo == 0 && contenidoExclusivo == 0) {
+            sqlInsert += ` WHERE isNew = 0 AND isExclusive = 0`;
+        }
+        else if (contenidoNuevo == 1 && contenidoExclusivo == 0) {
+            sqlInsert += ` WHERE (isNew = 1 AND isExclusive = 0) OR (isNew = 0 AND isExclusive = 0)`;
+        }
+        else if (contenidoNuevo == 0 && contenidoExclusivo == 1) {
+            sqlInsert += ` WHERE (isNew = 0 AND isExclusive = 1) OR (isNew = 0 AND isExclusive = 0)`;
+        }
+        // si ambos son 1 → no se agrega WHERE (todos los contenidos)
+
+        // 4. Ejecutar inserción
+        const [insertResult] = await localDB.query(sqlInsert, params);
 
         return {
             success: true,
-            contenidosInsertados: contenidosInsertados,
-            mensaje: `Configuración automática aplicada. ${contenidosInsertados} contenidos asignados.`
+            contenidosInsertados: insertResult.affectedRows,
+            mensaje: `Configuración automática aplicada: ${insertResult.affectedRows} contenidos asignados`
         };
 
     } catch (error) {
-        console.error('Error en configurarContenidoAutomatico:', error);
-        return {
-            success: false,
-            error: error.message
-        };
+        console.error("Error en configurarContenidoAutomatico:", error);
+        return { success: false, error: error.message };
     }
 }
 
