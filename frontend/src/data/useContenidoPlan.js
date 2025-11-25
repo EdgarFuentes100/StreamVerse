@@ -69,7 +69,7 @@ const useContenidoPlan = () => {
         try {
             setCargando(true);
             
-            const result = await postFetch(`contenidoPlan/configurar-automatico/${idPlan}`, {});
+            const result = await postFetch(`contenidoPlan/configurar-automatico/${idPlan}`);
             
             // ✅ CORREGIDO: Usar tu estructura real "result.ok" y "result.datos"
             if (result.ok) {
