@@ -134,6 +134,7 @@ CREATE TABLE `contenido_plan` (
 
 LOCK TABLES `contenido_plan` WRITE;
 /*!40000 ALTER TABLE `contenido_plan` DISABLE KEYS */;
+INSERT INTO `contenido_plan` VALUES (1,1,2),(1,1,3),(2,1,1),(2,1,2),(2,1,3),(3,1,1),(3,1,2),(3,1,3),(4,1,1),(4,1,2),(4,1,3),(5,1,1),(5,1,2),(5,1,3),(6,1,2),(6,1,3),(7,1,1),(7,1,2),(7,1,3),(8,1,1),(8,1,2),(8,1,3),(9,1,1),(9,1,2),(9,1,3),(10,1,2),(10,1,3),(11,1,2),(11,1,3),(12,1,1),(12,1,2),(12,1,3),(13,1,1),(13,1,2),(13,1,3),(14,1,1),(14,1,2),(14,1,3),(15,1,2),(15,1,3),(16,1,1),(16,1,2),(16,1,3),(17,1,1),(17,1,2),(17,1,3),(18,1,2),(18,1,3),(19,1,1),(19,1,2),(19,1,3),(20,1,1),(20,1,2),(20,1,3),(21,2,2),(21,2,3),(22,2,2),(22,2,3),(23,2,1),(23,2,2),(23,2,3),(24,2,1),(24,2,2),(24,2,3),(25,2,2),(25,2,3),(26,2,2),(26,2,3),(27,2,1),(27,2,2),(27,2,3),(28,2,2),(28,2,3),(29,2,2),(29,2,3),(30,2,2),(30,2,3),(31,3,1),(31,3,2),(31,3,3),(32,3,2),(32,3,3),(33,3,1),(33,3,2),(33,3,3),(34,3,2),(34,3,3),(35,3,1),(35,3,2),(35,3,3),(36,3,2),(36,3,3),(37,3,1),(37,3,2),(37,3,3),(38,3,2),(38,3,3),(39,3,2),(39,3,3),(40,3,2),(40,3,3),(41,4,1),(41,4,2),(41,4,3),(42,4,1),(42,4,2),(42,4,3),(43,4,1),(43,4,2),(43,4,3),(44,4,1),(44,4,2),(44,4,3),(45,4,2),(45,4,3),(46,4,1),(46,4,2),(46,4,3),(47,4,1),(47,4,2),(47,4,3),(48,4,1),(48,4,2),(48,4,3),(49,4,2),(49,4,3),(50,4,2),(50,4,3),(51,5,1),(51,5,2),(51,5,3),(52,5,1),(52,5,2),(52,5,3),(53,5,1),(53,5,2),(53,5,3),(54,5,1),(54,5,2),(54,5,3),(55,5,1),(55,5,2),(55,5,3),(56,5,1),(56,5,2),(56,5,3),(57,5,1),(57,5,2),(57,5,3),(58,5,1),(58,5,2),(58,5,3),(59,5,1),(59,5,2),(59,5,3),(60,5,1),(60,5,2),(60,5,3),(61,6,2),(61,6,3),(62,6,1),(62,6,2),(62,6,3),(63,6,2),(63,6,3),(64,6,1),(64,6,2),(64,6,3),(65,6,1),(65,6,2),(65,6,3),(66,6,2),(66,6,3),(67,6,1),(67,6,2),(67,6,3),(68,6,2),(68,6,3),(69,6,1),(69,6,2),(69,6,3),(70,6,1),(70,6,2),(70,6,3),(71,7,1),(71,7,2),(71,7,3),(72,7,1),(72,7,2),(72,7,3),(73,7,2),(73,7,3),(74,7,1),(74,7,2),(74,7,3),(75,7,2),(75,7,3),(76,7,1),(76,7,2),(76,7,3),(77,7,1),(77,7,2),(77,7,3),(78,7,1),(78,7,2),(78,7,3),(79,7,1),(79,7,2),(79,7,3),(80,7,1),(80,7,2),(80,7,3),(81,8,1),(81,8,2),(81,8,3),(82,8,2),(82,8,3),(83,8,2),(83,8,3),(84,8,1),(84,8,2),(84,8,3),(85,8,1),(85,8,2),(85,8,3),(86,8,2),(86,8,3),(87,8,1),(87,8,2),(87,8,3);
 /*!40000 ALTER TABLE `contenido_plan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -431,7 +432,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (1,'117825334618019172559','Edgar Fuentes','edgarfuentes139@gmail.com','https://lh3.googleusercontent.com/a/ACg8ocLiISmRrBkDcdT0Qvf53cUyucIk3xrQF8ASypfalfc1VHFeNA=s96-c','activo',1,'2025-11-06 04:40:26'),(2,'google123456789','Juan Pérez','juan.perez@email.com','https://avatar.com/juan','activo',2,'2025-11-24 04:06:09'),(3,'google987654321','María García','maria.garcia@email.com','https://avatar.com/maria','activo',2,'2025-11-24 04:06:09'),(4,'google555666777','Carlos López','carlos.lopez@email.com','https://avatar.com/carlos','activo',2,'2025-11-24 04:06:09'),(5,'google111222333','Ana Martínez','ana.martinez@email.com','https://avatar.com/ana','activo',2,'2025-11-24 04:06:09'),(6,'google444555666','Pedro Rodríguez','pedro.rodriguez@email.com','https://avatar.com/pedro','activo',2,'2025-11-24 04:06:09');
+INSERT INTO `usuario` VALUES (2,'google123456789','Juan Pérez','juan.perez@email.com','https://avatar.com/juan','activo',2,'2025-11-24 04:06:09'),(3,'google987654321','María García','maria.garcia@email.com','https://avatar.com/maria','activo',2,'2025-11-24 04:06:09'),(4,'google555666777','Carlos López','carlos.lopez@email.com','https://avatar.com/carlos','activo',2,'2025-11-24 04:06:09'),(5,'google111222333','Ana Martínez','ana.martinez@email.com','https://avatar.com/ana','activo',2,'2025-11-24 04:06:09'),(6,'google444555666','Pedro Rodríguez','pedro.rodriguez@email.com','https://avatar.com/pedro','activo',2,'2025-11-24 04:06:09');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -465,38 +466,47 @@ BEGIN
     FROM plan
     WHERE idPlan = p_idPlan;
     
-    -- 2. Primero quitar TODO el contenido existente del plan
+    -- 2. Quitar TODO el contenido existente del plan
     DELETE FROM contenido_plan WHERE idPlan = p_idPlan;
     
-    -- 3. Insertar contenido según configuración CORREGIDA
+    -- 3. Insertar contenido según configuración
     IF v_contenidoNuevo = 0 AND v_contenidoExclusivo = 0 THEN
-        -- SOLO contenido REGULAR (no nuevo, no exclusivo)
+        
+        -- SOLO contenido REGULAR
         INSERT INTO contenido_plan (idContenido, idCategoria, idPlan)
         SELECT idContenido, idCategoria, p_idPlan
         FROM contenido 
         WHERE isNew = 0 AND isExclusive = 0;
         
     ELSEIF v_contenidoNuevo = 1 AND v_contenidoExclusivo = 0 THEN
-        -- SOLO NUEVO: contenido nuevo NO exclusivo + contenido regular
+        
+        -- SOLO NUEVO + REGULAR
         INSERT INTO contenido_plan (idContenido, idCategoria, idPlan)
         SELECT idContenido, idCategoria, p_idPlan
         FROM contenido 
-        WHERE (isNew = 1 AND isExclusive = 0) OR (isNew = 0 AND isExclusive = 0);
+        WHERE (isNew = 1 AND isExclusive = 0)
+           OR (isNew = 0 AND isExclusive = 0);
         
     ELSEIF v_contenidoNuevo = 0 AND v_contenidoExclusivo = 1 THEN
-        -- SOLO EXCLUSIVO: contenido exclusivo NO nuevo + contenido regular
+        
+        -- SOLO EXCLUSIVO + REGULAR
         INSERT INTO contenido_plan (idContenido, idCategoria, idPlan)
         SELECT idContenido, idCategoria, p_idPlan
         FROM contenido 
-        WHERE (isNew = 0 AND isExclusive = 1) OR (isNew = 0 AND isExclusive = 0);
+        WHERE (isNew = 0 AND isExclusive = 1)
+           OR (isNew = 0 AND isExclusive = 0);
         
     ELSEIF v_contenidoNuevo = 1 AND v_contenidoExclusivo = 1 THEN
+        
         -- TODO el contenido
         INSERT INTO contenido_plan (idContenido, idCategoria, idPlan)
         SELECT idContenido, idCategoria, p_idPlan
         FROM contenido;
     END IF;
-    
+
+    -- ⭐ RETORNAR CANTIDAD DE CONTENIDOS INSERTADOS
+    SELECT ROW_COUNT() AS contenidosInsertados;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -513,4 +523,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-24  7:57:36
+-- Dump completed on 2025-11-24 18:56:41
